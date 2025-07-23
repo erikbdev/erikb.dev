@@ -13,14 +13,14 @@ public struct ActivityClient: Sendable {
 extension ActivityClient {
   public func redactedActivity() -> Activity {
     let location = self.location()
-    let redactedLocation = location.flatMap { 
+    let redactedLocation = location.flatMap {
       Location(
-        city: $0.city, 
-        state: $0.state, 
-        region: $0.region, 
+        city: $0.city,
+        state: $0.state,
+        region: $0.region,
         timestamp: $0.timestamp,
         residency: nil
-      ) 
+      )
     }
     return Activity(
       location: redactedLocation,
@@ -46,14 +46,30 @@ extension ActivityClient {
   }
 
   public struct NowPlaying: Sendable, Equatable, Codable {
+
+    /// track title
     public let title: String
-    public let album: String?
+
+    /// artist name
     public let artist: String?
+
+    /// album name
+    public let album: String?
+
+    /// time elapsed
+    public let progress: TimeInterval
+
+    /// total duration
+    public let duration: TimeInterval
+
+    /// timestamp of the request sent
+    public let timestamp: Date
+
+    /// service used
     public let service: Service
 
     public enum Service: String, Sendable, Equatable, Codable {
       case apple
-      case spotify
     }
   }
 
@@ -72,22 +88,6 @@ extension ActivityClient {
       decoder.dateDecodingStrategy = .iso8601
       return decoder
     }()
-  }
-}
-
-extension ActivityClient: DependencyKey {
-  public static var liveValue: ActivityClient {
-    let state = LockIsolated((Location?.none, NowPlaying?.none))
-    return ActivityClient(
-      location: { state.value.0 },
-      updateLocation: { newLocation in
-        state.withValue { $0.0 = newLocation }
-      },
-      nowPlaying: { state.value.1 },
-      updateNowPlaying: { nowPlaying in
-        state.withValue { $0.1 = nowPlaying }
-      }
-    )
   }
 }
 

@@ -61,11 +61,11 @@ private struct UserView: HTML {
     guard let nowPlaying = activityClient.nowPlaying() else {
       return nil
     }
-    
+
     let nowPlayingText = [
       nowPlaying.title,
       nowPlaying.artist?.isEmpty == false ? "—" : nil,
-      nowPlaying.artist
+      nowPlaying.artist,
     ]
     .compactMap { $0 }
     .joined(separator: " ")
@@ -73,7 +73,7 @@ private struct UserView: HTML {
   }
 
   static let aboutDescription = """
-    I'm a passionate software developer who builds applications using Swift and modern web technologies.
+    A passionate software developer who builds applications using Swift and modern web technologies.
     """
 
   @HTMLBuilder
@@ -84,7 +84,7 @@ private struct UserView: HTML {
         """
         let user = User(
           name: "Erik Bautista Santibanez",
-          role: "Mobile & Web Developer",
+          role: [.mobile, .web],
           home: "\(residency ?? .default)"\
         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
@@ -97,7 +97,7 @@ private struct UserView: HTML {
         """
         const user: User = {
           name: "Erik Bautista Santibanez",
-          role: "Mobile & Web Developer",
+          role: [Role.Mobile, Role.Web],
           home: "\(residency ?? .default)"\
         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
@@ -110,7 +110,7 @@ private struct UserView: HTML {
         """
         let user = User {
           name: "Erik Bautista Santibanez",
-          role: "Mobile & Web Developer",
+          role: [Role::Mobile, Role::Web],
           home: "\(residency ?? .default)"\
         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
@@ -133,91 +133,42 @@ private struct UserView: HTML {
           p(.aria.label("occupation")) { "Mobile & Web Developer" }
 
           p(.aria.label("residency")) {
-            svg(
-              .xmlns(),
-              .fill("currentColor"),
-              .viewBox("0 0 256 256"),
-              .aria.label("Map pin icon")
-            ) {
-              path(
-                .d(
-                  "M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z"
-                )
-              )
-            }
-            .svgIconStyling()
-            .inlineStyle("margin-right", "0.25rem")
-
+            MapPinIcon()
             "\(residency ?? .default)"
           }
 
           if let currentLocation {
             p(.aria.label("current location")) {
-              svg(
-                .xmlns(),
-                .fill("currentColor"),
-                .viewBox("0 0 256 256"),
-                .aria.label("Navigation icon")
-              ) {
-                path(
-                  .d(
-                    "M234.35,129,152,152,129,234.35a8,8,0,0,1-15.21.27l-65.28-176A8,8,0,0,1,58.63,48.46l176,65.28A8,8,0,0,1,234.35,129Z"
-                  )
-                )
-                path(
-                  .d(
-                    "M237.33,106.21,61.41,41l-.16-.05A16,16,0,0,0,40.9,61.25a1,1,0,0,0,.05.16l65.26,175.92A15.77,15.77,0,0,0,121.28,248h.3a15.77,15.77,0,0,0,15-11.29l.06-.2,21.84-78,78-21.84.2-.06a16,16,0,0,0,.62-30.38ZM149.84,144.3a8,8,0,0,0-5.54,5.54L121.3,232l-.06-.17L56,56l175.82,65.22.16.06Z"
-                  )
-                )
-              }
-              .inlineStyle("scale", "calc(100% * -1) 100%")
-              .svgIconStyling()
-              .inlineStyle("margin-right", "0.25rem")
-
+              NavigationArrowIcon()
               "Currently in "
-
-              // span { "***" }
-              //   .inlineStyle("color", "#808080")
-              //   .inlineStyle("font-weight", "700")
+              span { "***" }
+                .inlineStyle("color", "#808080")
+                .inlineStyle("font-weight", "700")
               em { currentLocation }
                 .inlineStyle("font-weight", "700")
                 .inlineStyle("color", "#fafafa")
-              // span { "***" }
-              //   .inlineStyle("color", "#808080")
-              //   .inlineStyle("font-weight", "700")
+              span { "***" }
+                .inlineStyle("color", "#808080")
+                .inlineStyle("font-weight", "700")
             }
           }
 
           if let nowPlaying {
             p(.aria.label("music playing")) {
               // <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d=""></path></svg>
-              svg(
-                .xmlns(),
-                .fill("currentColor"),
-                .viewBox("0 0 256 256"),
-                .aria.label("wave icon")
-              ) {
-                path(
-                  .d(
-                    "M56,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM88,24a8,8,0,0,0-8,8V224a8,8,0,0,0,16,0V32A8,8,0,0,0,88,24Zm40,32a8,8,0,0,0-8,8V192a8,8,0,0,0,16,0V64A8,8,0,0,0,128,56Zm40,32a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,168,88Zm40-16a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,208,72Z"
-                  )
-                )
-              }
-              .inlineStyle("scale", "calc(100% * -1) 100%")
-              .svgIconStyling()
-              .inlineStyle("margin-right", "0.25rem")
+              WaveFormIcon()
 
               "Listening to "
 
-              // span { "***" }
-                // .inlineStyle("color", "#808080")
-                // .inlineStyle("font-weight", "700")
+              span { "***" }
+                .inlineStyle("color", "#808080")
+                .inlineStyle("font-weight", "700")
               em { nowPlaying }
                 .inlineStyle("font-weight", "700")
                 .inlineStyle("color", "#fafafa")
-              // span { "***" }
-                // .inlineStyle("color", "#808080")
-                // .inlineStyle("font-weight", "700")
+              span { "***" }
+                .inlineStyle("color", "#808080")
+                .inlineStyle("font-weight", "700")
             }
           }
 
@@ -360,8 +311,8 @@ private struct PostsView: HTML {
                 CodeLang.conditionalCases(initial: selected) { lang in
                   code(.class("hljs \("language-\(lang?.rawValue ?? "markdown")")")) {
                     switch lang {
-                      case .none: "log-\(self.number).md"
-                      case .some: "logs[\(self.number)]"
+                    case .none: "log-\(self.number).md"
+                    case .some: "logs[\(self.number)]"
                     }
                   }
                 }
@@ -521,15 +472,6 @@ private struct PostsView: HTML {
 }
 
 extension HTML {
-  fileprivate func svgIconStyling() -> HTMLInlineStyle<Self> {
-    self.inlineStyle("display", "inline-block")
-      .inlineStyle("vertical-align", "middle")
-      .inlineStyle("position", "relative")
-      .inlineStyle("bottom", "0.125em")
-      .inlineStyle("width", "1em")
-      .inlineStyle("height", "1em")
-  }
-
   fileprivate func postCodeBlockStyling() -> HTMLInlineStyle<Self> {
     self.inlineStyle("padding", "0.75rem", post: " pre")
       .inlineStyle("background", "#242424", post: " pre")
