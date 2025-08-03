@@ -1,6 +1,6 @@
 import HTML
 
-extension HTML {
+extension AsyncHTML {
   func wrappedStyling() -> HTMLInlineStyle<Self> {
     self.inlineStyle("border-top", "1px solid #303030")
   }

@@ -5,25 +5,24 @@ import HTML
 import Models
 import Vue
 
-public struct HomePage: Page {
+@Vue.Component
+public struct HomePage: Page, Sendable {
   public let title = "Portfolio | Erik Bautista Santibanez"
 
-  let initialCodeLang: CodeLang?
+  @Vue.Reactive let codeLang: CodeLang?
 
   public init(codeLang: CodeLang? = .swift) {
-    self.initialCodeLang = codeLang
+    self.codeLang = codeLang
   }
 
-  public var head: some HTML { EmptyHTML() }
-
   public var body: some HTML {
-    #VueScope(initialCodeLang) { codeLang in
-      HeaderView(selected: codeLang)
+    div {
+      HeaderView(selected: $codeLang)
       main {
         Spacer()
-        UserView(selected: codeLang)
+        UserView(selected: $codeLang)
         Spacer()
-        PostsView(selected: codeLang)
+        PostsView(selected: $codeLang)
         Spacer()
       }
       FooterView()
@@ -471,7 +470,7 @@ private struct PostsView: HTML {
   }
 }
 
-extension HTML {
+extension AsyncHTML {
   fileprivate func postCodeBlockStyling() -> HTMLInlineStyle<Self> {
     self.inlineStyle("padding", "0.75rem", post: " pre")
       .inlineStyle("background", "#242424", post: " pre")

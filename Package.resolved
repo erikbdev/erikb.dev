@@ -1,5 +1,5 @@
 {
-  "originHash" : "5d6cc5fa9093dc34cfb54624f37af62be8591eb1d030a13a50c5608c973cfece",
+  "originHash" : "276229327e865fe0a13729b7ccbcd942c558be7ab382d542decd4505fd53c029",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -276,8 +276,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
-        "revision" : "638a548ac49c8b59e5bf75b6b45375b0dd95842c",
-        "version" : "0.0.17"
+        "revision" : "eb8192a4a01ae15c2ddea07ddae236bfe629e62c",
+        "version" : "0.2.3"
       }
     },
     {

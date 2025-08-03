@@ -2,25 +2,22 @@ import Dependencies
 import HTML
 import Vue
 
-public struct NotFoundPage: Page {
+@Vue.Component
+public struct NotFoundPage: Page, Sendable {
   public let title = "404 | Erik Bautista Santibanez"
 
-  let initialCodeLang: CodeLang?
+  @Vue.Reactive let codeLang: CodeLang?
 
   public init(codeLang: CodeLang? = .swift) {
-    self.initialCodeLang = codeLang
-  }
-
-  public var head: some HTML {
-    EmptyHTML()
+    self.codeLang = codeLang
   }
 
   public var body: some HTML {
-    #VueScope(initialCodeLang) { codeLang in
-      HeaderView(selected: codeLang)
+    div {
+      HeaderView(selected: $codeLang)
       Spacer()
       main {
-        InnerView(codeLang: codeLang)
+        InnerView(codeLang: $codeLang)
       }
       Spacer()
       FooterView()
