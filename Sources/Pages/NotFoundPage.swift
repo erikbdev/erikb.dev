@@ -6,9 +6,9 @@ import Vue
 public struct NotFoundPage: Page, Sendable {
   public let title = "404 | Erik Bautista Santibanez"
 
-  @Vue.Reactive let codeLang: CodeLang?
+  @Vue.Reactive let codeLang: CodeLang
 
-  public init(codeLang: CodeLang? = .swift) {
+  public init(codeLang: CodeLang = .markdown) {
     self.codeLang = codeLang
   }
 
@@ -29,7 +29,7 @@ public struct NotFoundPage: Page, Sendable {
 }
 
 private struct InnerView: HTML {
-  let codeLang: Expression<CodeLang?>
+  let codeLang: Expression<CodeLang>
 
   private static let notFoundDescription = "The asset or page could not be found"
 
@@ -51,7 +51,7 @@ private struct InnerView: HTML {
           .inlineStyle("padding-bottom", "0.5rem")
 
           div {
-            if let lang {
+            if lang != .markdown {
               pre {
                 code {
                   """
@@ -72,6 +72,7 @@ private struct InnerView: HTML {
                     """
                     throw new Error("Not found");
                     """
+                  case .markdown: ""
                   }
                 }
               }
@@ -91,8 +92,10 @@ private struct InnerView: HTML {
             }
           }
           .inlineStyle("padding", "160px 32px")
-          .inlineStyle("justify-self", "center")
+          .inlineStyle("align-self", "center")
         }
+        .inlineStyle("display", "flex")
+        .inlineStyle("flex-direction", "column")
       }
       .containerStyling()
       .inlineStyle("width", "100%")

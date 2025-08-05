@@ -4,7 +4,7 @@ import HTML
 import Vue
 
 struct HeaderView: HTML {
-  let selected: Vue.Expression<CodeLang?>
+  let selected: Vue.Expression<CodeLang>
 
   var body: some HTML {
     header {
@@ -30,14 +30,16 @@ struct HeaderView: HTML {
   }
 }
 
+@Vue.Component
 private struct CodeSelector: HTML {
-  let selected: Vue.Expression<CodeLang?>
+  let selected: Vue.Expression<CodeLang>
+  @Vue.Reactive let visible = false
 
   var body: some HTML {
-    #VueScope(false) { visible in
+    div {
       button(
-        .v.on(.click, visible.assign(!visible)),
-        .v.bind(attrOrProp: "aria-pressed", visible)
+        .v.on(.click, $visible.assign(!$visible)),
+        .v.bind(attrOrProp: "aria-pressed", $visible)
       ) {
         code { "</>" }
       }
@@ -51,23 +53,19 @@ private struct CodeSelector: HTML {
       .inlineStyle("background", "#8A8A8A", post: "[aria-pressed=\"true\"]")
       .inlineStyle("color", "#080808", post: "[aria-pressed=\"true\"]")
 
-      ul(.hidden, .v.bind(attrOrProp: "hidden", !visible)) {
-        for codeLang in [nil] + CodeLang.allCases {
+      ul(.hidden, .v.bind(attrOrProp: "hidden", !$visible)) {
+        for codeLang in CodeLang.allCases {
           li {
             button(
               .v.on(
                 .click,
-                Expression(
-                  rawValue: "\(selected.assign(Expression(codeLang))), \(visible.assign(!visible))"
-                )
+                Expression(rawValue: "\(selected.assign(Expression(codeLang))), \($visible.assign(!$visible))")
               ),
               .v.bind(attrOrProp: "aria-selected", selected == Expression(codeLang))
             ) {
-              p {
-                codeLang?.title ?? "Markdown"
-              }
-              .inlineStyle("width", "100%")
-              .inlineStyle("padding", "0.5rem")
+              p { codeLang.title }
+                .inlineStyle("width", "100%")
+                .inlineStyle("padding", "0.5rem")
             }
             .inlineStyle("all", "unset")
             .inlineStyle("display", "block")

@@ -9,9 +9,9 @@ import Vue
 public struct HomePage: Page, Sendable {
   public let title = "Portfolio | Erik Bautista Santibanez"
 
-  @Vue.Reactive let codeLang: CodeLang?
+  @Vue.Reactive let codeLang: CodeLang
 
-  public init(codeLang: CodeLang? = .swift) {
+  public init(codeLang: CodeLang) {
     self.codeLang = codeLang
   }
 
@@ -34,7 +34,7 @@ public struct HomePage: Page, Sendable {
 private struct UserView: HTML {
   @Dependency(\.activityClient) private var activityClient
 
-  let selected: Vue.Expression<CodeLang?>
+  let selected: Vue.Expression<CodeLang>
 
   var location: ActivityClient.Location? {
     self.activityClient.location()
@@ -118,7 +118,7 @@ private struct UserView: HTML {
         > println!("{}", user.about());
         // \(Self.aboutDescription)
         """
-      case .none:
+      case .markdown:
         h1(.aria.label("name")) {
           span { "#" }
             .inlineStyle("color", "#808080")
@@ -229,15 +229,15 @@ private struct UserView: HTML {
   struct ConditionalCodeLabel: HTML {
     let label: String
     let value: String
-    let selected: Vue.Expression<CodeLang?>
+    let selected: Vue.Expression<CodeLang>
 
     var body: some HTML {
       CodeLang.conditionalCases(initial: selected) { lang in
         code {
-          if let lang {
-            "user.\(label)()\(lang.hasSemiColon ? ";" : "")"
-          } else {
+          if lang == .markdown {
             "[\(label)](\(value))"
+          } else {
+            "user.\(label)()\(lang.hasSemiColon ? ";" : "")"
           }
         }
       }
@@ -246,7 +246,7 @@ private struct UserView: HTML {
 }
 
 private struct PostsView: HTML {
-  let selected: Vue.Expression<CodeLang?>
+  let selected: Vue.Expression<CodeLang>
 
   static let description = "A curated list of projects I've worked on."
 
@@ -268,7 +268,7 @@ private struct PostsView: HTML {
         // \(Self.description)
         let logs = fetch(Filter::All).await;
         """
-      case .none:
+      case .markdown:
         h1 {
           span { "#" }
             .inlineStyle("color", "#808080")
@@ -293,7 +293,7 @@ private struct PostsView: HTML {
   struct PostView: HTML {
     let number: Int
     let post: Post
-    let selected: Vue.Expression<CodeLang?>
+    let selected: Vue.Expression<CodeLang>
 
     var body: some HTML {
       article(.id(self.post.slug)) {
@@ -308,10 +308,10 @@ private struct PostsView: HTML {
             pre {
               a(.href("#\(self.post.slug)")) {
                 CodeLang.conditionalCases(initial: selected) { lang in
-                  code(.class("hljs \("language-\(lang?.rawValue ?? "markdown")")")) {
+                  code(.class("hljs \("language-\(lang.rawValue)")")) {
                     switch lang {
-                    case .none: "log-\(self.number).md"
-                    case .some: "logs[\(self.number)]"
+                    case .markdown: "log-\(self.number).md"
+                    default: "logs[\(self.number)]"
                     }
                   }
                 }

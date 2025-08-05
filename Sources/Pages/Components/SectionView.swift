@@ -5,8 +5,8 @@ import Vue
 
 struct SectionView<Header: HTML, Content: HTML>: HTML {
   let id: String
-  let selected: Vue.Expression<CodeLang?>
-  @HTMLBuilder let header: @Sendable (CodeLang?) -> Header
+  let selected: Vue.Expression<CodeLang>
+  @HTMLBuilder let header: @Sendable (CodeLang) -> Header
   @HTMLBuilder let content: @Sendable () -> Content
 
   var body: some HTML {
@@ -30,7 +30,7 @@ struct SectionView<Header: HTML, Content: HTML>: HTML {
             .inlineStyle("padding-bottom", "0.5rem")
 
             CodeLang.conditionalCases(initial: selected) { lang in
-              if let lang {
+              if lang != .markdown {
                 pre {
                   code(.class("hljs language-\(lang.rawValue)")) {
                     self.header(lang)
@@ -39,7 +39,7 @@ struct SectionView<Header: HTML, Content: HTML>: HTML {
                 .inlineStyle("white-space", "pre-wrap")
               } else {
                 hgroup {
-                  self.header(nil)
+                  self.header(.markdown)
                 }
               }
             }
@@ -57,10 +57,10 @@ struct SectionView<Header: HTML, Content: HTML>: HTML {
 }
 
 extension CodeLang {
-  static func slugToFileName(_ slug: String, lang: CodeLang?) -> String {
+  static func slugToFileName(_ slug: String, lang: CodeLang) -> String {
     let fileName =
       switch lang {
-      case .none: slug
+      case .markdown: slug
       case .swift:
         slug.components(separatedBy: "-")
           .map { component -> String in
@@ -86,7 +86,7 @@ extension CodeLang {
           }
           .joined()
       }
-    return fileName + "." + (lang?.ext ?? "md")
+    return fileName + "." + lang.ext
   }
 }
 
