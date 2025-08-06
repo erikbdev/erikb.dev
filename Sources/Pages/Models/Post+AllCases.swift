@@ -31,15 +31,15 @@ extension Post: CaseIterable {
         kind: .project,
         links: [
           .init(
-            title: "PrismUI on GitHub", 
+            title: "PrismUI on GitHub",
             href: "https://github.com/erikbdev/PrismUI",
             role: .primary
           ),
           .init(
-            title: "SSKeyboardHue on GitHub", 
+            title: "SSKeyboardHue on GitHub",
             href: "https://github.com/erikbdev/SSKeyboardHue",
             role: .secondary
-          )
+          ),
         ]
       ),
       Self(
@@ -49,7 +49,7 @@ extension Post: CaseIterable {
         ),
         title: "Anime Now! \u{2014} An iOS and macOS App",
         content: """
-          
+
           """,
         date: Date(month: 9, day: 15, year: 2022),
         kind: .project
@@ -62,7 +62,7 @@ extension Post: CaseIterable {
         kind: .project,
         links: [
           .init(
-            title: "Mochi Website", 
+            title: "Mochi Website",
             href: "https://mochi.erikb.dev",
             role: .primary
           )
@@ -106,17 +106,17 @@ extension Post: CaseIterable {
       Self(
         title: "XTool is Awesome",
         content: """
-        [xtool](https://github.com/xtool-org/xtool) is a tool that attempts to replace Xcode and use Swift Package Manager to \
-        build and deploy iOS apps on macOS, Linux, and Windows! \
-        I have been working closely with the developer to support for App Extensions and also resolve additional issues.
+          [xtool](https://github.com/xtool-org/xtool) is a tool that attempts to replace Xcode and use Swift Package Manager to \
+          build and deploy iOS apps on macOS, Linux, and Windows! \
+          I have been working closely with the developer to support for App Extensions and also resolve additional issues.
 
-        I hope to also replace "AppleProductTypes", a library used to build iOS and macOS apps using Swift Playgrounds, in favor of \
-        "XToolProductTypes."
-        """,
+          I hope to also replace "AppleProductTypes", a library used to build iOS and macOS apps using Swift Playgrounds, in favor of \
+          "XToolProductTypes."
+          """,
         date: Date(month: 7, day: 20, year: 2025),
         kind: .blog,
         hidden: true
-      )
+      ),
     ]
     .sorted { $0.date < $1.date }
     .filter { !$0.hidden }

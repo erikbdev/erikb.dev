@@ -16,7 +16,7 @@ extension PageLayout: ResponseGenerator {
   ) -> Response {
     Response(
       status: status,
-      headers: [.contentType:  "text/html; charset=utf-8"],
+      headers: [.contentType: "text/html; charset=utf-8"],
       body: ResponseBody { [self] writer in
         var htmlWriter = AsyncHTMLWriter(writer: &writer, chunkSize: 1024)
         try await self.render(into: &htmlWriter)

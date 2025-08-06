@@ -85,8 +85,8 @@ private struct NotFoundMiddleware<Context: RequestContext>: RouterMiddleware {
   }
 }
 
-private extension Metadata {
-  static func `default`() -> Metadata {
+extension Metadata {
+  fileprivate static func `default`() -> Metadata {
     @Dependency(\.publicAssets) var assets
 
     return Metadata(
@@ -101,7 +101,7 @@ private extension Metadata {
 extension CodeLang {
   fileprivate static func resolve(_ req: Request) -> CodeLang {
     req.uri.queryParameters["codeLang"]
-      .flatMap { 
+      .flatMap {
         CodeLang(rawValue: $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
       } ?? .markdown
   }
