@@ -65,6 +65,7 @@ let package = Package(
         "Models",
         "ActivityClient",
         "PublicAssets",
+        "Routes",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "HTML", package: "swift-web"),
         .product(name: "Vue", package: "swift-web"),
