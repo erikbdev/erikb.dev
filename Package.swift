@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "portfolio",
   platforms: [
-    .macOS(.v13),
+    .macOS(.v13)
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.4.0"),
@@ -13,14 +13,14 @@ let package = Package(
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
-    .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2")
+    .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
   ],
   targets: [
     .target(
       name: "EnvVars",
       dependencies: [
         .product(name: "Hummingbird", package: "hummingbird"),
-        .product(name: "Dependencies", package: "swift-dependencies")
+        .product(name: "Dependencies", package: "swift-dependencies"),
       ]
     ),
     .target(
@@ -31,11 +31,11 @@ let package = Package(
       ],
       resources: [.copy("assets")],
       plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
-    ),    
+    ),
     .target(
       name: "Models",
       dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "Dependencies", package: "swift-dependencies")
       ]
     ),
     .target(
@@ -55,7 +55,7 @@ let package = Package(
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "URLRouting", package: "swift-url-routing"),
         .product(name: "HummingbirdURLRouting", package: "swift-web"),
-        .product(name: "CasePaths", package: "swift-case-paths")
+        .product(name: "CasePaths", package: "swift-case-paths"),
       ]
     ),
     .target(
@@ -63,13 +63,14 @@ let package = Package(
       dependencies: [
         "EnvVars",
         "Models",
+        "Routes",
         "ActivityClient",
         "PublicAssets",
         "Routes",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "HTML", package: "swift-web"),
         .product(name: "Vue", package: "swift-web"),
-        .product(name: "Hummingbird", package: "hummingbird")
+        .product(name: "Hummingbird", package: "hummingbird"),
       ]
     ),
 
@@ -87,7 +88,7 @@ let package = Package(
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "MiddlewareUtils", package: "swift-web")
+        .product(name: "MiddlewareUtils", package: "swift-web"),
       ]
     ),
   ],
@@ -102,7 +103,8 @@ package.targets
         "-Xfrontend",
         "-warn-long-function-bodies=500",
         "-Xfrontend",
-        "-warn-long-expression-type-checking=250"
+        "-warn-long-expression-type-checking=250",
       ])
     ]
   }
+
