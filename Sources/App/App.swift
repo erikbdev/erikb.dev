@@ -4,4 +4,3 @@ struct App {
     print("Hello, world")
   }
 }
-

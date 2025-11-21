@@ -14,6 +14,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
+    .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0")
   ],
   targets: [
     .target(
@@ -91,7 +92,12 @@ let package = Package(
         .product(name: "MiddlewareUtils", package: "swift-web"),
       ]
     ),
-    .executableTarget(name: "App"),
+    .executableTarget(
+      name: "App",
+      dependencies: [
+        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows]))
+      ]
+    ),
   ],
   swiftLanguageModes: [.v6]
 )
