@@ -27,7 +27,7 @@ COPY . .
 # Build the application, with optimizations, with static linking, and using jemalloc
 # N.B.: The static version of jemalloc is incompatible with the static Swift runtime.
 RUN swift build -c release \
-        --product App \
+        --product Server \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
@@ -35,7 +35,7 @@ RUN swift build -c release \
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/App" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/Server" ./
 
 # Copy resources bundled by SPM to staging area
 RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
@@ -60,14 +60,14 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     libcurl4 \
     && rm -r /var/lib/apt/lists/*
 
-# Create a deploy user and group with /app as its home directory
-RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app deploy
+# Create a deploy user and group with /server as its home directory
+RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /server deploy
 
 # Switch to the new home directory
-WORKDIR /app
+WORKDIR /server
 
 # Copy built executable and any staged resources from builder
-COPY --from=build --chown=deploy:deploy /staging /app
+COPY --from=build --chown=deploy:deploy /staging /server
 
 # Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
@@ -79,5 +79,5 @@ USER deploy:deploy
 EXPOSE 8080
 
 # Start the service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./App"]
+ENTRYPOINT ["./Server"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]

@@ -76,7 +76,7 @@ let package = Package(
 
     /// Executable
     .executableTarget(
-      name: "App",
+      name: "Server",
       dependencies: [
         "EnvVars",
         "Models",
@@ -91,6 +91,7 @@ let package = Package(
         .product(name: "MiddlewareUtils", package: "swift-web"),
       ]
     ),
+    .executableTarget(name: "App"),
   ],
   swiftLanguageModes: [.v6]
 )
@@ -107,4 +108,3 @@ package.targets
       ])
     ]
   }
-
