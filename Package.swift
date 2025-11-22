@@ -31,7 +31,7 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ],
       resources: [.copy("assets")],
-      plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
+      // plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
     ),
     .target(
       name: "Models",
@@ -94,10 +94,15 @@ let package = Package(
     ),
     .executableTarget(
       name: "App",
-      dependencies: [
-        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows]))
-      ]
+      dependencies: []
     ),
+    .executableTarget(
+      name: "Terminal",
+      dependencies: [
+        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows])),
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+      ]
+    )
   ],
   swiftLanguageModes: [.v6]
 )
