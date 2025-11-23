@@ -1,5 +1,4 @@
 import Dependencies
-import EnvVars
 import Foundation
 import Hummingbird
 import HummingbirdURLRouting

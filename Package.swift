@@ -1,6 +1,52 @@
-// swift-tools-version:6.0.3
+// swift-tools-version:6.2
 
 import PackageDescription
+
+let targets: [Target]
+
+if Context.environment["WASM"] != nil {
+  targets = [
+    // WASM
+    .executableTarget(
+      name: "App",
+      dependencies: []
+    )
+  ]
+} else {
+  targets = [
+    .target(
+      name: "ActivityClient",
+      dependencies: [
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+      ]
+    ),
+    /// Server
+    .executableTarget(
+      name: "Server",
+      dependencies: [
+        "Models",
+        "Routes",
+        "Pages",
+        "ActivityClient",
+        "PublicAssets",
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "Hummingbird", package: "hummingbird"),
+        .product(name: "HummingbirdRouter", package: "hummingbird"),
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "MiddlewareUtils", package: "swift-web"),
+      ]
+    ),
+    // SSH Server
+    .executableTarget(
+      name: "Terminal",
+      dependencies: [
+        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows])),
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+      ]
+    ),
+  ]
+}
 
 let package = Package(
   name: "portfolio",
@@ -14,16 +60,9 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
-    .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0")
+    .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
   ],
   targets: [
-    .target(
-      name: "EnvVars",
-      dependencies: [
-        .product(name: "Hummingbird", package: "hummingbird"),
-        .product(name: "Dependencies", package: "swift-dependencies"),
-      ]
-    ),
     .target(
       name: "PublicAssets",
       dependencies: [
@@ -37,13 +76,6 @@ let package = Package(
       name: "Models",
       dependencies: [
         .product(name: "Dependencies", package: "swift-dependencies")
-      ]
-    ),
-    .target(
-      name: "ActivityClient",
-      dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ]
     ),
     .target(
@@ -62,7 +94,6 @@ let package = Package(
     .target(
       name: "Pages",
       dependencies: [
-        "EnvVars",
         "Models",
         "Routes",
         "ActivityClient",
@@ -74,36 +105,7 @@ let package = Package(
         .product(name: "Hummingbird", package: "hummingbird"),
       ]
     ),
-
-    /// Executable
-    .executableTarget(
-      name: "Server",
-      dependencies: [
-        "EnvVars",
-        "Models",
-        "Routes",
-        "Pages",
-        "ActivityClient",
-        "PublicAssets",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "Hummingbird", package: "hummingbird"),
-        .product(name: "HummingbirdRouter", package: "hummingbird"),
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "MiddlewareUtils", package: "swift-web"),
-      ]
-    ),
-    .executableTarget(
-      name: "App",
-      dependencies: []
-    ),
-    .executableTarget(
-      name: "Terminal",
-      dependencies: [
-        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows])),
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-      ]
-    )
-  ],
+  ] + targets,
   swiftLanguageModes: [.v6]
 )
 

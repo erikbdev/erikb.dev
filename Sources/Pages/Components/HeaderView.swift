@@ -1,5 +1,4 @@
 import Dependencies
-import EnvVars
 import HTML
 import Vue
 

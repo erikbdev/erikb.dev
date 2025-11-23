@@ -1,6 +1,5 @@
 import ArgumentParser
 import Dependencies
-import EnvVars
 import Hummingbird
 import HummingbirdRouter
 import Logging
