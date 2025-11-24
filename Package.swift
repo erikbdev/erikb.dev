@@ -41,8 +41,9 @@ if Context.environment["WASM"] != nil {
     .executableTarget(
       name: "Terminal",
       dependencies: [
-        .product(name: "NIOSSH", package: "swift-nio-ssh", condition: .when(platforms: [.linux, .macOS, .windows])),
+        .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "Logging", package: "swift-log")
       ]
     ),
   ]
@@ -61,6 +62,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0")
   ],
   targets: [
     .target(
