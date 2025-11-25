@@ -39,10 +39,10 @@ struct Terminal: AsyncParsableCommand {
       )
     #endif
 
-    let eventLoop = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
-    let bootstrap = ServerBootstrap(group: eventLoop)
+    let bootstrap = ServerBootstrap(group: .singletonMultiThreadedEventLoopGroup)
       .serverChannelOption(.backlog, value: 256)
       .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
+      // .serverChannelOption(.socketOption(.tcp_nodelay), value: 1)
       .childChannelInitializer { channel in
         channel.pipeline.eventLoop.makeCompletedFuture {
           try channel.pipeline.syncOperations.addHandler(
@@ -57,28 +57,19 @@ struct Terminal: AsyncParsableCommand {
               ),
               allocator: channel.allocator,
             ) { child, type in
-              child.pipeline.addHandler(InteractiveClient())
+              child.pipeline.addHandler(InteractiveClient(type: type))
             }
           )
         }
       }
+      .childChannelOption(.allowRemoteHalfClosure, value: true)
 
-    do {
-      let serverChannel =
-        try await bootstrap
-        .bind(host: host, port: port)
-        .get()
+    let serverChannel = try await bootstrap
+      .bind(host: host, port: port)
+      .get()
 
-      log.debug("SSH server listening on \(String(describing: serverChannel.localAddress))")
-      try await serverChannel.closeFuture.get()
-    } catch {
-      log.debug("Failed to start SSH server: \(error)")
-    }
-
-    do {
-      try await eventLoop.shutdownGracefully()
-    } catch {
-      log.debug("Shutdown failed: \(error)")
-    }
+    log.debug("SSH server listening on \(host):\(port))")
+    try await serverChannel.closeFuture.get()
+    try await serverChannel.eventLoop.shutdownGracefully()
   }
 }

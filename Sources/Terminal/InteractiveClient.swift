@@ -1,18 +1,31 @@
 import NIO
+import NIOConcurrencyHelpers
 import NIOSSH
 
-final class InteractiveClient: ChannelDuplexHandler, Sendable {
+private struct ClientState {
+  let type: SSHChannelType
+
+  var pty: SSHChannelRequestEvent.PseudoTerminalRequest?
+  var hasPty: Bool { pty != nil }
+}
+
+final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
+
+  init(type: SSHChannelType) {
+    self._clientState = ClientState(type: type)
+  }
+
   typealias InboundIn = SSHChannelData
   typealias InboundOut = SSHChannelData
   typealias OutboundIn = SSHChannelData
   typealias OutboundOut = SSHChannelData
 
-  // var hasPty = false
+  private let lock = NIOLock()
+  private var _clientState: ClientState
 
-  func handlerAdded(context: ChannelHandlerContext) {
-    // context.channel.setOption(.allowRemoteHalfClosure, value: true) { _ in
-    //   context.channel.close()
-    // }
+  private var clientState: ClientState {
+    get { lock.withLock { _clientState } }
+    set { lock.withLock { _clientState = newValue } }
   }
 
   func userInboundEventTriggered(context: ChannelHandlerContext, event: Any) {
@@ -20,7 +33,8 @@ final class InteractiveClient: ChannelDuplexHandler, Sendable {
     case let event as SSHChannelRequestEvent.PseudoTerminalRequest:
       // Asks for terminal, typically calls shell afterwards
       log.debug("Client Pseudo Terminal event: \(context.remoteAddress?.description ?? "")")
-      context.triggerUserOutboundEvent(ChannelSuccessEvent(), promise: nil)
+      clientState.pty = event
+      context.fireUserInboundEventTriggered(event)
       break
     case let event as SSHChannelRequestEvent.ShellRequest:
       // request shell env
@@ -54,6 +68,7 @@ final class InteractiveClient: ChannelDuplexHandler, Sendable {
       break
     default:
       log.debug("client event unsupported: \(context.remoteAddress?.description ?? "")")
+      context.fireUserInboundEventTriggered(event)
     }
   }
 
@@ -83,6 +98,7 @@ final class InteractiveClient: ChannelDuplexHandler, Sendable {
 
   func channelRead(context: ChannelHandlerContext, data: NIOAny) {
     log.debug("Client read: \(context.remoteAddress?.description ?? "")")
+    context.fireChannelRead(data)
     // let asciiArt = """
     //   -------------
     //   < ASCII ART >
