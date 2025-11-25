@@ -11,7 +11,7 @@ final class InteractiveClient: ChannelDuplexHandler, Sendable {
 
   func handlerAdded(context: ChannelHandlerContext) {
     // context.channel.setOption(.allowRemoteHalfClosure, value: true) { _ in
-      // context.channel.close()
+    //   context.channel.close()
     // }
   }
 

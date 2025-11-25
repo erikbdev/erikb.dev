@@ -52,11 +52,11 @@ if Context.environment["WASM"] != nil {
 let package = Package(
   name: "portfolio",
   platforms: [
-    .macOS(.v13)
+    .macOS(.v14)
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.4.0"),
-    .package(url: "https://github.com/erikbdev/swift-web.git", exact: "0.2.3"),
+    .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
