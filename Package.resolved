@@ -1,5 +1,5 @@
 {
-  "originHash" : "0c960ac04004e25cb6d5faed978b49ad3b7f76a2721c00655b95bf2fb163c467",
+  "originHash" : "87622c045071771e366a9376f942cac224f4646254fbcb3266b40f2560a12fe6",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -304,6 +304,14 @@
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
         "revision" : "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"
+      }
+    },
+    {
+      "identity" : "swifttui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Joannis/SwiftTUI.git",
+      "state" : {
+        "revision" : "7e504c34a426def5319f529ed5ac42c03dda38bf"
       }
     },
     {

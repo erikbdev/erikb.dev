@@ -1,16 +1,18 @@
 import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
+@preconcurrency import SwiftTUI
 
 private struct ClientState {
   let type: SSHChannelType
 
   var pty: SSHChannelRequestEvent.PseudoTerminalRequest?
   var hasPty: Bool { pty != nil }
+
+  var application: Application?
 }
 
 final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
-
   init(type: SSHChannelType) {
     self._clientState = ClientState(type: type)
   }
@@ -34,18 +36,18 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
       // Asks for terminal, typically calls shell afterwards
       log.debug("Client Pseudo Terminal event: \(context.remoteAddress?.description ?? "")")
       clientState.pty = event
-      context.fireUserInboundEventTriggered(event)
       break
     case let event as SSHChannelRequestEvent.ShellRequest:
       // request shell env
       // require pty for event
       log.debug("Client shell event: \(context.remoteAddress?.description ?? "")")
-      context.triggerUserOutboundEvent(ChannelSuccessEvent(), promise: nil)
-      break
     case let event as SSHChannelRequestEvent.ExecRequest:
       // simulate argumet call
       // require pty to enable interaction for events
       log.debug("Client exec request event: \(context.remoteAddress?.description ?? "")")
+    //   clientState.application = Application(rootView: CustomView()) { string in 
+    //     context.write(NIOAny(string), promise: nil)
+    //   }
     case let event as SSHChannelRequestEvent.WindowChangeRequest:
       // window size change
       log.debug("Client window change request event: \(context.remoteAddress?.description ?? "")")
@@ -68,7 +70,6 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
       break
     default:
       log.debug("client event unsupported: \(context.remoteAddress?.description ?? "")")
-      context.fireUserInboundEventTriggered(event)
     }
   }
 
@@ -117,5 +118,11 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
     //   let out = SSHChannelData(type: .channel, data: .byteBuffer(buffer))
     //   context.writeAndFlush(wrapOutboundOut(out), promise: nil)
     // }
+  }
+}
+
+private struct CustomView: View {
+  var body: some View {
+    Text("Hello, Terminal!")
   }
 }
