@@ -41,22 +41,29 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
       // request shell env
       // require pty for event
       log.debug("Client shell event: \(context.remoteAddress?.description ?? "")")
+      clientState.application = Application(rootView: CustomView()) { string in 
+        context.write(self.wrapOutboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
+      }
+      clientState.application?.changeWindowsSize(to: Size(width: 200, height: 200))
     case let event as SSHChannelRequestEvent.ExecRequest:
       // simulate argumet call
       // require pty to enable interaction for events
       log.debug("Client exec request event: \(context.remoteAddress?.description ?? "")")
-    //   clientState.application = Application(rootView: CustomView()) { string in 
-    //     context.write(NIOAny(string), promise: nil)
-    //   }
+      clientState.application = Application(rootView: CustomView()) { string in 
+        context.write(self.wrapOutboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
+      }
+      clientState.application?.changeWindowsSize(to: Size(width: 200, height: 200))
     case let event as SSHChannelRequestEvent.WindowChangeRequest:
       // window size change
       log.debug("Client window change request event: \(context.remoteAddress?.description ?? "")")
-      break
+      clientState.application?.changeWindowsSize(to: Size(width: Extended(event.terminalPixelWidth), height: Extended(event.terminalPixelHeight)))
     case let event as SSHChannelRequestEvent.EnvironmentRequest:
       log.debug("Client Environment event: \(context.remoteAddress?.description ?? "")")
       break
     case let event as SSHChannelRequestEvent.ExitSignal:
       log.debug("Client signal request event: \(context.remoteAddress?.description ?? "")")
+      clientState.application?.stop()
+      clientState.application = nil
       context.channel.close(mode: .all, promise: nil)
       break
     case let event as SSHChannelRequestEvent.SignalRequest:
@@ -99,25 +106,11 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
 
   func channelRead(context: ChannelHandlerContext, data: NIOAny) {
     log.debug("Client read: \(context.remoteAddress?.description ?? "")")
+    let output = unwrapInboundIn(data)
+    if case .byteBuffer(let buffer) = output.data {
+      clientState.application?.handleInput(String(buffer: buffer))
+    }
     context.fireChannelRead(data)
-    // let asciiArt = """
-    //   -------------
-    //   < ASCII ART >
-    //   -------------
-    //   ^__^
-    //   (oo)_______
-    //   (__)       )
-    //     ||----w |
-    //     ||     ||
-    //   """
-    // let buffer = context.channel.allocator.buffer(string: asciiArt)
-    // context.channel.writeAndFlush(SSHChannelData(type: .channel, data: .byteBuffer(buffer)), promise: nil)
-    // context.close(promise: nil)
-    // // let sshData = unwrapInboundIn(data)
-    // if case .byteBuffer(let buffer) = sshData.data {
-    //   let out = SSHChannelData(type: .channel, data: .byteBuffer(buffer))
-    //   context.writeAndFlush(wrapOutboundOut(out), promise: nil)
-    // }
   }
 }
 

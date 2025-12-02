@@ -1,5 +1,5 @@
 {
-  "originHash" : "87622c045071771e366a9376f942cac224f4646254fbcb3266b40f2560a12fe6",
+  "originHash" : "976c8528f8011a5ef5daf2ffc91d00caecde58ec79b0e70e5059d8514e0e99de",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -290,6 +290,14 @@
       }
     },
     {
+      "identity" : "swift-tui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/erikbdev/swift-tui.git",
+      "state" : {
+        "revision" : "f2e8275eafc859801eb7a4439def2e48e38fd17c"
+      }
+    },
+    {
       "identity" : "swift-url-routing",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-url-routing.git",
@@ -304,14 +312,6 @@
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
         "revision" : "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"
-      }
-    },
-    {
-      "identity" : "swifttui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Joannis/SwiftTUI.git",
-      "state" : {
-        "revision" : "7e504c34a426def5319f529ed5ac42c03dda38bf"
       }
     },
     {
