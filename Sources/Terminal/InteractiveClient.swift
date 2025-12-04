@@ -14,7 +14,7 @@ private struct ClientState {
 
 final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
   init(type: SSHChannelType) {
-    self._clientState = ClientState(type: type)
+    self.clientState = ClientState(type: type)
   }
 
   typealias InboundIn = SSHChannelData
@@ -23,12 +23,12 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
   typealias OutboundOut = SSHChannelData
 
   private let lock = NIOLock()
-  private var _clientState: ClientState
+  private var clientState: ClientState
 
-  private var clientState: ClientState {
-    get { lock.withLock { _clientState } }
-    set { lock.withLock { _clientState = newValue } }
-  }
+  // private var clientState: ClientState {
+    // get { lock.withLock { _clientState } }
+    // set { lock.withLock { _clientState = newValue } }
+  // }
 
   func userInboundEventTriggered(context: ChannelHandlerContext, event: Any) {
     switch event {
@@ -41,22 +41,25 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
       // request shell env
       // require pty for event
       log.debug("Client shell event: \(context.remoteAddress?.description ?? "")")
-      clientState.application = Application(rootView: CustomView()) { string in 
-        context.write(self.wrapOutboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
+      clientState.application = Application(rootView: TerminalApp()) { string in 
+        context.writeAndFlush(self.wrapInboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
       }
-      clientState.application?.changeWindowsSize(to: Size(width: 200, height: 200))
+      clientState.application?.changeWindowsSize(to: Size(width: .init(clientState.pty?.terminalPixelWidth ?? 0), height: .init(clientState.pty?.terminalPixelHeight ?? 0)))
+      clientState.application?.start()
     case let event as SSHChannelRequestEvent.ExecRequest:
       // simulate argumet call
       // require pty to enable interaction for events
       log.debug("Client exec request event: \(context.remoteAddress?.description ?? "")")
-      clientState.application = Application(rootView: CustomView()) { string in 
-        context.write(self.wrapOutboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
+      clientState.application = Application(rootView: TerminalApp()) { string in 
+        context.writeAndFlush(self.wrapInboundOut(SSHChannelData(type: .channel, data: .byteBuffer(ByteBuffer(string: string)))), promise: nil)
       }
-      clientState.application?.changeWindowsSize(to: Size(width: 200, height: 200))
+      clientState.application?.changeWindowsSize(to: Size(width: 50, height: 50))
+      clientState.application?.start()
     case let event as SSHChannelRequestEvent.WindowChangeRequest:
       // window size change
       log.debug("Client window change request event: \(context.remoteAddress?.description ?? "")")
-      clientState.application?.changeWindowsSize(to: Size(width: Extended(event.terminalPixelWidth), height: Extended(event.terminalPixelHeight)))
+      clientState.application?.changeWindowsSize(to: Size(width: Extended(event.terminalCharacterWidth), height: Extended(event.terminalCharacterWidth)))
+      clientState.application?.start()
     case let event as SSHChannelRequestEvent.EnvironmentRequest:
       log.debug("Client Environment event: \(context.remoteAddress?.description ?? "")")
       break
@@ -78,6 +81,7 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
     default:
       log.debug("client event unsupported: \(context.remoteAddress?.description ?? "")")
     }
+    context.fireUserInboundEventTriggered(event)
   }
 
   func channelActive(context: ChannelHandlerContext) {
@@ -111,11 +115,5 @@ final class InteractiveClient: ChannelDuplexHandler, @unchecked Sendable {
       clientState.application?.handleInput(String(buffer: buffer))
     }
     context.fireChannelRead(data)
-  }
-}
-
-private struct CustomView: View {
-  var body: some View {
-    Text("Hello, Terminal!")
   }
 }

@@ -64,7 +64,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
-    .package(url: "https://github.com/erikbdev/swift-tui.git", revision: "f2e8275eafc859801eb7a4439def2e48e38fd17c")
+    .package(url: "https://github.com/erikbdev/swift-tui.git", revision: "1fcd4b67d63626051e7876d8584f149f5f84801c")
   ],
   targets: [
     .target(
