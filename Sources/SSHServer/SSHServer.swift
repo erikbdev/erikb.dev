@@ -12,7 +12,7 @@ let log = {
 }()
 
 @main
-struct Terminal: AsyncParsableCommand {
+struct SSHServer: AsyncParsableCommand {
   @Option(name: .shortAndLong)
   var host = "0.0.0.0"
 
