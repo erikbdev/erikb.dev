@@ -2,11 +2,12 @@ import ArgumentParser
 import Crypto
 import Foundation
 import Logging
-@preconcurrency import NIO
+import NIO
 import NIOCore
-@preconcurrency import NIOSSH
+import NIOSSH
 
 let log = {
+  LoggingSystem.bootstrap(StreamLogHandler.standardError(label:))
   var log = Logger(label: "dev.erikb.ssh")
   log.logLevel = .debug
   return log
@@ -15,7 +16,7 @@ let log = {
 @main
 struct SSHServer: AsyncParsableCommand {
   @Option(name: .shortAndLong)
-  var host = "0.0.0.0"
+  var host = "127.0.0.1"
 
   @Option(name: .shortAndLong)
   var port = 2222
@@ -26,13 +27,11 @@ struct SSHServer: AsyncParsableCommand {
   #endif
 
   func run() async throws {
-    LoggingSystem.bootstrap(StreamLogHandler.standardError(label:))
     let delegate = UserAuthDelegate()
-    let hostKey: NIOSSHPrivateKey
     #if DEBUG
-      hostKey = NIOSSHPrivateKey(ed25519Key: .init())
+      let hostKey = NIOSSHPrivateKey(ed25519Key: .init())
     #else
-      hostKey = try NIOSSHPrivateKey(
+      let hostKey = try NIOSSHPrivateKey(
         ed25519Key: Curve25519.Signing.PrivateKey(
           rawRepresentation: FileHandle(forReadingFrom: privateKeyFile)
             .readToEnd() ?? Data()
@@ -40,80 +39,63 @@ struct SSHServer: AsyncParsableCommand {
       )
     #endif
 
-    let bootstrap = ServerBootstrap(group: .singletonMultiThreadedEventLoopGroup)
+    let serverChannel = try await ServerBootstrap(group: .singletonMultiThreadedEventLoopGroup)
       .serverChannelOption(.backlog, value: 256)
       .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
       // .serverChannelOption(.socketOption(.tcp_nodelay), value: 1)
       .childChannelOption(.allowRemoteHalfClosure, value: true)
-    // .childChannelInitializer { channel in
-    //   channel.pipeline.eventLoop.makeCompletedFuture {
-    //     try channel.pipeline.syncOperations.addHandler(
-    //       NIOSSHHandler(
-    //         role: .server(
-    //           SSHServerConfiguration(
-    //             hostKeys: [hostKey],
-    //             userAuthDelegate: delegate,
-    //             globalRequestDelegate: nil,
-    //             banner: nil
-    //           )
-    //         ),
-    //         allocator: channel.allocator,
-    //       ) { child, type in
-    //         child.pipeline.addHandler(InteractiveClient(type: type))
-    //       }
-    //     )
-    //   }
-    // }
-
-    let serverChannel = try await bootstrap.bind(host: host, port: port) { channel in
-      channel.pipeline.eventLoop.makeCompletedFuture {
-        try channel.pipeline.syncOperations.addHandler(
-          NIOSSHHandler(
-            role: .server(
-              SSHServerConfiguration(
-                hostKeys: [hostKey],
-                userAuthDelegate: delegate,
-                globalRequestDelegate: nil,
-                banner: nil
-              )
-            ),
-            allocator: channel.allocator,
-          ) { channel, type in
-            channel.eventLoop.makeSucceededVoidFuture()
+      .childChannelOption(.socketOption(.so_reuseaddr), value: 1)
+      .bind(host: host, port: port) { channel in
+        channel.configureSSHPipeline(
+          role: .server(
+            SSHServerConfiguration(
+              hostKeys: [hostKey],
+              userAuthDelegate: delegate,
+              globalRequestDelegate: nil,
+              banner: nil
+            )
+          ),
+          allocator: channel.allocator,
+        ) { channel, type in
+          channel.eventLoop.makeCompletedFuture {
+            guard type == .session else {
+              throw SSHServerError.unsupportedSSHChannelType
+            }
+            return try NIOAsyncChannel<SSHChannelData, SSHChannelData>(wrappingChannelSynchronously: channel)
           }
-        )
-        return try NIOAsyncChannel<IOData, IOData>(wrappingChannelSynchronously: channel)
+        }
       }
-    }
 
     log.info("SSH Server listening on \(host):\(port)")
 
-    try await serverChannel.executeThenClose { inbound in
-      try await withThrowingDiscardingTaskGroup { group in
-        for try await client in inbound {
+    try await withThrowingDiscardingTaskGroup { group in
+      try await serverChannel.executeThenClose { inbound in
+        for try await (parentChannel, multiplexer) in inbound {
+          log.debug("SSH client connected", metadata: ["ip": "\(parentChannel.remoteAddress?.ipAddress ?? "")"])
           group.addTask {
-            try await client.executeThenClose { clientInbound, clientOutbound in
-              log.info("SSH Client connected [\(client.channel.remoteAddress?.ipAddress ?? "")")
-
-              try await withThrowingTaskGroup { group in
-              // try await clientOutbound.write(.byteBuffer(ByteBuffer(string: "jhello")))
-
-                // try await clientOutbound.write(.init(type: .channel, data: .byteBuffer(ByteBuffer(string: "Hello, Terminal!"))))
+            try await withThrowingDiscardingTaskGroup { group in
+              for try await child in multiplexer.inbound {
                 group.addTask {
-                  for try await input in clientInbound {
-                    let string: String
-
-                    switch input {
-                    case .byteBuffer(let buffer):
-                      string = String(buffer: buffer)
-                    case .fileRegion(let file):
-                      let fileIo = NonBlockingFileIO(threadPool: .singleton)
-                      string = (try? await String(buffer: fileIo.read(fileRegion: file, allocator: client.channel.allocator))) ?? ""
+                  try await child.executeThenClose { inbound, outbound in
+                    try await withThrowingTaskGroup(of: Void.self) { group in
+                      log.debug("New ssh session", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
+                      group.addTask {
+                        for await event in try await child.channel.requestEvents.get() {
+                          log.debug("Event: \(event)", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
+                        }
+                        log.debug("Event stream finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
+                      }
+                      group.addTask {
+                        for try await data in inbound {
+                          log.debug("Data: \(data)", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
+                        }
+                        log.debug("Data stream finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
+                      }
+                      try await group.waitForAll()
                     }
-                    log.debug("New input data: \(string)")
+                    log.debug("SSH session finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
                   }
                 }
-                try await client.channel.closeFuture.get()
               }
             }
           }
