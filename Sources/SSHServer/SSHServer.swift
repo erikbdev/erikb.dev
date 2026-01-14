@@ -6,11 +6,13 @@ import NIO
 import NIOCore
 import NIOSSH
 
-let log = {
-  LoggingSystem.bootstrap(StreamLogHandler.standardError(label:))
-  var log = Logger(label: "dev.erikb.ssh")
-  log.logLevel = .debug
-  return log
+let logger = {
+  LoggingSystem.bootstrap {
+    var handler = StreamLogHandler.standardOutput(label: $0)
+    handler.logLevel = .debug
+    return handler
+  }
+  return Logger(label: "dev.erikb.ssh")
 }()
 
 @main
@@ -54,47 +56,35 @@ struct SSHServer: AsyncParsableCommand {
               globalRequestDelegate: nil,
               banner: nil
             )
-          ),
-          allocator: channel.allocator,
+          )
         ) { channel, type in
           channel.eventLoop.makeCompletedFuture {
             guard type == .session else {
               throw SSHServerError.unsupportedSSHChannelType
             }
-            return try NIOAsyncChannel<SSHChannelData, SSHChannelData>(wrappingChannelSynchronously: channel)
+            return try NIOAsyncChannel(
+              wrappingChannelSynchronously: channel,
+              configuration: .init(
+                inboundType: NIOSSHHandler.SSHChannelInboundData.self,
+                outboundType: NIOSSHHandler.SSHChannelOutboundData.self
+              )
+            )
           }
         }
       }
 
-    log.info("SSH Server listening on \(host):\(port)")
+    logger.info("SSH Server listening on \(host):\(port)")
 
     try await withThrowingDiscardingTaskGroup { group in
       try await serverChannel.executeThenClose { inbound in
         for try await (parentChannel, multiplexer) in inbound {
-          log.debug("SSH client connected", metadata: ["ip": "\(parentChannel.remoteAddress?.ipAddress ?? "")"])
+          logger.debug("SSH client connected", metadata: ["ip": "\(parentChannel.remoteAddress?.ipAddress ?? "")"])
           group.addTask {
             try await withThrowingDiscardingTaskGroup { group in
-              for try await child in multiplexer.inbound {
+              for try await childChannel in multiplexer.inbound {
                 group.addTask {
-                  try await child.executeThenClose { inbound, outbound in
-                    try await withThrowingTaskGroup(of: Void.self) { group in
-                      log.debug("New ssh session", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                      group.addTask {
-                        for await event in try await child.channel.requestEvents.get() {
-                          log.debug("Event: \(event)", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                        }
-                        log.debug("Event stream finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                      }
-                      group.addTask {
-                        for try await data in inbound {
-                          log.debug("Data: \(data)", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                        }
-                        log.debug("Data stream finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                      }
-                      try await group.waitForAll()
-                    }
-                    log.debug("SSH session finished", metadata: ["ip": "\(child.channel.remoteAddress?.ipAddress ?? "")"])
-                  }
+                  let session = ClientSession(childChannel)
+                  try await session.serve()
                 }
               }
             }

@@ -41,7 +41,7 @@ extension ChannelPipeline.SynchronousOperations {
       allocator: allocator,
       inboundChildChannelInitializer: { channel, kind in
         channel.eventLoop.makeCompletedFuture {
-          try channel.pipeline.syncOperations.addHandler(_SSHRequestEventHandler())
+          try channel.pipeline.syncOperations.addHandler(SSHMergeEventAndDataHandler())
         }
         .flatMap {
           inboundChildChannelInitializer(channel, kind)
@@ -54,7 +54,7 @@ extension ChannelPipeline.SynchronousOperations {
       }
     )
     try self.addHandler(handler)
-    try self.addHandler(ParentChannelClosedListener(multiplexer))
+    try self.addHandler(_ParentChannelClosedListener(multiplexer))
     return multiplexer
   }
 }
@@ -65,6 +65,13 @@ extension NIOSSHHandler {
 
     var inbound: AsyncStream<InboundChildOutput> { stream.stream }
   }
+
+  enum SSHChannelInboundData {
+    case event(RequestEvent)
+    case data(SSHChannelData)
+  }
+
+  typealias SSHChannelOutboundData = SSHChannelData
 
   enum RequestEvent {
     case pseudoTerminal(SSHChannelRequestEvent.PseudoTerminalRequest)
@@ -113,25 +120,28 @@ extension NIOSSHHandler {
   }
 }
 
-private final class _SSHRequestEventHandler: ChannelInboundHandler {
-  typealias InboundIn = Any
-
-  let (eventStream, eventContinuation) = AsyncStream.makeStream(of: NIOSSHHandler.RequestEvent.self)
-
-  func channelInactive(context: ChannelHandlerContext) {
-    eventContinuation.finish()
-    context.fireChannelInactive()
-  }
+private final class SSHMergeEventAndDataHandler: ChannelInboundHandler {
+  typealias InboundIn = SSHChannelData
+  typealias InboundOut = NIOSSHHandler.SSHChannelInboundData 
 
   func userInboundEventTriggered(context: ChannelHandlerContext, event: Any) {
     if let event = NIOSSHHandler.RequestEvent(event) {
-      eventContinuation.yield(event)
+      context.fireChannelRead(self.wrapInboundOut(.event(event)))
+      context.fireChannelReadComplete()
     }
     context.fireUserInboundEventTriggered(event)
   }
+
+  func channelRead(context: ChannelHandlerContext, data: NIOAny) {
+    context.fireChannelRead(self.wrapInboundOut(.data(self.unwrapInboundIn(data))))
+  }
+
+  func channelInactive(context: ChannelHandlerContext) {
+    context.fireChannelInactive()
+  }
 }
 
-private final class ParentChannelClosedListener<Output: Sendable>: ChannelInboundHandler {
+private final class _ParentChannelClosedListener<Output: Sendable>: ChannelInboundHandler {
   typealias InboundIn = Any
 
   let multiplexer: NIOSSHHandler.AsyncSSHMultiplexer<Output>
@@ -143,12 +153,5 @@ private final class ParentChannelClosedListener<Output: Sendable>: ChannelInboun
   func channelInactive(context: ChannelHandlerContext) {
     multiplexer.stream.continuation.finish()
     context.fireChannelInactive()
-  }
-}
-
-extension Channel {
-  var requestEvents: EventLoopFuture<AsyncStream<NIOSSHHandler.RequestEvent>> {
-    self.pipeline.handler(type: _SSHRequestEventHandler.self)
-      .map(\.eventStream)
   }
 }
