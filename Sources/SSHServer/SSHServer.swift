@@ -9,10 +9,10 @@ import NIOSSH
 let logger = {
   LoggingSystem.bootstrap {
     var handler = StreamLogHandler.standardOutput(label: $0)
-    handler.logLevel = .debug
+    handler.logLevel = .trace
     return handler
   }
-  return Logger(label: "dev.erikb.ssh")
+  return Logger(label: "SSHServer")
 }()
 
 @main
@@ -73,12 +73,11 @@ struct SSHServer: AsyncParsableCommand {
         }
       }
 
-    logger.info("SSH Server listening on \(host):\(port)")
+    logger.info("SSH Server started", metadata: ["host": "\(host)", "port": "\(port)"])
 
     try await withThrowingDiscardingTaskGroup { group in
       try await serverChannel.executeThenClose { inbound in
-        for try await (parentChannel, multiplexer) in inbound {
-          logger.debug("SSH client connected", metadata: ["ip": "\(parentChannel.remoteAddress?.ipAddress ?? "")"])
+        for try await (_, multiplexer) in inbound {
           group.addTask {
             try await withThrowingDiscardingTaskGroup { group in
               for try await childChannel in multiplexer.inbound {

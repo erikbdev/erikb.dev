@@ -2,7 +2,6 @@ import Logging
 import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
-@preconcurrency import SwiftTUI
 
 private struct ClientState {
   let type: SSHChannelType
@@ -10,7 +9,6 @@ private struct ClientState {
   var pty: SSHChannelRequestEvent.PseudoTerminalRequest?
   var hasPty: Bool { pty != nil }
 
-  var application: Application?
 }
 
 struct ClientSession: Sendable {
@@ -20,10 +18,9 @@ struct ClientSession: Sendable {
 
   init(_ channel: AsyncChannel) {
     self.channel = channel
-    self.logger = Logger(
-      label: "\(Self.self)", 
-      metadataProvider: Logger.MetadataProvider { ["ip": "\(channel.channel.remoteAddress?.ipAddress ?? "unknown")"] }
-    )
+    var logger = Logger(label: "\(Self.self)")
+    logger[metadataKey: "ip"] = "\(channel.channel.remoteAddress?.ipAddress ?? "unknown")"
+    self.logger = logger
   }
 
   enum Error: Swift.Error {
@@ -33,6 +30,7 @@ struct ClientSession: Sendable {
   func serve() async throws {
     try await channel.executeThenClose { inbound, outbound in
       logger.debug("New ssh session")
+      defer { logger.trace("Closing ssh session") }
 
       var iterator = inbound.makeAsyncIterator()
 
@@ -41,40 +39,20 @@ struct ClientSession: Sendable {
           throw Error.missingPseudoTerminalRequest
         }
 
-        logger.debug("Received pseudo terminal request: \(pseudoTerm)")
-
-        let application = Application(rootView: TerminalApp()) { string in
-          channel.channel.write(
-            NIOSSHHandler.SSHChannelOutboundData(type: .channel, data: .byteBuffer(channel.channel.allocator.buffer(string: string))),
-            promise: nil
-          )
-        }
-        // application.changeWindowsSize(
-        //   to: Size(
-        //     width: .init(pseudoTerm.terminalPixelWidth),
-        //     height: .init(pseudoTerm.terminalPixelHeight)
-        //   )
-        // )
-
-        application.start()
+        logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
 
         while let next = try await iterator.next() {
+          logger.trace("New inbound event received", metadata: ["event": "\(next)"])
           switch next {
           case .data(let data):
-            logger.debug("Received data: \(data)")
             guard case .byteBuffer(let b) = data.data, data.type == .channel else {
               continue
             }
-            application.handleInput(String(buffer: b))
           case .event(let event):
-            logger.debug("Received event: \(event)")
             switch event {
             case .windowChange(let event):
-              application.changeWindowsSize(
-                to: Size(width: Extended(event.terminalCharacterWidth), height: Extended(event.terminalCharacterWidth))
-              )
+              continue
             case .exitSignal:
-              application.stop()
               try await channel.channel.close()
             default:
               continue
@@ -84,7 +62,7 @@ struct ClientSession: Sendable {
 
         try await channel.channel.closeFuture.get()
       } catch {
-        logger.debug("An error occurred: \(error)")
+        logger.debug("An error occurred", metadata: ["error": "\(error)"])
         if let error = error as? Error {
           switch error {
           case .missingPseudoTerminalRequest:
@@ -97,7 +75,6 @@ struct ClientSession: Sendable {
           }
         }
       }
-      logger.debug("Closing ssh session")
     }
   }
 }

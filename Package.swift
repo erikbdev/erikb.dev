@@ -16,7 +16,6 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.6.2"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
-    .package(url: "https://github.com/erikbdev/swift-tui.git", revision: "1fcd4b67d63626051e7876d8584f149f5f84801c"),
   ],
   targets: [
     .target(
@@ -90,8 +89,7 @@ let package = Package(
       dependencies: [
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Logging", package: "swift-log"),
-        .product(name: "SwiftTUI", package: "swift-tui"),
+        .product(name: "Logging", package: "swift-log")
       ]
     ),
   ],
