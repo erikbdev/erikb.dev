@@ -9,7 +9,11 @@ import NIOSSH
 let logger = {
   LoggingSystem.bootstrap {
     var handler = StreamLogHandler.standardOutput(label: $0)
-    handler.logLevel = .trace
+    #if DEBUG
+      handler.logLevel = .trace
+    #else
+      handler.logLevel = .error
+    #endif
     return handler
   }
   return Logger(label: "SSHServer")
@@ -79,13 +83,16 @@ struct SSHServer: AsyncParsableCommand {
       try await serverChannel.executeThenClose { inbound in
         for try await (_, multiplexer) in inbound {
           group.addTask {
-            try await withThrowingDiscardingTaskGroup { group in
-              for try await childChannel in multiplexer.inbound {
-                group.addTask {
-                  let session = ClientSession(childChannel)
-                  try await session.serve()
+            do {
+              try await withThrowingDiscardingTaskGroup { group in
+                for try await childChannel in multiplexer.inbound {
+                  group.addTask {
+                    await ClientSession.serve(childChannel)
+                  }
                 }
               }
+            } catch {
+              logger.debug("Connection error", metadata: ["error": "\(error)"])
             }
           }
         }
