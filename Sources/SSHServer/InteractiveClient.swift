@@ -2,6 +2,7 @@ import Logging
 import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
+import Cnotcurses
 
 private struct ClientState {
   let type: SSHChannelType
@@ -42,6 +43,15 @@ enum ClientSession: Sendable {
           }
 
           logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
+          var flags = notcurses_options()
+          flags.flags = NCOPTION_NO_ALTERNATE_SCREEN | NCOPTION_DRAIN_INPUT
+
+          // TODO: pass a reader and writer
+          // guard let notcurses = notcurses_core_init(&flags, nil) else {
+          //   throw Error.missingPseudoTerminalRequest
+          // }
+          // defer { notcurses_stop(notcurses) }
+          // var plane = notcurses_stdplane(notcurses)
 
           while let next = try await iterator.next() {
             logger.trace("New inbound event received", metadata: ["event": "\(next)"])

@@ -89,15 +89,24 @@ let package = Package(
       dependencies: [
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Logging", package: "swift-log")
+        .product(name: "Logging", package: "swift-log"),
+        "Cnotcurses"
       ]
     ),
+    .systemLibrary(
+      name: "Cnotcurses",
+      pkgConfig: "notcurses",
+      providers: [
+        .brewItem(["notcurses"]),
+        .yumItem(["notcurses"])
+      ]
+    )
   ],
   swiftLanguageModes: [.v6]
 )
 
 package.targets
-  .filter { $0.type != .binary && $0.type != .plugin }
+  .filter { $0.type != .binary && $0.type != .plugin && $0.type != .system }
   .forEach {
     $0.swiftSettings = [
       .unsafeFlags([
