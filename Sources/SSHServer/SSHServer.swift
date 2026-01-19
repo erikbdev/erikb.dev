@@ -32,6 +32,10 @@ struct SSHServer: AsyncParsableCommand {
     var privateKeyFile: URL
   #endif
 
+  enum Error: Swift.Error {
+    case unsupportedSSHChannelType
+  }
+
   func run() async throws {
     let delegate = UserAuthDelegate()
     #if DEBUG
@@ -48,7 +52,6 @@ struct SSHServer: AsyncParsableCommand {
     let serverChannel = try await ServerBootstrap(group: .singletonMultiThreadedEventLoopGroup)
       .serverChannelOption(.backlog, value: 256)
       .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
-      // .serverChannelOption(.socketOption(.tcp_nodelay), value: 1)
       .childChannelOption(.allowRemoteHalfClosure, value: true)
       .childChannelOption(.socketOption(.so_reuseaddr), value: 1)
       .bind(host: host, port: port) { channel in
@@ -64,7 +67,7 @@ struct SSHServer: AsyncParsableCommand {
         ) { channel, type in
           channel.eventLoop.makeCompletedFuture {
             guard type == .session else {
-              throw SSHServerError.unsupportedSSHChannelType
+              throw Error.unsupportedSSHChannelType
             }
             return try NIOAsyncChannel(
               wrappingChannelSynchronously: channel,

@@ -89,18 +89,9 @@ let package = Package(
       dependencies: [
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Logging", package: "swift-log"),
-        "Cnotcurses"
+        .product(name: "Logging", package: "swift-log")
       ]
     ),
-    .systemLibrary(
-      name: "Cnotcurses",
-      pkgConfig: "notcurses",
-      providers: [
-        .brewItem(["notcurses"]),
-        .yumItem(["notcurses"])
-      ]
-    )
   ],
   swiftLanguageModes: [.v6]
 )
