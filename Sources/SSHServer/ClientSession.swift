@@ -4,26 +4,27 @@ import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
 
-private struct ClientState {
-  let type: SSHChannelType
-
-  var pty: SSHChannelRequestEvent.PseudoTerminalRequest?
-  var hasPty: Bool { pty != nil }
-
-}
-
 enum ClientSession: Sendable {
   typealias AsyncChannel = NIOAsyncChannel<NIOSSHHandler.SSHChannelInboundData, NIOSSHHandler.SSHChannelOutboundData>
 
-  enum Error: Swift.Error, CustomStringConvertible {
-    case missingPseudoTerminalRequest
-    case connectionUnexpectedClosed
+  struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
+    var errorDescription: String
+    var underlyingError: Swift.Error?
 
     var description: String {
-      switch self {
-      case .missingPseudoTerminalRequest: "A pseudo terminal is requires to access this application."
-      case .connectionUnexpectedClosed: "The connection unexpectedly closed."
-      }
+      "\(errorDescription)\(underlyingError.map { " Error: \($0)" } ?? "")"
+    }
+
+    static func missingPseudoTerminalRequest(_ underlyingError: Swift.Error? = nil) -> Self {
+      Self(errorDescription: "A pseudo terminal is required to access this application.", underlyingError: underlyingError)
+    }
+
+    static func connectionUnexpectedClosed(_ underlyingError: Swift.Error? = nil) -> Self {
+      Self(errorDescription: "The connection unexpectedly closed.", underlyingError: underlyingError)
+    }
+
+    static func unknown(_ underlyingError: Swift.Error) -> Self {
+      Self(errorDescription: "An unknown error occurred.", underlyingError: underlyingError)
     }
   }
 
@@ -40,8 +41,10 @@ enum ClientSession: Sendable {
 
         do {
           guard case .event(.pseudoTerminal(let pseudoTerm)) = try await iterator.wrappedValue.next() else {
-            throw Error.missingPseudoTerminalRequest
+            throw Error.missingPseudoTerminalRequest()
           }
+
+          // let app = App()
 
           logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
 
@@ -70,16 +73,16 @@ enum ClientSession: Sendable {
             }
             group.addTask {
               try await channel.channel.closeFuture.get()
-              throw Error.connectionUnexpectedClosed
+              throw Error.connectionUnexpectedClosed()
             }
           }
         } catch {
-          logger.debug("An error occurred during session", metadata: ["error": "\(error)"])
-          if channel.channel.isWritable {
+          let error = error as? ClientSession.Error ?? ClientSession.Error.unknown(error)
+          if channel.channel.isActive, channel.channel.isWritable {
             try await outbound.write(
               .init(
                 type: .channel,
-                data: .byteBuffer(channel.channel.allocator.buffer(string: error.localizedDescription))
+                data: .byteBuffer(channel.channel.allocator.buffer(string: error.errorDescription))
               )
             )
           }
@@ -87,7 +90,7 @@ enum ClientSession: Sendable {
         }
       }
     } catch {
-      logger.debug("An error occurred", metadata: ["error": "\(error)"])
+      logger.debug("\(error)")
     }
   }
 }

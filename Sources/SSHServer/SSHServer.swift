@@ -33,7 +33,7 @@ struct SSHServer: AsyncParsableCommand {
   #endif
 
   enum Error: Swift.Error {
-    case unsupportedSSHChannelType
+    case unsupportedChannelType
   }
 
   func run() async throws {
@@ -67,15 +67,9 @@ struct SSHServer: AsyncParsableCommand {
         ) { channel, type in
           channel.eventLoop.makeCompletedFuture {
             guard type == .session else {
-              throw Error.unsupportedSSHChannelType
+              throw Error.unsupportedChannelType
             }
-            return try NIOAsyncChannel(
-              wrappingChannelSynchronously: channel,
-              configuration: .init(
-                inboundType: NIOSSHHandler.SSHChannelInboundData.self,
-                outboundType: NIOSSHHandler.SSHChannelOutboundData.self
-              )
-            )
+            return try ClientSession.AsyncChannel(wrappingChannelSynchronously: channel)
           }
         }
       }
