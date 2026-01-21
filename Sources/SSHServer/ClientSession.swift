@@ -9,22 +9,22 @@ enum ClientSession: Sendable {
 
   struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
     var errorDescription: String
-    var underlyingError: Swift.Error?
+    var caught: Swift.Error?
 
     var description: String {
-      "\(errorDescription)\(underlyingError.map { " Error: \($0)" } ?? "")"
+      "\(errorDescription)\(caught.map { " Error: \($0)" } ?? "")"
     }
 
     static func missingPseudoTerminalRequest(_ underlyingError: Swift.Error? = nil) -> Self {
-      Self(errorDescription: "A pseudo terminal is required to access this application.", underlyingError: underlyingError)
+      Self(errorDescription: "A pseudo terminal is required to access this application.", caught: underlyingError)
     }
 
     static func connectionUnexpectedClosed(_ underlyingError: Swift.Error? = nil) -> Self {
-      Self(errorDescription: "The connection unexpectedly closed.", underlyingError: underlyingError)
+      Self(errorDescription: "The connection unexpectedly closed.", caught: underlyingError)
     }
 
     static func unknown(_ underlyingError: Swift.Error) -> Self {
-      Self(errorDescription: "An unknown error occurred.", underlyingError: underlyingError)
+      Self(errorDescription: "An unknown error occurred.", caught: underlyingError)
     }
   }
 
