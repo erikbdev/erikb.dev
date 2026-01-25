@@ -14,12 +14,4 @@ struct HomeScreen: Component {
     // Text("(press q to quit)")
     //   .padding(.bottom, 1)
   }
-
-  func renderBody() {
-
-  }
-
-  mutating func update(_ event: ()) {
-
-  }
 }

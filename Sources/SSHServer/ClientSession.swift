@@ -8,23 +8,32 @@ enum ClientSession: Sendable {
   typealias AsyncChannel = NIOAsyncChannel<NIOSSHHandler.SSHChannelInboundData, NIOSSHHandler.SSHChannelOutboundData>
 
   struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
-    var errorDescription: String
+    var backing: Backing
     var caught: Swift.Error?
 
+    init(_ backing: Backing, caught error: Swift.Error? = nil) {
+      self.backing = backing
+      self.caught = error
+    }
+
     var description: String {
-      "\(errorDescription)\(caught.map { " Error: \($0)" } ?? "")"
+      "\(backing.description)\(caught.map { " Error: \($0)" } ?? "")"
     }
 
-    static func missingPseudoTerminalRequest(_ underlyingError: Swift.Error? = nil) -> Self {
-      Self(errorDescription: "A pseudo terminal is required to access this application.", caught: underlyingError)
-    }
+    var errorDescription: String { backing.description }
 
-    static func connectionUnexpectedClosed(_ underlyingError: Swift.Error? = nil) -> Self {
-      Self(errorDescription: "The connection unexpectedly closed.", caught: underlyingError)
-    }
+    enum Backing: Hashable, Sendable {
+      case missingPseudoTerminalRequest
+      case connectionClosed
+      case unknown
 
-    static func unknown(_ underlyingError: Swift.Error) -> Self {
-      Self(errorDescription: "An unknown error occurred.", caught: underlyingError)
+      var description: String {
+        switch self {
+          case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
+          case .connectionClosed: "The connection unexpectedly closed."
+          case .unknown: "An unknown error occurred."
+        }
+      }
     }
   }
 
@@ -41,7 +50,7 @@ enum ClientSession: Sendable {
 
         do {
           guard case .event(.pseudoTerminal(let pseudoTerm)) = try await iterator.wrappedValue.next() else {
-            throw Error.missingPseudoTerminalRequest()
+            throw Error(.missingPseudoTerminalRequest)
           }
 
           // let app = App()
@@ -73,11 +82,11 @@ enum ClientSession: Sendable {
             }
             group.addTask {
               try await channel.channel.closeFuture.get()
-              throw Error.connectionUnexpectedClosed()
+              throw Error(.connectionClosed)
             }
           }
         } catch {
-          let error = error as? ClientSession.Error ?? ClientSession.Error.unknown(error)
+          let error = error as? Error ?? Error(.unknown, caught: error)
           if channel.channel.isActive, channel.channel.isWritable {
             try await outbound.write(
               .init(
