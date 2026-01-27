@@ -4,7 +4,7 @@ public struct _DependencyKeyWritingReducer<Base: Reducer>: Reducer {
   let base: Base
   let update: (inout DependencyValues) -> Void
 
-  public func reduce(into state: inout Base.State, action: Base.Action) -> Effect<Base.Action> {
+  public func reduce(into state: inout Base.State, action: Base.Action) -> EffectOf<Base> {
     withDependencies {
       self.update(&$0)
     } operation: {

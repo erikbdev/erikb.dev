@@ -1,7 +1,7 @@
 public struct Reduce<State, Action>: Reducer {
-  let reduce: (inout State, Action) -> Effect<Action>
+  let reduce: (inout State, Action) -> Effect<State, Action>
 
-  public init(_ operation: @escaping (_ state: inout State, _ action: Action) -> Effect<Action>) {
+  public init(_ operation: @escaping (_ state: inout State, _ action: Action) -> Effect<State, Action>) {
     self.reduce = operation
   }
 
@@ -9,7 +9,7 @@ public struct Reduce<State, Action>: Reducer {
     self.reduce = reducer.reduce
   }
 
-  public func reduce(into state: inout State, action: Action) -> Effect<Action> {
+  public func reduce(into state: inout State, action: Action) -> Effect<State, Action> {
     self.reduce(&state, action)
   }
 }

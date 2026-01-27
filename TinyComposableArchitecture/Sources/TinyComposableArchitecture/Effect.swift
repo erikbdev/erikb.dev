@@ -1,11 +1,11 @@
 import ConcurrencyExtras
 import Dependencies
 
-public struct Effect<Action>: Sendable {
+public struct Effect<State, Action>: Sendable {
   enum Operation: Sendable {
     case none
     // Immediately executes action.
-    case action(UncheckedSendable<Action>)
+    case action(@autoclosure @Sendable () -> Action)
     case task(
       name: String? = nil,
       priority: TaskPriority? = nil,
@@ -16,7 +16,7 @@ public struct Effect<Action>: Sendable {
   let operation: Operation
 }
 
-typealias EffectOf<R: Reducer> = Effect<R.Action>
+public typealias EffectOf<R: Reducer> = Effect<R.State, R.Action>
 
 extension Effect {
   public static var none: Self {
@@ -48,18 +48,17 @@ extension Effect {
     }
   }
 
-  public static func send(_ action: Action) -> Self {
-    // TODO: how to pass action without conforming to sendable?
-    let sendable = UncheckedSendable(action)
-    return Self(operation: .action(sendable))
+  public static func send(_ action: @escaping @Sendable () -> Action) -> Self {
+    return Self(operation: .action(action()))
   }
 }
 
 public struct Send<Action>: Sendable {
-  let send: @Sendable (Action) -> SendTask
+  let send: @StoreActor @Sendable (Action)-> SendTask
 
   // Should this return a store task wrapped inside a send task?
   @discardableResult
+  @StoreActor
   public func callAsFunction(_ action: Action) -> SendTask {
     guard !Task.isCancelled else { return SendTask(base: StoreTask(rawValue: nil)) }
     return self.send(action)

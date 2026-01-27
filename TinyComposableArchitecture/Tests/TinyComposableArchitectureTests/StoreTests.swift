@@ -5,14 +5,14 @@ import TinyComposableArchitecture
 @Suite("Store Tests")
 struct StoreTests {
   @Test func testStoreAction() async throws {
-    let store = Store(initialState: TestStoreActions.State()) {
+    let store = await Store(initialState: TestStoreActions.State()) {
       TestStoreActions()
     }
 
     print("Test started at \(Date.now)")
     await store.send(.increment).finish()
     print("Test Finished at \(Date.now)")
-    #expect(store.withState(\.count) == 10)
+    #expect(await store.withState(\.count) == 10)
   }
 
   struct TestStoreActions: Reducer {

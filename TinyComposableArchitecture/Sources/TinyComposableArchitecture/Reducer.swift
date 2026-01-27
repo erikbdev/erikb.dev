@@ -4,7 +4,7 @@ public protocol Reducer<State, Action> {
 
   associatedtype Body
 
-  func reduce(into state: inout State, action: Action) -> Effect<Action>
+  func reduce(into state: inout State, action: Action) -> EffectOf<Self>
 
   @ReducerBuilder<State, Action>
   var body: Body { get }
@@ -26,7 +26,7 @@ extension Reducer where Body == Never {
 public typealias ReducerOf<R: Reducer> = Reducer<R.State, R.Action>
 
 extension Reducer where Body: Reducer<State, Action> {
-  public func reduce(into state: inout Body.State, action: Body.Action) -> Effect<Body.Action> {
+  public func reduce(into state: inout Body.State, action: Body.Action) -> EffectOf<Body> { 
     self.body.reduce(into: &state, action: action)
   }
 }

@@ -20,14 +20,20 @@ let logger = {
   return Logger(label: "dev.erikb.tiny-composable-architecture")
 }()
 
-public final class Store<State, Action>: _Store, @unchecked Sendable {
+@globalActor
+public actor StoreActor {
+  public static let shared = StoreActor()
+}
+
+@StoreActor
+public final class Store<State, Action>: _Store, Sendable {
   private weak var parent: (any _Store)?
   private var currentState: State
   private var bufferedActions: [Action] = []
   private var isSending = false
   private let reducer: any Reducer<State, Action>
   private let logger: Logger
-  private var effectCancellables: [UUID: () -> Void] = [:]
+  private var effectCancellables: [UUID: AnyCancellable] = [:]
   private var children: [ScopeID<State, Action>: AnyObject] = [:]
   private var scopeID: AnyHashable?
 
@@ -50,10 +56,6 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
 
   deinit {
     logger.debug("deinit")
-    for effect in effectCancellables {
-      effect.value()
-    }
-    self.effectCancellables.removeAll()
   }
 
   public func withState<Value>(_ keyPath: KeyPath<State, Value>) -> Value {
@@ -93,10 +95,9 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
       switch effect.operation {
       case .none:
         break
-      case .action(let unchecked):
-        let uncheckedAction = unchecked.wrappedValue
+      case .action(let action):
         withEscapedDependencies { continuation in
-          if let task = continuation.yield({ self.send(uncheckedAction) }).rawValue {
+          if let task = continuation.yield({ self.send(action()) }).rawValue {
             tasks.withValue { $0.append(task) }
           }
         }
@@ -107,7 +108,7 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
             let isCompleted = LockIsolated(false)
             defer { isCompleted.setValue(true) }
             await operation(
-              Send { [weak self] effectAction in
+              Send { @StoreActor [weak self] effectAction in
                 if isCompleted.value {
                   logger.debug(
                     """
@@ -128,6 +129,7 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
                     """
                   )
                 }
+
                 let storeTask = continuation.yield({ self?.send(effectAction) })
                 if let task = storeTask?.rawValue {
                   tasks.withValue { $0.append(task) }
@@ -137,9 +139,10 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
             )
             self?.effectCancellables[uuid] = nil
           }
-
           tasks.withValue { $0.append(task) }
-          self.effectCancellables[uuid] = task.cancel
+          self.effectCancellables[uuid] = AnyCancellable {
+            task.cancel()
+          }
         }
       }
     }
@@ -147,7 +150,7 @@ public final class Store<State, Action>: _Store, @unchecked Sendable {
     guard !tasks.isEmpty else { return StoreTask(rawValue: nil) }
 
     return StoreTask(
-      rawValue: Task {
+      rawValue: Task { @StoreActor in
         await withTaskCancellationHandler {
           var index = tasks.startIndex
           while index < tasks.endIndex {
@@ -198,6 +201,7 @@ public struct StoreTask: Hashable, Sendable {
 
 public typealias StoreOf<R: Reducer> = Store<R.State, R.Action>
 
+@StoreActor
 protocol _Store: AnyObject {
   func removeChild(_ id: AnyHashable)
 }
