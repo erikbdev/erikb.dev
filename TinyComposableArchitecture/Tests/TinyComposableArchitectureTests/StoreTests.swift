@@ -1,43 +1,85 @@
 import Foundation
 import Testing
-import TinyComposableArchitecture
+@testable import TinyComposableArchitecture
 
 @Suite("Store Tests")
 struct StoreTests {
   @Test func testStoreAction() async throws {
-    let store = await Store(initialState: TestStoreActions.State()) {
-      TestStoreActions()
+    let store = Store(initialState: TestStoreReducer.State()) {
+      TestStoreReducer()
     }
 
-    print("Test started at \(Date.now)")
+    let task = await store.send(.increment)
+    #expect(await store.count == 1)
+    task.cancel()
+    try await Task.sleep(for: .seconds(15))
+    #expect(await store.count == 1)
     await store.send(.increment).finish()
-    print("Test Finished at \(Date.now)")
-    #expect(await store.withState(\.count) == 10)
+    #expect(await store.count == 10)
   }
 
-  struct TestStoreActions: Reducer {
+  @Test func testParallelActor() async throws {
+    let store = Store(initialState: TestStoreReducer.State()) {
+      TestStoreReducer()
+    }
+
+    try await withThrowingTaskGroup { group in
+      group.addTask {
+        await store.send(.startCountLoop).finish()
+      }
+      group.addTask {
+        await store.send(.startStringLoop).finish()
+      }
+      group.addTask {
+        try await Task.sleep(for: .seconds(5))
+        #expect(await store.effectCount() == 2)
+        try await Task.sleep(for: .seconds(12))
+        #expect(await store.effectCount() == 0)
+      }
+      try await group.waitForAll()
+    }
+  }
+
+  struct TestStoreReducer: Reducer {
     struct State: Equatable {
       var count = 0
+      var string = ""
     }
 
     enum Action {
       case increment
       case set(Int)
+      case startCountLoop
+      case startStringLoop
     }
 
     var body: some ReducerOf<Self> {
       Reduce { state, action in
         switch action {
         case .increment:
-          // state.count += 1
-          return .run { send in
-            print("Send started at \(Date.now)")
+          state.count += 1
+          return .run { store in
             try await Task.sleep(for: .seconds(10))
-            await send(.set(10)).finish()
-            print("Send Finished at \(Date.now)")
+            store.send(.set(10))
           }
         case .set(let count):
           state.count = count
+        case .startCountLoop:
+          return .run { store in
+            for _ in 0..<10 {
+              store.modify { $0.count += 1 }
+              print("incrementing count: \(store.count)")
+              try await Task.sleep(for: .seconds(1))
+            }
+          }
+         case .startStringLoop:
+          return .run { store in
+            for _ in 0..<10 {
+              store.modify { $0.string += "A" }
+              print("incrementing string: \(store.string)")
+              try await Task.sleep(for: .seconds(1))
+            }
+          }
         }
         return .none
       }

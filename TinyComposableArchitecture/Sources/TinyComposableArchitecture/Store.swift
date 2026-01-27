@@ -20,22 +20,21 @@ let logger = {
   return Logger(label: "dev.erikb.tiny-composable-architecture")
 }()
 
-@globalActor
-public actor StoreActor {
-  public static let shared = StoreActor()
-}
-
-@StoreActor
-public final class Store<State, Action>: _Store, Sendable {
+@dynamicMemberLookup
+public actor Store<State, Action>: @preconcurrency _Store, Sendable {
   private weak var parent: (any _Store)?
   private var currentState: State
-  private var bufferedActions: [Action] = []
-  private var isSending = false
   private let reducer: any Reducer<State, Action>
   private let logger: Logger
   private var effectCancellables: [UUID: AnyCancellable] = [:]
   private var children: [ScopeID<State, Action>: AnyObject] = [:]
   private var scopeID: AnyHashable?
+
+  func effectCount() -> Int {
+    effectCancellables.count
+  }
+
+  public var state: State { currentState }
 
   public init<R: Reducer<State, Action>>(
     initialState: @autoclosure () -> R.State,
@@ -58,114 +57,73 @@ public final class Store<State, Action>: _Store, Sendable {
     logger.debug("deinit")
   }
 
-  public func withState<Value>(_ keyPath: KeyPath<State, Value>) -> Value {
-    self.currentState[keyPath: keyPath]
+  public func modify<R>(_ operation: (inout State) -> R) -> R {
+    var currentState = currentState
+    defer { self.currentState = currentState }
+    return operation(&currentState)
   }
 
   @discardableResult
   public func send(_ action: Action) -> StoreTask {
-    self.bufferedActions.append(action)
-    guard !isSending else { return StoreTask(rawValue: nil) }
-
-    self.isSending = true
     var currentState = self.currentState
-    let tasks = LockIsolated([Task<Void, Never>]())
+    defer { self.currentState = currentState }
 
-    defer {
-      withExtendedLifetime(self.bufferedActions) {
-        self.logger.debug("Removing all buffered actions.")
-        self.bufferedActions.removeAll()
+    let effect = self.reducer.reduce(into: &currentState, action: action)
+    let effectId = UUID()
+
+    switch effect.operation {
+    case .none:
+      return StoreTask(rawValue: nil)
+    case .action(let effectAction):
+      return withEscapedDependencies { continuation in 
+        continuation.yield {
+          self.send(effectAction())
+        }
       }
-      self.currentState = currentState
-      self.isSending = false
-      if !self.bufferedActions.isEmpty, let task = self.send(self.bufferedActions.removeLast()).rawValue {
-        tasks.withValue { $0.append(task) }
+    case let .task(name, priority, operation):
+      let task = withEscapedDependencies { [weak self] continuation in
+        Task(name: name, priority: priority) { [weak self] in
+          let isCompleted = LockIsolated(false)
+          defer { isCompleted.setValue(true) }
+          guard let self else { return }
+          // TODO: create a EffectStore that restricts user's
+          // edits if isCompleted is false.
+          //
+          //     if isCompleted.value {
+          //       logger.debug(
+          //         """
+          //         An action was sent from a completed effect.
+
+          //           Action:
+          //             \(type(of: effectAction))
+
+          //           Effect returned from:
+          //             \(typeOfAction)
+
+          //         Avoid sending actions using the 'send' argument from 'Effect.run' after \
+          //         the effect has completed. This can happen if you escape the 'send' \
+          //         argument in an unstructured context.
+
+          //         To fix this, make sure that your 'run' closure does not return until \
+          //         you're done calling 'send'.
+          //         """
+          //       )
+
+          await operation(self)
+          await self.removeEffect(effectId)
+        }
       }
+      effectCancellables[effectId] = AnyCancellable(task.cancel)
+      return StoreTask(rawValue: task)
     }
+  }
 
-    var index = self.bufferedActions.startIndex
+  public subscript<Value>(dynamicMember keyPath: _SendableKeyPath<State, Value>) -> Value {
+    self.currentState[keyPath: keyPath]
+  }
 
-    while index < self.bufferedActions.endIndex {
-      defer { index += 1 }
-      let action = self.bufferedActions[index]
-      let effect = reducer.reduce(into: &currentState, action: action)
-
-      let uuid = UUID()
-
-      switch effect.operation {
-      case .none:
-        break
-      case .action(let action):
-        withEscapedDependencies { continuation in
-          if let task = continuation.yield({ self.send(action()) }).rawValue {
-            tasks.withValue { $0.append(task) }
-          }
-        }
-      case let .task(name, priority, operation):
-        let typeOfAction = type(of: action)
-        withEscapedDependencies { continuation in
-          let task = Task(name: name, priority: priority) { [weak self, logger, typeOfAction] in
-            let isCompleted = LockIsolated(false)
-            defer { isCompleted.setValue(true) }
-            await operation(
-              Send { @StoreActor [weak self] effectAction in
-                if isCompleted.value {
-                  logger.debug(
-                    """
-                    An action was sent from a completed effect.
-
-                      Action:
-                        \(type(of: effectAction))
-
-                      Effect returned from:
-                        \(typeOfAction)
-
-                    Avoid sending actions using the 'send' argument from 'Effect.run' after \
-                    the effect has completed. This can happen if you escape the 'send' \
-                    argument in an unstructured context.
-
-                    To fix this, make sure that your 'run' closure does not return until \
-                    you're done calling 'send'.
-                    """
-                  )
-                }
-
-                let storeTask = continuation.yield({ self?.send(effectAction) })
-                if let task = storeTask?.rawValue {
-                  tasks.withValue { $0.append(task) }
-                }
-                return SendTask(base: storeTask ?? StoreTask(rawValue: nil))
-              }
-            )
-            self?.effectCancellables[uuid] = nil
-          }
-          tasks.withValue { $0.append(task) }
-          self.effectCancellables[uuid] = AnyCancellable {
-            task.cancel()
-          }
-        }
-      }
-    }
-
-    guard !tasks.isEmpty else { return StoreTask(rawValue: nil) }
-
-    return StoreTask(
-      rawValue: Task { @StoreActor in
-        await withTaskCancellationHandler {
-          var index = tasks.startIndex
-          while index < tasks.endIndex {
-            defer { index += 1 }
-            await tasks[index].value
-          }
-        } onCancel: {
-          var index = tasks.startIndex
-          while index < tasks.endIndex {
-            defer { index += 1 }
-            tasks[index].cancel()
-          }
-        }
-      }
-    )
+  private func removeEffect(_ id: UUID) {
+    self.effectCancellables[id] = nil
   }
 
   // public func scope<ChildState, ChildAction, R>(
@@ -201,7 +159,6 @@ public struct StoreTask: Hashable, Sendable {
 
 public typealias StoreOf<R: Reducer> = Store<R.State, R.Action>
 
-@StoreActor
 protocol _Store: AnyObject {
   func removeChild(_ id: AnyHashable)
 }
