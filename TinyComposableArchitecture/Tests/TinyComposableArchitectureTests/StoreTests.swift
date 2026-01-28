@@ -1,89 +1,52 @@
+import Dependencies
 import Foundation
 import Testing
+
 @testable import TinyComposableArchitecture
 
 @Suite("Store Tests")
 struct StoreTests {
-  @Test func testStoreAction() async throws {
-    let store = Store(initialState: TestStoreReducer.State()) {
-      TestStoreReducer()
-    }
+  @Test func cancellableIsRemovedOnImmediatelyCompletingEffect() async {
+    let store = Store<Void, Void>(initialState: ()) {}
 
-    let task = await store.send(.increment)
-    #expect(await store.count == 1)
-    task.cancel()
-    try await Task.sleep(for: .seconds(15))
-    #expect(await store.count == 1)
-    await store.send(.increment).finish()
-    #expect(await store.count == 10)
+    #expect(await store.effectCancellablesCount == 0)
+
+    await store.send(())
+
+    #expect(await store.effectCancellablesCount == 0)
   }
 
-  @Test func testParallelActor() async throws {
-    let store = Store(initialState: TestStoreReducer.State()) {
-      TestStoreReducer()
-    }
+  @Test func cancellableIsRemovedWhenEffectCompletes() async {
+    let clock = TestClock()
+    enum Action { case start, end }
 
-    try await withThrowingTaskGroup { group in
-      group.addTask {
-        await store.send(.startCountLoop).finish()
-      }
-      group.addTask {
-        await store.send(.startStringLoop).finish()
-      }
-      group.addTask {
-        try await Task.sleep(for: .seconds(5))
-        #expect(await store.effectCount() == 2)
-        try await Task.sleep(for: .seconds(12))
-        #expect(await store.effectCount() == 0)
-      }
-      try await group.waitForAll()
-    }
-  }
-
-  struct TestStoreReducer: Reducer {
-    struct State: Equatable {
-      var count = 0
-      var string = ""
-    }
-
-    enum Action {
-      case increment
-      case set(Int)
-      case startCountLoop
-      case startStringLoop
-    }
-
-    var body: some ReducerOf<Self> {
-      Reduce { state, action in
-        switch action {
-        case .increment:
-          state.count += 1
-          return .run { store in
-            try await Task.sleep(for: .seconds(10))
-            store.send(.set(10))
-          }
-        case .set(let count):
-          state.count = count
-        case .startCountLoop:
-          return .run { store in
-            for _ in 0..<10 {
-              store.modify { $0.count += 1 }
-              print("incrementing count: \(store.count)")
-              try await Task.sleep(for: .seconds(1))
-            }
-          }
-         case .startStringLoop:
-          return .run { store in
-            for _ in 0..<10 {
-              store.modify { $0.string += "A" }
-              print("incrementing string: \(store.string)")
-              try await Task.sleep(for: .seconds(1))
-            }
-          }
+    let reducer = Reduce<Void, Action>({ _, action in
+      switch action {
+      case .start:
+        return .run { store in
+          @Dependency(\.continuousClock) var clock
+          try await clock.sleep(for: .seconds(1))
         }
+      case .end:
         return .none
       }
+    })
+
+    let store = Store(initialState: ()) {
+      reducer
+    } withDependencies: {
+      $0.continuousClock = clock
     }
+
+    #expect(await store.effectCancellablesCount == 0)
+
+    let task = await store.send(.start)
+    #expect(await store.effectCancellablesCount == 1)
+
+    await clock.advance(by: .seconds(2))
+
+    await task.finish()
+    #expect(await store.effectCancellablesCount == 0)
   }
 }
 

@@ -21,20 +21,15 @@ let logger = {
 }()
 
 @dynamicMemberLookup
-public actor Store<State, Action>: @preconcurrency _Store, Sendable {
-  private weak var parent: (any _Store)?
-  private var currentState: State
-  private let reducer: any Reducer<State, Action>
+public actor Store<State, Action>: Sendable, Identifiable {
   private let logger: Logger
+  public private(set) var state: State
+  private let reducer: any Reducer<State, Action>
   private var effectCancellables: [UUID: AnyCancellable] = [:]
-  private var children: [ScopeID<State, Action>: AnyObject] = [:]
-  private var scopeID: AnyHashable?
 
-  func effectCount() -> Int {
-    effectCancellables.count
-  }
+  var effectCancellablesCount: Int { effectCancellables.count }
 
-  public var state: State { currentState }
+  public let id = UUID()
 
   public init<R: Reducer<State, Action>>(
     initialState: @autoclosure () -> R.State,
@@ -45,12 +40,23 @@ public actor Store<State, Action>: @preconcurrency _Store, Sendable {
       @Dependency(\.self) var dependencies
       return (initialState(), reducer(), dependencies)
     }
-    self.currentState = initialState
-    self.parent = nil
+    self.state = initialState
     self.reducer = reducer.dependency(\.self, dependencies)
     var logger = Logger(label: "Store<\(State.self), \(Action.self)>")
-    logger[metadataKey: "id"] = "\(UUID().uuidString)"
+    logger[metadataKey: "id"] = "\(self.id.uuidString)"
     self.logger = logger
+  }
+
+  init() {
+    // no-op
+    fatalError("Implement no-op/invalid store")
+  }
+
+  init<ParentState, ParentAction>(
+    parentToChildState: KeyPath<ParentState, State>,
+    parentToChildAction: CaseKeyPath<ParentAction, Action>
+  ) {
+    fatalError()
   }
 
   deinit {
@@ -58,15 +64,19 @@ public actor Store<State, Action>: @preconcurrency _Store, Sendable {
   }
 
   public func modify<R>(_ operation: (inout State) -> R) -> R {
-    var currentState = currentState
-    defer { self.currentState = currentState }
+    var currentState = state
+    defer { state = currentState }
     return operation(&currentState)
+  }
+
+  public subscript<Value>(dynamicMember keyPath: _SendableKeyPath<State, Value>) -> Value {
+    self.state[keyPath: keyPath]
   }
 
   @discardableResult
   public func send(_ action: Action) -> StoreTask {
-    var currentState = self.currentState
-    defer { self.currentState = currentState }
+    var currentState = self.state
+    defer { self.state = currentState }
 
     let effect = self.reducer.reduce(into: &currentState, action: action)
     let effectId = UUID()
@@ -74,68 +84,31 @@ public actor Store<State, Action>: @preconcurrency _Store, Sendable {
     switch effect.operation {
     case .none:
       return StoreTask(rawValue: nil)
-    case .action(let effectAction):
-      return withEscapedDependencies { continuation in 
-        continuation.yield {
-          self.send(effectAction())
-        }
-      }
-    case let .task(name, priority, operation):
-      let task = withEscapedDependencies { [weak self] continuation in
+    case let .run(name, priority, operation):
+      let task = withDependencies({ _ in }) { [weak self] in
         Task(name: name, priority: priority) { [weak self] in
-          let isCompleted = LockIsolated(false)
-          defer { isCompleted.setValue(true) }
-          guard let self else { return }
-          // TODO: create a EffectStore that restricts user's
-          // edits if isCompleted is false.
-          //
-          //     if isCompleted.value {
-          //       logger.debug(
-          //         """
-          //         An action was sent from a completed effect.
-
-          //           Action:
-          //             \(type(of: effectAction))
-
-          //           Effect returned from:
-          //             \(typeOfAction)
-
-          //         Avoid sending actions using the 'send' argument from 'Effect.run' after \
-          //         the effect has completed. This can happen if you escape the 'send' \
-          //         argument in an unstructured context.
-
-          //         To fix this, make sure that your 'run' closure does not return until \
-          //         you're done calling 'send'.
-          //         """
-          //       )
-
-          await operation(self)
-          await self.removeEffect(effectId)
+          await operation(self ?? Store())
+          await self?.removeEffect(id: effectId)
         }
       }
-      effectCancellables[effectId] = AnyCancellable(task.cancel)
+      self.effectCancellables[effectId] = AnyCancellable(task.cancel)
       return StoreTask(rawValue: task)
     }
   }
 
-  public subscript<Value>(dynamicMember keyPath: _SendableKeyPath<State, Value>) -> Value {
-    self.currentState[keyPath: keyPath]
-  }
-
-  private func removeEffect(_ id: UUID) {
+  private func removeEffect(id: UUID) {
     self.effectCancellables[id] = nil
   }
 
-  // public func scope<ChildState, ChildAction, R>(
-  //   state: KeyPath<State, ChildState>,
-  //   action: CaseKeyPath<Action, ChildAction>,
-  //   @ReducerBuilder<ChildState, ChildAction> childReducer: () -> R
-  // ) -> Store<ChildState, ChildAction> {
-  //   // let child = Store<ChildState, ChildAction>()
-  // }
-
-  func removeChild(_ id: AnyHashable) {
-    self.children[id.base as! ScopeID<State, Action>] = nil
+  public nonisolated func scope<ChildState, ChildAction>(
+    state childStateKeyPath: KeyPath<State, ChildState>,
+    action childActionCaseKeyPath: CaseKeyPath<Action, ChildAction>
+  ) -> Store<ChildState, ChildAction> {
+    // let child = Store<ChildState, ChildAction>(
+    //   parentToChildState: childStateKeyPath,
+    //   parentToChildAction: childActionCaseKeyPath
+    // )
+    fatalError("Not implemented")
   }
 }
 
@@ -155,13 +128,7 @@ public struct StoreTask: Hashable, Sendable {
   }
 }
 
-// extension Store: Observable {}
-
 public typealias StoreOf<R: Reducer> = Store<R.State, R.Action>
-
-protocol _Store: AnyObject {
-  func removeChild(_ id: AnyHashable)
-}
 
 struct ScopeID<State, Action>: Hashable {
   let state: PartialKeyPath<State>
