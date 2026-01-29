@@ -4,9 +4,6 @@ import Dependencies
 import Foundation
 import Logging
 
-// import Observation
-// import Perception
-
 let logger = {
   LoggingSystem.bootstrap { label in
     var output = StreamLogHandler.standardOutput(label: label)
@@ -52,12 +49,12 @@ public actor Store<State, Action>: Sendable, Identifiable {
     fatalError("Implement no-op/invalid store")
   }
 
-  init<ParentState, ParentAction>(
-    parentToChildState: KeyPath<ParentState, State>,
-    parentToChildAction: CaseKeyPath<ParentAction, Action>
-  ) {
-    fatalError()
-  }
+  // init<ParentState, ParentAction>(
+  //   parentToChildState: KeyPath<ParentState, State>,
+  //   parentToChildAction: CaseKeyPath<ParentAction, Action>
+  // ) {
+  //   fatalError()
+  // }
 
   deinit {
     logger.debug("deinit")
@@ -69,8 +66,19 @@ public actor Store<State, Action>: Sendable, Identifiable {
     return operation(&currentState)
   }
 
-  public subscript<Value>(dynamicMember keyPath: _SendableKeyPath<State, Value>) -> Value {
-    self.state[keyPath: keyPath]
+  public subscript<Value>(dynamicMember keyPath: _SendableWritableKeyPath<State, Value>) -> Value {
+    get {
+      // TODO: register access recursively
+      return self.state[keyPath: keyPath]
+    }
+    set {
+      // TODO: register mutation
+      self.state[keyPath: keyPath] = newValue
+    }
+    _modify {
+      // TODO: register modify
+      yield &self.state[keyPath: keyPath]
+    }
   }
 
   @discardableResult
@@ -100,16 +108,16 @@ public actor Store<State, Action>: Sendable, Identifiable {
     self.effectCancellables[id] = nil
   }
 
-  public nonisolated func scope<ChildState, ChildAction>(
-    state childStateKeyPath: KeyPath<State, ChildState>,
-    action childActionCaseKeyPath: CaseKeyPath<Action, ChildAction>
-  ) -> Store<ChildState, ChildAction> {
-    // let child = Store<ChildState, ChildAction>(
-    //   parentToChildState: childStateKeyPath,
-    //   parentToChildAction: childActionCaseKeyPath
-    // )
-    fatalError("Not implemented")
-  }
+  // public nonisolated func scope<ChildState, ChildAction>(
+  //   state childStateKeyPath: KeyPath<State, ChildState>,
+  //   action childActionCaseKeyPath: CaseKeyPath<Action, ChildAction>
+  // ) -> Store<ChildState, ChildAction> {
+  //   // let child = Store<ChildState, ChildAction>(
+  //   //   parentToChildState: childStateKeyPath,
+  //   //   parentToChildAction: childActionCaseKeyPath
+  //   // )
+  //   fatalError("Not implemented")
+  // }
 }
 
 public struct StoreTask: Hashable, Sendable {

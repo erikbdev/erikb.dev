@@ -97,3 +97,10 @@ struct SSHServer: AsyncParsableCommand {
     }
   }
 }
+
+#if os(Linux)
+  // https://github.com/swiftlang/swift/pull/77890
+  // On Swift 6.2.1 on Linux, Observation runs into a linker error that swift::threading::fatal can't be found.
+  // Seems to happen again when running test cases. So, stub it out.
+  @_cdecl("_ZN5swift9threading5fatalEPKcz") func swift_threading_fatal() { fatalError("swift::threading::fatal") }
+#endif

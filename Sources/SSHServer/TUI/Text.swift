@@ -1,9 +1,11 @@
-struct Text: _PrimitiveComponent {
+struct Text: Component {
   let text: String
 
   init(_ text: String) {
     self.text = text
   }
 
-  var body: Never { fatalError() }
+  func render() -> String {
+    text
+  }
 }

@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "TinyComposableArchitecture",
+  name: "tiny-composable-architecture",
   products: [
     .library(
       name: "TinyComposableArchitecture",

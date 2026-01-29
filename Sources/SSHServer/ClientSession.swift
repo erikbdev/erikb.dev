@@ -3,6 +3,7 @@ import Logging
 import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
+import TinyComposableArchitecture
 
 enum ClientSession: Sendable {
   typealias AsyncChannel = NIOAsyncChannel<NIOSSHHandler.SSHChannelInboundData, NIOSSHHandler.SSHChannelOutboundData>
@@ -29,9 +30,9 @@ enum ClientSession: Sendable {
 
       var description: String {
         switch self {
-          case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
-          case .connectionClosed: "The connection unexpectedly closed."
-          case .unknown: "An unknown error occurred."
+        case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
+        case .connectionClosed: "The connection unexpectedly closed."
+        case .unknown: "An unknown error occurred."
         }
       }
     }
@@ -53,12 +54,22 @@ enum ClientSession: Sendable {
             throw Error(.missingPseudoTerminalRequest)
           }
 
-          // let app = App()
-
           logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
 
+          let app = App(
+            store: Store(initialState: App.Feature.State()) {
+              App.Feature()
+            }
+          )
+
           try await withFrameClock(fps: 10) { timestamp in
-            logger.debug("Printing framerate \(timestamp)")
+            // logger.debug("Printing framerate \(timestamp)")
+            // try? await outbound.write(
+            //   .init(
+            //     type: .channel,
+            //     data: .byteBuffer(channel.channel.allocator.buffer(string: "\033[2J," + app.render()))
+            //   )
+            // )
           } tasks: { group in
             group.addTask {
               while let next = try await iterator.wrappedValue.next() {
@@ -68,11 +79,26 @@ enum ClientSession: Sendable {
                   guard case .byteBuffer(let b) = data.data, data.type == .channel else {
                     continue
                   }
+                // await app.store.send(.event(.key))
                 case .event(let event):
                   switch event {
                   case .windowChange(let event):
-                    continue
+                    await app.store.send(
+                      .event(
+                        .resize(
+                          .init(
+                            width: event.terminalPixelWidth,
+                            height: event.terminalPixelHeight,
+                            rowHeight: event.terminalRowHeight,
+                            charWidth: event.terminalCharacterWidth
+                          )
+                        )
+                      )
+                    )
                   case .exitSignal:
+                    await app.store.send(.event(.exit))
+                    try await channel.channel.close()
+                  case .exitStatus:
                     try await channel.channel.close()
                   default:
                     continue
