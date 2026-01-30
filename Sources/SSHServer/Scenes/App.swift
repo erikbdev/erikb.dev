@@ -1,10 +1,10 @@
 import NIOCore
 import TinyComposableArchitecture
 
-struct App: Component {
+struct App: Cell {
   let store: StoreOf<Feature>
 
-  var body: some Component {
+  var body: some Cell {
     Text("What kind of food would you like to order?")
       .padding(.bottom, 1)
 

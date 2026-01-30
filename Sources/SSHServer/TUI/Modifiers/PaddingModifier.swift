@@ -1,4 +1,4 @@
-struct PaddingModifier<Content: Component>: Component {
+struct PaddingModifier<Content: Cell>: Cell {
   let content: Content
   let edges: Edge.Set
   let length: Int
@@ -13,8 +13,8 @@ struct PaddingModifier<Content: Component>: Component {
   }
 }
 
-extension Component {
-  func padding(_ edges: Edge.Set = .all, _ length: Int) -> some Component {
+extension Cell {
+  func padding(_ edges: Edge.Set = .all, _ length: Int) -> some Cell {
     PaddingModifier(content: self, edges: edges, length: length)
   }
 }

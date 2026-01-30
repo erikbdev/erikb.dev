@@ -1,4 +1,4 @@
-struct Text: Component {
+struct Text: Cell {
   let text: String
 
   init(_ text: String) {
