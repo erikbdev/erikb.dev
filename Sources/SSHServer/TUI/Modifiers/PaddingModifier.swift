@@ -1,20 +1,20 @@
-struct PaddingModifier<Content: Cell>: Cell {
+struct PaddingModifier<Content: Component>: Component {
   let content: Content
   let edges: Edge.Set
   let length: Int
 
-  func render() -> String {
-    let value = content.render()
-    let leading = String(repeating: " ", count: edges.values.contains(.leading) ? length : 0)
-    let trailing = String(repeating: " ", count: edges.values.contains(.trailing) ? length : 0)
-    let top = String(repeating: "\n", count: edges.values.contains(.top) ? length : 0)
-    let bottom = String(repeating: "\n", count: edges.values.contains(.bottom) ? length : 0)
-    return top + leading + value + trailing + bottom
+  func render(into renderer: inout VTBuffer) {
+    // let value = content.render()
+    // let leading = String(repeating: " ", count: edges.values.contains(.leading) ? length : 0)
+    // let trailing = String(repeating: " ", count: edges.values.contains(.trailing) ? length : 0)
+    // let top = String(repeating: "\n", count: edges.values.contains(.top) ? length : 0)
+    // let bottom = String(repeating: "\n", count: edges.values.contains(.bottom) ? length : 0)
+    // return top + leading + value + trailing + bottom
   }
 }
 
-extension Cell {
-  func padding(_ edges: Edge.Set = .all, _ length: Int) -> some Cell {
+extension Component {
+  func padding(_ edges: Edge.Set = .all, _ length: Int) -> some Component {
     PaddingModifier(content: self, edges: edges, length: length)
   }
 }

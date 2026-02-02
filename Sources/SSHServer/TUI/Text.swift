@@ -1,11 +1,11 @@
-struct Text: Cell {
+struct Text: Component {
   let text: String
 
   init(_ text: String) {
     self.text = text
   }
 
-  func render() -> String {
-    text
+  func render(into renderer: inout VTBuffer) {
+    renderer.write(string: text, at: .zero)
   }
 }

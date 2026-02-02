@@ -62,41 +62,52 @@ enum ClientSession: Sendable {
             }
           )
 
-          try await withFrameClock(fps: 10) { timestamp in
-            // logger.debug("Printing framerate \(timestamp)")
-            // try? await outbound.write(
-            //   .init(
-            //     type: .channel,
-            //     data: .byteBuffer(channel.channel.allocator.buffer(string: "\033[2J," + app.render()))
-            //   )
-            // )
-          } tasks: { group in
+          let renderer = VTRenderer(Size(width: pseudoTerm.terminalPixelWidth, height: pseudoTerm.terminalPixelHeight)) { bytes in
+            try await outbound.write(.init(type: .channel, data: .byteBuffer(bytes)))
+          }
+
+          try await outbound.write(
+            .init(
+              type: .channel,
+              data: .byteBuffer(ByteBuffer(string: ControlSequence.SetMode([.DEC(.UseAlternateScreenBufferSaveCursor)]).encoded(as: .b7)))
+            )
+          )
+
+          try await withThrowingTaskGroup(of: Void.self) { group in
+            defer { group.cancelAll() }
             group.addTask {
+              renderer.back.clear()
+              app.render(into: &renderer.back)
+              await renderer.present()
+              for await _ in app.store.didSet {
+                renderer.back.clear()
+                app.render(into: &renderer.back)
+                await renderer.present()
+              }
+            }
+            group.addTask {
+              var parser = TerminalInputParser()
+
               while let next = try await iterator.wrappedValue.next() {
-                logger.trace("New inbound event received", metadata: ["event": "\(next)"])
                 switch next {
                 case .data(let data):
                   guard case .byteBuffer(let b) = data.data, data.type == .channel else {
                     continue
                   }
-                // await app.store.send(.event(.key))
+
+                  for event in parser.parse(b) {
+                    logger.debug("Received parsed event", metadata: ["event": "\(event)"])
+                    await app.store.send(.event(.key(event)))
+                  }
                 case .event(let event):
+                  logger.trace("New inbound event received", metadata: ["event": "\(event)"])
                   switch event {
                   case .windowChange(let event):
-                    await app.store.send(
-                      .event(
-                        .resize(
-                          .init(
-                            width: event.terminalPixelWidth,
-                            height: event.terminalPixelHeight,
-                            rowHeight: event.terminalRowHeight,
-                            charWidth: event.terminalCharacterWidth
-                          )
-                        )
-                      )
-                    )
+                    renderer.back.resize(to: Size(width: event.terminalPixelWidth, height: event.terminalPixelHeight))
+                    renderer.back.clear()
+                    app.render(into: &renderer.back)
+                    await renderer.present()
                   case .exitSignal:
-                    await app.store.send(.event(.exit))
                     try await channel.channel.close()
                   case .exitStatus:
                     try await channel.channel.close()
@@ -109,6 +120,15 @@ enum ClientSession: Sendable {
             group.addTask {
               try await channel.channel.closeFuture.get()
               throw Error(.connectionClosed)
+            }
+
+            // TODO: fix store not deinit.
+            do {
+              try await group.waitForAll()
+              await app.store.finish()
+            } catch {
+              await app.store.finish()
+              throw error
             }
           }
         } catch {

@@ -20,11 +20,20 @@ let logger = {
 @dynamicMemberLookup
 public actor Store<State, Action>: Sendable, Identifiable {
   private let logger: Logger
-  public private(set) var state: State
   private let reducer: any Reducer<State, Action>
   private var effectCancellables: [UUID: AnyCancellable] = [:]
+  private let stateChangeContinuation: AsyncStream<Void>.Continuation
+  private let stateChangeStream: AsyncStream<Void>
 
   var effectCancellablesCount: Int { effectCancellables.count }
+
+  public nonisolated(unsafe) private(set) var state: State {
+    didSet {
+      self.stateChangeContinuation.yield()
+    }
+  }
+  
+  public nonisolated var didSet: AsyncStream<Void> { self.stateChangeStream }
 
   public let id = UUID()
 
@@ -42,6 +51,9 @@ public actor Store<State, Action>: Sendable, Identifiable {
     var logger = Logger(label: "Store<\(State.self), \(Action.self)>")
     logger[metadataKey: "id"] = "\(self.id.uuidString)"
     self.logger = logger
+    let (stream, continuation) = AsyncStream<Void>.makeStream()
+    self.stateChangeStream = stream
+    self.stateChangeContinuation = continuation
   }
 
   init() {
@@ -69,7 +81,7 @@ public actor Store<State, Action>: Sendable, Identifiable {
   public subscript<Value>(dynamicMember keyPath: _SendableWritableKeyPath<State, Value>) -> Value {
     get {
       // TODO: register access recursively
-      return self.state[keyPath: keyPath]
+      self.state[keyPath: keyPath]
     }
     set {
       // TODO: register mutation
@@ -118,6 +130,10 @@ public actor Store<State, Action>: Sendable, Identifiable {
   //   // )
   //   fatalError("Not implemented")
   // }
+
+  public func finish() {
+    self.stateChangeContinuation.finish()
+  }
 }
 
 public struct StoreTask: Hashable, Sendable {
