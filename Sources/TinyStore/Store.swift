@@ -30,8 +30,11 @@ public actor Store<State, Action>: Sendable, Identifiable {
   public nonisolated(unsafe) private(set) var state: State {
     didSet {
       self.stateChangeContinuation.yield()
+      self.didSetCallback?()
     }
   }
+
+  private nonisolated(unsafe) var didSetCallback: (() -> Void)?
   
   public nonisolated var didSet: AsyncStream<Void> { self.stateChangeStream }
 
@@ -78,7 +81,7 @@ public actor Store<State, Action>: Sendable, Identifiable {
     return operation(&currentState)
   }
 
-  public subscript<Value>(dynamicMember keyPath: _SendableWritableKeyPath<State, Value>) -> Value {
+  public nonisolated subscript<Value>(dynamicMember keyPath: _SendableWritableKeyPath<State, Value>) -> Value {
     get {
       // TODO: register access recursively
       self.state[keyPath: keyPath]
@@ -133,6 +136,10 @@ public actor Store<State, Action>: Sendable, Identifiable {
 
   public func finish() {
     self.stateChangeContinuation.finish()
+  }
+
+  public nonisolated func observe(_ callback: @escaping () -> Void) {
+    self.didSetCallback = callback
   }
 }
 

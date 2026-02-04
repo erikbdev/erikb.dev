@@ -1,20 +1,10 @@
+import NIOCore
 import NIOSSH
 import TauTUI
 
-final class RemoteTerminal: Terminal {
+final class RemoteTerminal: Terminal, @unchecked Sendable {
   var columns: Int = 0
   var rows: Int = 0
-
-  private var iterator: any AsyncIteratorProtocol<NIOSSHHandler.SSHChannelInboundData, Swift.Error>
-  private var task: Task<Void, Error>?
-
-  deinit {
-    task?.cancel()
-  }
-
-  init(_ iterator: any AsyncIteratorProtocol<NIOSSHHandler.SSHChannelInboundData, Swift.Error>) {
-    self.iterator = iterator
-  }
 
   func start(
     onInput: @escaping (TerminalInput) -> Void,
@@ -52,4 +42,8 @@ final class RemoteTerminal: Terminal {
 
   }
 
+}
+
+private struct InputProcessing {
+  var buffer: ByteBuffer?
 }
