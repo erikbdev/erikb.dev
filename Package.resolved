@@ -1,5 +1,5 @@
 {
-  "originHash" : "7d3769caf12dae3dfd445cdb1db36fdfd680f454b0d7333d03b762e9b995933f",
+  "originHash" : "32732b5b504dc8b893c7e7220139f987c1f1a558fda7557c173810125394a827",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -94,10 +94,10 @@
     {
       "identity" : "swift-cmark",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-cmark.git",
+      "location" : "https://github.com/swiftlang/swift-cmark.git",
       "state" : {
-        "revision" : "3ccff77b2dc5b96b77db3da0d68d28068593fa53",
-        "version" : "0.5.0"
+        "revision" : "5d9bdaa4228b381639fff09403e39a04926e2dbe",
+        "version" : "0.7.1"
       }
     },
     {
@@ -146,6 +146,15 @@
       }
     },
     {
+      "identity" : "swift-displaywidth",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ainame/swift-displaywidth.git",
+      "state" : {
+        "revision" : "e2bfbdf1469366483451708bca36511f4f48ddb1",
+        "version" : "0.0.3"
+      }
+    },
+    {
       "identity" : "swift-distributed-tracing",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-distributed-tracing.git",
@@ -175,10 +184,10 @@
     {
       "identity" : "swift-markdown",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-markdown.git",
+      "location" : "https://github.com/apple/swift-markdown.git",
       "state" : {
-        "revision" : "8f79cb175981458a0a27e76cb42fee8e17b1a993",
-        "version" : "0.5.0"
+        "revision" : "7d9a5ce307528578dfa777d505496bd5f544ad94",
+        "version" : "0.7.3"
       }
     },
     {
@@ -311,8 +320,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
       "state" : {
-        "revision" : "c8a44d836fe7913603e246acab7c528c2e780168",
-        "version" : "1.4.0"
+        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+        "version" : "1.6.4"
       }
     },
     {
@@ -330,6 +339,15 @@
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
         "revision" : "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"
+      }
+    },
+    {
+      "identity" : "tautui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/steipete/TauTUI.git",
+      "state" : {
+        "revision" : "d30c095b65885adb7dc5042a9f5012e574cdc73b",
+        "version" : "0.1.5"
       }
     },
     {

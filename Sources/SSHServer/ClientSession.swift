@@ -3,7 +3,8 @@ import Logging
 import NIO
 import NIOConcurrencyHelpers
 import NIOSSH
-import TinyComposableArchitecture
+import TinyStore
+import TauTUI
 
 enum ClientSession: Sendable {
   typealias AsyncChannel = NIOAsyncChannel<NIOSSHHandler.SSHChannelInboundData, NIOSSHHandler.SSHChannelOutboundData>
@@ -47,87 +48,89 @@ enum ClientSession: Sendable {
 
     do {
       try await channel.executeThenClose { inbound, outbound in
-        let iterator = UnsafeMutableTransferBox(inbound.makeAsyncIterator())
+        var iterator = inbound.makeAsyncIterator()
 
         do {
-          guard case .event(.pseudoTerminal(let pseudoTerm)) = try await iterator.wrappedValue.next() else {
+          guard case .event(.pseudoTerminal(let pseudoTerm)) = try await iterator.next() else {
             throw Error(.missingPseudoTerminalRequest)
           }
 
           logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
 
-          let app = App(
-            store: Store(initialState: App.Feature.State()) {
-              App.Feature()
-            }
-          )
+          let terminal = RemoteTerminal(iterator)
+          let app = App()
 
-          let renderer = VTRenderer(Size(width: pseudoTerm.terminalPixelWidth, height: pseudoTerm.terminalPixelHeight)) { bytes in
-            try await outbound.write(.init(type: .channel, data: .byteBuffer(bytes)))
-          }
+          // let app = App(
+          //   store: Store(initialState: App.Feature.State()) {
+          //     App.Feature()
+          //   }
+          // )
 
-          try await outbound.write(
-            .init(
-              type: .channel,
-              data: .byteBuffer(ByteBuffer(string: ControlSequence.SetMode([.DEC(.UseAlternateScreenBufferSaveCursor)]).encoded(as: .b7)))
-            )
-          )
+          // let renderer = VTRenderer(Size(width: pseudoTerm.terminalPixelWidth, height: pseudoTerm.terminalPixelHeight)) { bytes in
+          //   try await outbound.write(.init(type: .channel, data: .byteBuffer(bytes)))
+          // }
+
+          // try await outbound.write(
+          //   .init(
+          //     type: .channel,
+          //     data: .byteBuffer(ByteBuffer(string: ControlSequence.SetMode([.DEC(.UseAlternateScreenBufferSaveCursor)]).encoded(as: .b7)))
+          //   )
+          // )
 
           try await withThrowingTaskGroup(of: Void.self) { group in
-            defer { group.cancelAll() }
-            group.addTask {
-              renderer.back.clear()
-              app.render(into: &renderer.back)
-              await renderer.present()
-              for await _ in app.store.didSet {
-                renderer.back.clear()
-                app.render(into: &renderer.back)
-                await renderer.present()
-              }
-            }
-            group.addTask {
-              var parser = TerminalInputParser()
+            // group.addTask {
+            // renderer.back.clear()
+            // app.render(into: &renderer.back)
+            // await renderer.present()
+            // // TODO: fix store not deinit.
+            // for await _ in app.store.didSet {
+            //   app.render(into: &renderer.back)
+            //   await renderer.present()
+            // }
+            // }
+            // group.addTask {
+            //   var parser = TerminalInputParser()
 
-              while let next = try await iterator.wrappedValue.next() {
-                switch next {
-                case .data(let data):
-                  guard case .byteBuffer(let b) = data.data, data.type == .channel else {
-                    continue
-                  }
+            //   while let next = try await iterator.wrappedValue.next() {
+            //     switch next {
+            //     case .data(let data):
+            //       guard case .byteBuffer(let b) = data.data, data.type == .channel else {
+            //         continue
+            //       }
 
-                  for event in parser.parse(b) {
-                    logger.debug("Received parsed event", metadata: ["event": "\(event)"])
-                    await app.store.send(.event(.key(event)))
-                  }
-                case .event(let event):
-                  logger.trace("New inbound event received", metadata: ["event": "\(event)"])
-                  switch event {
-                  case .windowChange(let event):
-                    renderer.back.resize(to: Size(width: event.terminalPixelWidth, height: event.terminalPixelHeight))
-                    renderer.back.clear()
-                    app.render(into: &renderer.back)
-                    await renderer.present()
-                  case .exitSignal:
-                    try await channel.channel.close()
-                  case .exitStatus:
-                    try await channel.channel.close()
-                  default:
-                    continue
-                  }
-                }
-              }
-            }
+            //       for event in parser.parse(b) {
+            //         logger.debug("Received parsed event", metadata: ["event": "\(event)"])
+            //         await app.store.send(.event(.key(event)))
+            //       }
+            //     case .event(let event):
+            //       logger.trace("New inbound event received", metadata: ["event": "\(event)"])
+            //       switch event {
+            //       case .windowChange(let event):
+            //         // renderer.back.resize(to: Size(width: event.terminalPixelWidth, height: event.terminalPixelHeight))
+            //         // app.render(into: &renderer.back)
+            //         // await renderer.present()
+            //         continue
+            //       case .exitSignal:
+            //         try await channel.channel.close()
+            //       case .exitStatus:
+            //         try await channel.channel.close()
+            //       default:
+            //         continue
+            //       }
+            //     }
+            //   }
+            // }
             group.addTask {
               try await channel.channel.closeFuture.get()
               throw Error(.connectionClosed)
             }
 
-            // TODO: fix store not deinit.
             do {
-              try await group.waitForAll()
-              await app.store.finish()
+              try await group.next()
+              // await app.store.finish()
             } catch {
-              await app.store.finish()
+              // await app.store.finish()
+              group.cancelAll()
               throw error
             }
           }
