@@ -2,13 +2,12 @@ import NIOCore
 import TauTUI
 import TinyStore
 
-final class App: Container, @unchecked Sendable {
-  let store: StoreOf<Feature> = Store(initialState: Feature.State()) {
-    Feature()
-  }
+final class App: Container {
+  let store: StoreOf<Feature>
 
-  convenience init() {
-    self.init(children: [])
+  init(store: StoreOf<Feature>) {
+    self.store = store
+    super.init(children: [])
 
     let text = Text(text: "Hello, world!")
     self.addChild(text)

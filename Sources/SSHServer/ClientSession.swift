@@ -59,8 +59,16 @@ enum ClientSession: Sendable {
 
               logger.trace("Pseudo terminal request received", metadata: ["event": "\(pseudoTerm)"])
 
-              let app = App()
-              let terminal = RemoteTerminal()
+              let terminal = RemoteTerminal(
+                App(
+                  store: Store(initialState: App.Feature.State()) {
+                    App.Feature()
+                  }
+                ),
+                writer: outbound
+              )
+
+              try await terminal.render()
 
               while let next = try await iterator.next() {
                 switch next {
@@ -69,10 +77,7 @@ enum ClientSession: Sendable {
                     continue
                   }
 
-                // for event in parser.parse(b) {
-                //   logger.debug("Received parsed event", metadata: ["event": "\(event)"])
-                //   await app.store.send(.event(.key(event)))
-                // }
+                  await terminal.parse(b)
                 case .event(let event):
                   logger.trace("New inbound event received", metadata: ["event": "\(event)"])
                   switch event {
