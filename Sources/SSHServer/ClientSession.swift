@@ -48,6 +48,7 @@ enum ClientSession: Sendable {
 
     do {
       try await channel.executeThenClose { inbound, outbound in
+        defer { logger.trace("Closing connection") }
         do {
           try await withThrowingTaskGroup(of: Void.self) { group in
             group.addTask {
@@ -65,10 +66,12 @@ enum ClientSession: Sendable {
                     App.Feature()
                   }
                 ),
-                writer: outbound
+                writer: outbound,
+                columns: pseudoTerm.terminalCharacterWidth,
+                rows: pseudoTerm.terminalRowHeight
               )
 
-              try await terminal.render()
+              try await terminal.renderNow()
 
               while let next = try await iterator.next() {
                 switch next {
@@ -76,13 +79,12 @@ enum ClientSession: Sendable {
                   guard case .byteBuffer(let b) = data.data, data.type == .channel else {
                     continue
                   }
-
-                  await terminal.parse(b)
+                  try await terminal.parse(b)
                 case .event(let event):
                   logger.trace("New inbound event received", metadata: ["event": "\(event)"])
                   switch event {
                   case .windowChange(let event):
-                    continue
+                    try await terminal.resize(columns: event.terminalCharacterWidth, rows: event.terminalRowHeight)
                   case .exitSignal:
                     try await channel.channel.close()
                   case .exitStatus:

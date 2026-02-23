@@ -20,7 +20,7 @@ let logger = {
 @dynamicMemberLookup
 public actor Store<State, Action>: Sendable, Identifiable {
   private let logger: Logger
-  private let reducer: any Reducer<State, Action>
+  private let reduce: (_ into: inout State, _ action: Action) -> Effect<State, Action>
   private var effectCancellables: [UUID: AnyCancellable] = [:]
   private let stateChangeContinuation: AsyncStream<Void>.Continuation
   private let stateChangeStream: AsyncStream<Void>
@@ -50,7 +50,7 @@ public actor Store<State, Action>: Sendable, Identifiable {
       return (initialState(), reducer(), dependencies)
     }
     self.state = initialState
-    self.reducer = reducer.dependency(\.self, dependencies)
+    self.reduce = reducer.dependency(\.self, dependencies).reduce(into:action:)
     var logger = Logger(label: "Store<\(State.self), \(Action.self)>")
     logger[metadataKey: "id"] = "\(self.id.uuidString)"
     self.logger = logger
@@ -101,7 +101,7 @@ public actor Store<State, Action>: Sendable, Identifiable {
     var currentState = self.state
     defer { self.state = currentState }
 
-    let effect = self.reducer.reduce(into: &currentState, action: action)
+    let effect = self.reduce(&currentState, action)
     let effectId = UUID()
 
     switch effect.operation {

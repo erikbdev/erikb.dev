@@ -1,113 +1,343 @@
+import Foundation
 import NIOCore
 import NIOSSH
 import TauTUI
 
-actor RemoteTerminal<Root: Container>: Sendable {
+actor RemoteTerminal<Root: Component>: Sendable {
   typealias Writer = NIOAsyncChannelOutboundWriter<NIOSSHHandler.SSHChannelOutboundData>
 
   private var theme = ThemePalette.default
   private var pendingInputBuffer: ByteBuffer?
   private var previousLines: [String] = []
   private var previousWidth = 0
-  private var cursorRaw = 0
+  private var cursorRow = 0
   private var columns = 0
   private var rows = 0
-
   private let writer: Writer
 
-  let root: Root
+  let root: Root 
 
   init(
     _ root: Root,
-    writer: Writer
+    writer: Writer,
+    columns: Int = 80,
+    rows: Int = 24
   ) {
     self.root = root
     self.writer = writer
+    self.columns = columns
+    self.rows = rows
   }
 
-  func render() async throws {
-
-  }
-
-  func parse(_ input: ByteBuffer) {
-    self.pendingInputBuffer.setOrWriteImmutableBuffer(input)
+  /// Parser from: https://github.com/webpro/ANSI.tools/tree/main/packages/parser
+  func parse(_ buffer: ByteBuffer) async throws {
+    self.pendingInputBuffer.setOrWriteImmutableBuffer(buffer)
 
     guard var pendingInputBuffer else {
       return
     }
+
     defer { self.pendingInputBuffer = pendingInputBuffer }
 
     var bufferedInputs: [TerminalInput] = []
 
-    var escape = false
+    while let byte = pendingInputBuffer.getByte() {
+      switch (byte, pendingInputBuffer.getByte(offset: 1)) {
+      case (0x1B, 0x4F):  // ESC + (O) SS3
+        switch pendingInputBuffer.getByte(offset: 2) {
+        // case .some(let byte) where 0x41 <= byte && byte <= 0x44: // legacy arrow keys
+        // bufferedInputs.append(.key(.cursorUp))
+        case 0x46:
+          bufferedInputs.append(.key(.end))
+        case 0x47:
+          bufferedInputs.append(.key(.home))
+        case .some(let byte) where 0x50 <= byte && byte <= 0x53:
+          bufferedInputs.append(.key(.function(Int(byte - 0x50) + 1)))
+        case .some(let byte):
+          bufferedInputs.append(
+            .key(
+              .unknown(
+                sequence: String(
+                  [
+                    Character(Unicode.Scalar(0x1B)),
+                    Character(Unicode.Scalar(0x4F)),
+                    Character(Unicode.Scalar(byte)),
+                  ]
+                )
+              )
+            )
+          )
+        case .none:
+          // incomplete process the current bytes, and wait for additional input.
+          break
+        }
+        pendingInputBuffer.moveReaderIndex(forwardBy: 3)
+      case (0x1B, 0x50):  // (P) DCS
+        continue
+      case (0x1B, 0x5B):  // [ CSI
+        var input = (TerminalKey.unknown(sequence: ""), KeyModifiers())
+        // switch pendingInputBuffer.getByte(offset: 2) {
+        // case 0x01:
+        //   input.0 = .home
+        // // case 0x02:
+        // //   input.0 = .insert
+        // case 0x03:
+        //   input.0 = .delete
+        // case 0x04:
+        //   input.0 = .end
+        // // case 0x05:
+        // //   input.0 = .pageUp
+        // // case 0x06:
+        // //   input.0 = .pageDown
+        // case .some(let byte) where 0x0B <= byte && byte <= 0x0F:
+        //   input.0 = .function(Int(byte - 0x0A))
+        // case .some(let byte) where 0x11 <= byte && byte <= 0x15:
+        //   input.0 = .function(Int(byte - 0x0B))
+        // case .some(let byte) where 0x17 <= byte && byte <= 0x18:
+        //   input.0 = .function(Int(byte - 0x0C))
+        // case UInt8(ascii: "A"):
+        //   input.0 = .arrowUp
+        // case UInt8(ascii: "B"):
+        //   input.0 = .arrowDown
+        // case UInt8(ascii: "C"):
+        //   input.0 = .arrowRight
+        // case UInt8(ascii: "D"):
+        //   input.0 = .arrowLeft
+        // case UInt8(ascii: "H"):
+        //   input.0 = .home
+        // case UInt8(ascii: "F"):
+        //   input.0 = .end
+        // case UInt8(ascii: "A"):
+        //   input.0 = .arrowUp
+        // case UInt8(ascii: "Z"):
+        //   input.0 = .tab
+        //   input.1 = .shift
 
-    repeat {
-      var readableBytes = pendingInputBuffer.readableBytesView.makeIterator()
+        // case .some(let byte):
+        //   // TODO: Improve.
+        //   input.0 = .unknown(sequence: String(Character(Unicode.Scalar(byte))))
+        // case .none:
+        //   // incomplete.
+        //   break
+        // }
 
-      switch (readableBytes.next(), escape) {
-      case (0x1b, false):  // escape
-        escape = true
-      case (.none, true):
+        // switch pendingInputBuffer.getByte(offset: 3) {
+        // case 0x3B:  // ;
+        //   switch pendingInputBuffer.getByte(offset: 4) {
+        //   case 0x02:
+        //     input.1 = .shift
+        //   case 0x03:
+        //     input.1 = .option
+        //   case 0x04:
+        //     input.1 = [.shift, .option]
+        //   case 0x05:
+        //     input.1 = .control
+        //   case 0x06:
+        //     input.1 = [.shift, .control]
+        //   case 0x07:
+        //     input.1 = [.option, .control]
+        //   case 0x08:
+        //     input.1 = [.shift, .option, .control]
+        //   case 0x09:
+        //     input.1 = .meta
+        //   case 0x0A:
+        //     input.1 = [.shift, .meta]
+        //   case 0x0B:
+        //     input.1 = [.meta, .control]
+        //   case 0x0C:
+        //     input.1 = [.shift, .meta, .control]
+        //   case .some:
+        //     input.1 = []  // unknown modifier
+        //   case .none:
+        //     // missing bytes
+        //     break
+        //   }
+        // case 0x7E:  // ~
+        //   pendingInputBuffer.moveReaderIndex(to: 3)
+        // case .none:
+        //   break
+        // }
+        bufferedInputs.append(.key(input.0, modifiers: input.1))
+      case (0x1B, 0x5D):  // ] OSC
+        continue
+      case (0x1B, 0x7F):  // ESC + DEL (Option+Backspace)
+        bufferedInputs.append(.key(.backspace, modifiers: [.option]))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 2)
+      case (0x1B, .some(let second)):  // ESC + ?
+        // ESC + key is trated as option/meta on most terminals
+        bufferedInputs.append(.key(.character(Character(Unicode.Scalar(second))), modifiers: [.option]))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 2)
+      case (0x1B, .none):
         bufferedInputs.append(.key(.escape))
-      case (0x13, true):
-        continue
-      case (_, true):
-        continue
-      case (0x0D, _), (0x0A, _):
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
+      case (0x0A, _), (0x0D, _):
         bufferedInputs.append(.key(.enter))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
       case (0x09, _):
         bufferedInputs.append(.key(.tab))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
       case (0x7F, _), (0x08, _):
         bufferedInputs.append(.key(.backspace))
-      case (.some(let byte), _):
-        if byte < 0x20 {
-          bufferedInputs.append(.key(.character(Character(Unicode.Scalar(byte + 0x60))), modifiers: .control))
-        } else {
-          bufferedInputs.append(.key(.character(Character(Unicode.Scalar(byte)))))
-        }
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
+      case (byte, _) where byte < 0x20:
+        bufferedInputs.append(.key(.character(Character(Unicode.Scalar(byte + 0x60))), modifiers: .control))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
       default:
-        escape = false
-        continue
+        bufferedInputs.append(.key(.character(Character(Unicode.Scalar(byte)))))
+        pendingInputBuffer.moveReaderIndex(forwardBy: 1)
       }
-    } while pendingInputBuffer.readableBytes > 0
+    }
 
     for input in bufferedInputs {
       root.handle(input: input)
     }
-  }
-
-  func stop() {
-  }
-
-  func write(_ data: String) {
-  }
-
-  func moveBy(lines: Int) {
-
-  }
-
-  func hideCursor() {
-
-  }
-
-  func showCursor() {
-
-  }
-
-  func clearLine() {
-
-  }
-
-  func clearFromCursor() {
-
-  }
-
-  func clearScreen() {
-
+    
+    try await self.performRender()
   }
 
   private func write(_ string: String) async throws {
     try await writer.write(.init(type: .channel, data: .byteBuffer(ByteBuffer(string: string))))
+  }
+
+  func resize(columns: Int, rows: Int) async throws {
+    self.columns = columns
+    self.rows = rows
+    try await self.performRender()
+  }
+
+  private func queryCellSizeIfNeeded() async throws {
+    guard TerminalImage.getCapabilities().images != nil else { return }
+    // Query terminal for cell size in pixels: CSI 16 t
+    // Response format: CSI 6 ; height ; width t
+    try await self.write("\u{001B}[16t")
+  }
+
+  // MARK: - Rendering
+
+  private func performRender() async throws {
+    let width = self.columns
+    let height = self.rows
+    let newLines = render(width: width)
+
+    guard !newLines.isEmpty else {
+      self.previousLines = []
+      self.previousWidth = width
+      self.cursorRow = 0
+      return
+    }
+
+    if self.previousLines.isEmpty {
+      try await self.writeFullRender(newLines)
+      self.previousLines = newLines
+      self.previousWidth = width
+      self.cursorRow = newLines.count - 1
+      return
+    }
+
+    if self.previousWidth != width {
+      try await self.writeFullRender(newLines, clear: true)
+      self.previousLines = newLines
+      self.previousWidth = width
+      self.cursorRow = newLines.count - 1
+      return
+    }
+
+    guard let diffRange = computeDiffRange(old: previousLines, new: newLines) else {
+      return  // no changes
+    }
+
+    let viewportTop = self.cursorRow - height + 1
+    if diffRange.lowerBound < viewportTop {
+      try await self.writeFullRender(newLines, clear: true)
+      self.previousLines = newLines
+      self.previousWidth = width
+      self.cursorRow = newLines.count - 1
+      return
+    }
+
+    try await self.writePartialRender(lines: newLines, from: diffRange.lowerBound)
+    self.previousLines = newLines
+    self.previousWidth = width
+    self.cursorRow = newLines.count - 1
+  }
+
+  private func computeDiffRange(old: [String], new: [String]) -> Range<Int>? {
+    let maxCount = max(old.count, new.count)
+    var firstChanged: Int?
+    var lastChanged: Int?
+
+    for index in 0..<maxCount {
+      let oldLine = index < old.count ? old[index] : ""
+      let newLine = index < new.count ? new[index] : ""
+      if oldLine != newLine {
+        if firstChanged == nil { firstChanged = index }
+        lastChanged = index
+      }
+    }
+
+    guard let start = firstChanged, let end = lastChanged else {
+      return nil
+    }
+    return start..<(end + 1)
+  }
+
+  private func writeFullRender(_ lines: [String], clear: Bool = false) async throws {
+    var buffer = ANSI.syncStart
+    if clear {
+      buffer += ANSI.clearScrollbackAndScreen
+    }
+    buffer += lines.joined(separator: "\r\n")
+    buffer += ANSI.syncEnd
+    try await self.write(buffer)
+  }
+
+  private func writePartialRender(lines: [String], from start: Int) async throws {
+    var buffer = ANSI.syncStart
+    let lineDiff = start - self.cursorRow
+    if lineDiff > 0 {
+      buffer += ANSI.cursorDown(lineDiff)
+    } else if lineDiff < 0 {
+      buffer += ANSI.cursorUp(-lineDiff)
+    }
+
+    buffer += ANSI.carriageReturn
+
+    for index in start..<lines.count {
+      if index > start { buffer += "\r\n" }
+      let line = lines[index]
+      if !self.containsImage(line) {
+        precondition(VisibleWidth.measure(line) <= self.columns, "Rendered line exceeds width")
+      }
+      buffer += ANSI.clearLine
+      buffer += line
+    }
+
+    if self.previousLines.count > lines.count {
+      let extraLines = self.previousLines.count - lines.count
+      for _ in 0..<extraLines {
+        buffer += "\r\n" + ANSI.clearLine
+      }
+      buffer += ANSI.cursorUp(extraLines)
+    }
+
+    buffer += ANSI.syncEnd
+    try await self.write(buffer)
+  }
+
+  private func containsImage(_ line: String) -> Bool {
+    line.contains("\u{001B}_G") || line.contains("\u{001B}]1337;File=")
+  }
+
+  /// Testing/debug helper: render synchronously instead of via requestRender().
+  public func renderNow() async throws {
+    try await write("\u{001B}[?1047h") // puts screen in alternative mode
+    try await write("\u{001B}[?25l") // hide cursor
+    try await queryCellSizeIfNeeded()
+    try await self.performRender()
+  }
+
+  private func render(width: Int) -> [String] {
+    root.render(width: width)
   }
 }
 
@@ -116,7 +346,14 @@ extension ByteBuffer {
     self.readInteger()
   }
 
-  fileprivate func getByte() -> UInt8? {
-    self.getInteger(at: self.readerIndex)
+  fileprivate func getByte(offset: Int = 0) -> UInt8? {
+    self.getInteger(at: self.readerIndex + offset)
   }
 }
+
+// extension TerminalKey {
+  // public static var cursorUp: Self { .function(1) }
+  // public static var cursorDown: Self { .function(2) }
+  // public static var cursorRight: Self { .function(3) }
+  // public static var cursorLeft: Self { .function(4) }
+// }
