@@ -8,48 +8,51 @@ final class App: AnyContainer {
       var choices = ["carrots", "celery"]
       var selected: Set<Int> = []
       var isActive = false
+      var input = ""
     }
 
     enum Action {
-      case select
+      case input(_ input: TerminalInput)
     }
 
     var body: some ReducerOf<Self> {
       Reduce { state, action in
-        .none
+        switch action {
+        case .input(.key(.enter, _)):
+          state.isActive = false
+        case .input(.key(.character(let c), _)) where state.isActive:
+          state.input.append(c)
+        case .input:
+          break
+        }
+        return .none
       }
     }
   }
 
   var children: [any Component] = []
   let store: StoreOf<Feature>
+  let text = Text(text: "Hello, world!")
+  let input = Input(value: "(empty)")
 
   init(store: StoreOf<Feature>) {
     self.store = store
-
-    let text = Text(text: "Hello, world!")
     self.addChild(text)
+    self.addChild(input)
 
     store.observe { [weak self] in
-      guard let self else { return }
+      // guard let self else { return }
 
-      if self.store.isActive {
-        text.text = "active!"
-      } else {
-        text.text = "not active"
-      }
-
-      self.invalidate()
+      // self.invalidate()
     }
   }
 
   func handle(input: TerminalInput) {
-    logger.debug("new event: \(input)")
     switch input {
-    case .key(.character("a"), _):
+    case .key(.enter, _):
       self.store.isActive.toggle()
     default:
-      break
+      self.input.handle(input: input)
     }
   }
 }

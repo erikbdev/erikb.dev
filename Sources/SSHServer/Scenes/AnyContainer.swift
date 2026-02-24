@@ -3,8 +3,6 @@ import TauTUI
 protocol AnyContainer: Component {
   var children: [Component] { get set }
 
-  // init(children: [Component]) 
-
   func addChild(_ child: Component)
   func removeChild(_ child: Component)
   func clear()

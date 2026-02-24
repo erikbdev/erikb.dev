@@ -71,7 +71,7 @@ enum ClientSession: Sendable {
                 rows: pseudoTerm.terminalRowHeight
               )
 
-              try await terminal.renderNow()
+              try await terminal.start()
 
               while let next = try await iterator.next() {
                 switch next {

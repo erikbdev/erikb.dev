@@ -214,6 +214,14 @@ actor RemoteTerminal<Root: Component>: Sendable {
 
   // MARK: - Rendering
 
+  func start() async throws {
+    // try await write("\u{001B}[?25l") // hide cursor
+    try await write("\u{001B}[?1047h") // puts screen in alternative mode
+    try await write("\u{001B}[?25l") // hide cursor
+    try await queryCellSizeIfNeeded()
+    try await self.performRender()
+  }
+
   private func performRender() async throws {
     let width = self.columns
     let height = self.rows
@@ -328,14 +336,6 @@ actor RemoteTerminal<Root: Component>: Sendable {
     line.contains("\u{001B}_G") || line.contains("\u{001B}]1337;File=")
   }
 
-  /// Testing/debug helper: render synchronously instead of via requestRender().
-  public func renderNow() async throws {
-    try await write("\u{001B}[?1047h") // puts screen in alternative mode
-    try await write("\u{001B}[?25l") // hide cursor
-    try await queryCellSizeIfNeeded()
-    try await self.performRender()
-  }
-
   private func render(width: Int) -> [String] {
     root.render(width: width)
   }
@@ -352,8 +352,8 @@ extension ByteBuffer {
 }
 
 // extension TerminalKey {
-  // public static var cursorUp: Self { .function(1) }
-  // public static var cursorDown: Self { .function(2) }
-  // public static var cursorRight: Self { .function(3) }
-  // public static var cursorLeft: Self { .function(4) }
+//   public static var cursorUp: Self { .function(1) }
+//   public static var cursorDown: Self { .function(2) }
+//   public static var cursorRight: Self { .function(3) }
+//   public static var cursorLeft: Self { .function(4) }
 // }
