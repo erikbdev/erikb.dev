@@ -1,36 +1,40 @@
 import TauTUI
 
-protocol AnyContainer: Component {
-  var children: [Component] { get set }
+/// Basic container used by the `TUI` runtime. Components are stored in-order
+/// and rendered sequentially; consumers can subclass to add layout logic.
+///
+/// TODO: add handle as open func in Container.
+class AnyContainer: Component {
+  public private(set) var children: [Component] = []
 
-  func addChild(_ child: Component)
-  func removeChild(_ child: Component)
-  func clear()
-  func invalidate()
-  func render(width: Int) -> [String]
-}
+  public init(children: [Component] = []) {
+    self.children = children
+  }
 
-extension AnyContainer {
-  func addChild(_ child: Component) {
+  open func addChild(_ child: Component) {
     self.children.append(child)
   }
 
-  func removeChild(_ child: Component) {
+  open func removeChild(_ child: Component) {
     guard let index = children.firstIndex(where: { $0 === child }) else {
       return
     }
     self.children.remove(at: index)
   }
 
-  func clear() {
+  open func clear() {
     self.children.removeAll()
   }
 
-  func invalidate() {
+  open func invalidate() {
     self.children.forEach { $0.invalidate() }
   }
 
-  func render(width: Int) -> [String] {
+  open func render(width: Int) -> [String] {
     self.children.flatMap { $0.render(width: width) }
+  }
+
+  open func handle(input: TerminalInput) {
+    // Default: ignore input.
   }
 }
