@@ -14,12 +14,15 @@ actor RemoteTerminal<Root: Component>: Sendable {
   private var columns = 0
   private var rows = 0
   private let writer: Writer
+  private var capabilites: TerminalCapabilities
+  private var environment = [String: String]()
 
   let root: Root 
 
   init(
     _ root: Root,
     writer: Writer,
+    environment: [String: String] = [:],
     columns: Int = 80,
     rows: Int = 24
   ) {
@@ -27,6 +30,8 @@ actor RemoteTerminal<Root: Component>: Sendable {
     self.writer = writer
     self.columns = columns
     self.rows = rows
+    self.environment = environment 
+    self.capabilites = TerminalImage.detectCapabilities(env: environment) 
   }
 
   /// Parser from: https://github.com/webpro/ANSI.tools/tree/main/packages/parser
@@ -41,41 +46,27 @@ actor RemoteTerminal<Root: Component>: Sendable {
 
     var bufferedInputs: [TerminalInput] = []
 
-    while let byte = pendingInputBuffer.getByte() {
+    outerLoop: while let byte = pendingInputBuffer.getByte() {
       switch (byte, pendingInputBuffer.getByte(offset: 1)) {
-      case (0x1B, 0x4F):  // ESC + (O) SS3
-        switch pendingInputBuffer.getByte(offset: 2) {
-        // case .some(let byte) where 0x41 <= byte && byte <= 0x44: // legacy arrow keys
-        // bufferedInputs.append(.key(.cursorUp))
-        case 0x46:
-          bufferedInputs.append(.key(.end))
-        case 0x47:
-          bufferedInputs.append(.key(.home))
-        case .some(let byte) where 0x50 <= byte && byte <= 0x53:
-          bufferedInputs.append(.key(.function(Int(byte - 0x50) + 1)))
-        case .some(let byte):
-          bufferedInputs.append(
-            .key(
-              .unknown(
-                sequence: String(
-                  [
-                    Character(Unicode.Scalar(0x1B)),
-                    Character(Unicode.Scalar(0x4F)),
-                    Character(Unicode.Scalar(byte)),
-                  ]
-                )
-              )
-            )
-          )
-        case .none:
-          // incomplete process the current bytes, and wait for additional input.
-          break
+      case (0x1B, 0x4F):  // ESC O - SS3
+        guard let third = pendingInputBuffer.getByte(offset: 2) else {
+          break outerLoop  // incomplete, wait for more bytes
+        }
+        switch third {
+        case 0x46: bufferedInputs.append(.key(.end))
+        case 0x48: bufferedInputs.append(.key(.home))
+        case 0x50: bufferedInputs.append(.key(.function(1)))
+        case 0x51: bufferedInputs.append(.key(.function(2)))
+        case 0x52: bufferedInputs.append(.key(.function(3)))
+        case 0x53: bufferedInputs.append(.key(.function(4)))
+        default:
+          bufferedInputs.append(.key(.unknown(sequence: "\u{1B}O\(Character(Unicode.Scalar(third)))")))
         }
         pendingInputBuffer.moveReaderIndex(forwardBy: 3)
       case (0x1B, 0x50):  // (P) DCS
         continue
       case (0x1B, 0x5B):  // [ CSI
-        var input = (TerminalKey.unknown(sequence: ""), KeyModifiers())
+        var input: (TerminalKey, KeyModifiers) = (TerminalKey.unknown(sequence: ""), KeyModifiers())
         // switch pendingInputBuffer.getByte(offset: 2) {
         // case 0x01:
         //   input.0 = .home
@@ -157,9 +148,10 @@ actor RemoteTerminal<Root: Component>: Sendable {
         // case .none:
         //   break
         // }
+        pendingInputBuffer.moveReaderIndex(forwardBy: 2)
         bufferedInputs.append(.key(input.0, modifiers: input.1))
       case (0x1B, 0x5D):  // ] OSC
-        continue
+        pendingInputBuffer.moveReaderIndex(forwardBy: 2)
       case (0x1B, 0x7F):  // ESC + DEL (Option+Backspace)
         bufferedInputs.append(.key(.backspace, modifiers: [.option]))
         pendingInputBuffer.moveReaderIndex(forwardBy: 2)
@@ -199,6 +191,18 @@ actor RemoteTerminal<Root: Component>: Sendable {
     try await writer.write(.init(type: .channel, data: .byteBuffer(ByteBuffer(string: string))))
   }
 
+  func addEnvironment(name: String, value: String) async throws {
+    self.environment[name, default: ""] = value 
+    let newCapabilities = TerminalImage.detectCapabilities(env: self.environment)
+    guard newCapabilities.images != self.capabilites.images || 
+          newCapabilities.trueColor != self.capabilites.trueColor || 
+          newCapabilities.hyperlinks != self.capabilites.hyperlinks else {
+      return
+    }
+    self.capabilites = newCapabilities
+    try await performRender()
+  }
+
   func resize(columns: Int, rows: Int) async throws {
     self.columns = columns
     self.rows = rows
@@ -206,7 +210,7 @@ actor RemoteTerminal<Root: Component>: Sendable {
   }
 
   private func queryCellSizeIfNeeded() async throws {
-    guard TerminalImage.getCapabilities().images != nil else { return }
+    guard self.capabilites.images != nil else { return }
     // Query terminal for cell size in pixels: CSI 16 t
     // Response format: CSI 6 ; height ; width t
     try await self.write("\u{001B}[16t")
@@ -215,10 +219,13 @@ actor RemoteTerminal<Root: Component>: Sendable {
   // MARK: - Rendering
 
   func start() async throws {
-    // try await write("\u{001B}[?25l") // hide cursor
-    try await write("\u{001B}[?1047h") // puts screen in alternative mode
-    try await write("\u{001B}[?25l") // hide cursor
-    try await queryCellSizeIfNeeded()
+    // clear buffer to the top of the screen
+    // try await self.write("\u{001B}[?47h") // save screen)
+    try await self.write("\u{001B}[?1049h") // switch to alternative screen
+    try await self.write("\u{001B}[2J") // erase screen)
+    try await self.write("\u{001B}[H") // move cursor to top of the scren.
+    try await self.write("\u{001B}[?25l") // hide cursor
+    try await self.queryCellSizeIfNeeded()
     try await self.performRender()
   }
 
@@ -350,10 +357,3 @@ extension ByteBuffer {
     self.getInteger(at: self.readerIndex + offset)
   }
 }
-
-// extension TerminalKey {
-//   public static var cursorUp: Self { .function(1) }
-//   public static var cursorDown: Self { .function(2) }
-//   public static var cursorRight: Self { .function(3) }
-//   public static var cursorLeft: Self { .function(4) }
-// }

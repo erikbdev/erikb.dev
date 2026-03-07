@@ -10,26 +10,26 @@ enum ClientSession: Sendable {
   typealias AsyncChannel = NIOAsyncChannel<NIOSSHHandler.SSHChannelInboundData, NIOSSHHandler.SSHChannelOutboundData>
 
   struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
-    var backing: Backing
+    var code: Code
     var caught: Swift.Error?
 
-    init(_ backing: Backing, caught error: Swift.Error? = nil) {
-      self.backing = backing
+    init(_ code: Code, caught error: Swift.Error? = nil) {
+      self.code = code
       self.caught = error
     }
 
     var description: String {
-      "\(backing.description)\(caught.map { " Error: \($0)" } ?? "")"
+      "\(String(reflecting: code))\(caught.map { " Error: \($0)" } ?? "")"
     }
 
-    var errorDescription: String { backing.description }
+    var errorDescription: String { code.localizedDescription }
 
-    enum Backing: Hashable, Sendable {
+    enum Code: Hashable, Sendable, LocalizedError {
       case missingPseudoTerminalRequest
       case connectionClosed
       case unknown
 
-      var description: String {
+      var errorDescription: String {
         switch self {
         case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
         case .connectionClosed: "The connection unexpectedly closed."
@@ -51,6 +51,8 @@ enum ClientSession: Sendable {
         defer { logger.trace("Closing connection") }
         do {
           try await withThrowingTaskGroup(of: Void.self) { group in
+            defer { group.cancelAll() }
+
             group.addTask {
               var iterator = inbound.makeAsyncIterator()
 
@@ -64,9 +66,14 @@ enum ClientSession: Sendable {
                 App(
                   store: Store(initialState: App.Feature.State()) {
                     App.Feature()
+                  } withDependencies: {
+                    $0.exitApp = TerminalAction { 
+                      channel.channel.close(promise: nil)
+                    }
                   }
                 ),
                 writer: outbound,
+                environment: ["TERM": pseudoTerm.term],
                 columns: pseudoTerm.terminalCharacterWidth,
                 rows: pseudoTerm.terminalRowHeight
               )
@@ -85,6 +92,8 @@ enum ClientSession: Sendable {
                   switch event {
                   case .windowChange(let event):
                     try await terminal.resize(columns: event.terminalCharacterWidth, rows: event.terminalRowHeight)
+                  case .environment(let environment):
+                    try await terminal.addEnvironment(name: environment.name, value: environment.value)
                   case .exitSignal:
                     try await channel.channel.close()
                   case .exitStatus:
@@ -96,16 +105,11 @@ enum ClientSession: Sendable {
               }
             }
             group.addTask {
-              try await channel.channel.closeFuture.get()
+              try await channel.channel.closeFuture.cancellableGet()
               throw Error(.connectionClosed)
             }
 
-            do {
-              try await group.next()
-            } catch {
-              group.cancelAll()
-              throw error
-            }
+            try await group.next()
           }
         } catch {
           let error = error as? Error ?? Error(.unknown, caught: error)
