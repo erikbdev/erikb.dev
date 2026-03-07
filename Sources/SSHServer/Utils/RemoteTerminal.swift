@@ -200,7 +200,8 @@ actor RemoteTerminal<Root: Component>: Sendable {
       return
     }
     self.capabilites = newCapabilities
-    try await performRender()
+    try await self.queryCellSizeIfNeeded()
+    try await self.performRender()
   }
 
   func resize(columns: Int, rows: Int) async throws {
