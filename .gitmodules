@@ -1,0 +1,3 @@
+[submodule "swift-tau-tui"]
+	path = swift-tau-tui
+	url = git@github.com:erikbdev/swift-tau-tui
