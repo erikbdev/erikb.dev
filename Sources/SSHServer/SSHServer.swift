@@ -9,10 +9,13 @@ import NIOSSH
 let logger = {
   LoggingSystem.bootstrap {
     var handler = StreamLogHandler.standardOutput(label: $0)
+    let logLevel = ProcessInfo.processInfo.environment["LOG_LEVEL"]
+      .flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+      .flatMap(Logger.Level.init(rawValue:))
     #if DEBUG
-      handler.logLevel = .trace
+      handler.logLevel = logLevel ?? .trace
     #else
-      handler.logLevel = .error
+      handler.logLevel = logLevel ?? .error
     #endif
     return handler
   }
@@ -89,7 +92,7 @@ struct SSHServer: AsyncParsableCommand {
                 }
               }
             } catch {
-              logger.debug("Connection error", metadata: ["error": "\(error)"])
+              logger.debug("Client connection error", metadata: ["error": "\(error)"])
             }
           }
         }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "32732b5b504dc8b893c7e7220139f987c1f1a558fda7557c173810125394a827",
+  "originHash" : "d040c553c752c69393d7c8b52074707304890193e50cfcdfadbc6f7a95232b12",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -339,15 +339,6 @@
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
         "revision" : "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"
-      }
-    },
-    {
-      "identity" : "tautui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/steipete/TauTUI.git",
-      "state" : {
-        "revision" : "d30c095b65885adb7dc5042a9f5012e574cdc73b",
-        "version" : "0.1.5"
       }
     },
     {

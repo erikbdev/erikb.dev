@@ -25,7 +25,10 @@ let package = Package(
 
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
     .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
-    .package(url: "https://github.com/steipete/TauTUI.git", from: "0.1.5")
+    // TODO: use git version 
+    // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
+    .package(path: "./swift-tau-tui")
+
   ],
   targets: [
     .target(
@@ -38,15 +41,8 @@ let package = Package(
       // plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
     ),
     .target(
-      name: "Models",
-      dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies")
-      ]
-    ),
-    .target(
       name: "Routes",
       dependencies: [
-        "Models",
         "ActivityClient",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
@@ -59,7 +55,6 @@ let package = Package(
     .target(
       name: "Pages",
       dependencies: [
-        "Models",
         "Routes",
         "ActivityClient",
         "PublicAssets",
@@ -80,7 +75,6 @@ let package = Package(
     .executableTarget(
       name: "Server",
       dependencies: [
-        "Models",
         "Routes",
         "Pages",
         "ActivityClient",
@@ -101,7 +95,7 @@ let package = Package(
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Logging", package: "swift-log"),
-        .product(name: "TauTUI", package: "TauTUI"),
+        .product(name: "TauTUI", package: "swift-tau-tui"),
         "TinyStore",
       ]
     ),

@@ -4,7 +4,7 @@ import Vue
 
 @Vue.Component
 public struct NotFoundPage: Page, Sendable {
-  public let title = "404 | Erik Bautista Santibanez"
+  public let title = "404 | erikb.dev"
 
   @Vue.Reactive let codeLang: CodeLang
 

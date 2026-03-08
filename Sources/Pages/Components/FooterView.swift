@@ -13,7 +13,7 @@ struct FooterView: HTML {
   var body: some HTML {
     footer {
       div {
-        p { "©\(Self.copyrightDateFormatter.string(from: Date.now)) Erik Bautista Santibanez" }
+        p { "©\(Self.copyrightDateFormatter.string(from: Date.now)) erikb.dev" }
         p {
           "Made with \u{2764} using "
           a(.target(.blank), .rel("noopener noreferrer"), .href("https://swift.org")) { "Swift" }

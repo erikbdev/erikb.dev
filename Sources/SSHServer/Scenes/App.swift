@@ -2,46 +2,41 @@ import NIOCore
 import TauTUI
 import TinyStore
 
-final class App: AnyContainer {
+final class App: Container {
   let store: StoreOf<Feature>
-  let text = Text(text: "Hello, world!")
-  let input = Input(value: "")
-  let image = Image(
-    base64Data: "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC",
-    mimeType: "image/png"
+  let title = Text(text: """
+                     ███  █████      █████            █████                        
+                    ░░░  ░░███      ░░███            ░░███                         
+  ██████  ████████  ████  ░███ █████ ░███████      ███████   ██████  █████ █████   
+ ███░░███░░███░░███░░███  ░███░░███  ░███░░███    ███░░███  ███░░███░░███ ░░███    
+░███████  ░███ ░░░  ░███  ░██████░   ░███ ░███   ░███ ░███ ░███████  ░███  ░███    
+░███░░░   ░███      ░███  ░███░░███  ░███ ░███   ░███ ░███ ░███░░░   ░░███ ███     
+░░██████  █████     █████ ████ █████ ████████  ██░░████████░░██████   ░░█████      
+ ░░░░░░  ░░░░░     ░░░░░ ░░░░ ░░░░░ ░░░░░░░░  ░░  ░░░░░░░░  ░░░░░░     ░░░░░       
+"""
   )
+  let input = Input(value: "")
 
   init(store: StoreOf<Feature>) {
     self.store = store
     super.init()
-    self.addChild(text)
+    self.addChild(title)
     self.addChild(input)
-    self.addChild(image)
   }
 
   override func render(width: Int) -> [String] {
-    if self.store.isActive {
-      text.background = .init(red: 255, green: 0, blue: 0)
-    } else {
-      text.background = nil
-    }
-    text.text = self.store.isActive ? "Active" : "Inactive"
-
-    return super.render(width: width)
+    super.render(width: width)
   }
 
   override func handle(input: TerminalInput) {
-    super.handle(input: input)
-
     switch input {
     case .key(.enter, _):
-      self.store.isActive.toggle()
+      // self.store.isActive.toggle()
+      break
     case .key(.character("c"), modifiers: .control):
       Task { [store] in await store.send(.close) }
     default:
-      if self.store.isActive {
-        self.input.handle(input: input)
-      }
+      self.input.handle(input: input)
     }
   }
 }

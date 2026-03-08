@@ -1,6 +1,5 @@
 import Dependencies
 import HTML
-import Models
 import Vue
 
 struct SectionView<Header: HTML, Content: HTML>: HTML {

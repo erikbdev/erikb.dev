@@ -1,6 +1,5 @@
 import CasePaths
 import Foundation
-import Models
 import URLRouting
 
 @CasePathable

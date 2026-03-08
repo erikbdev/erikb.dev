@@ -2,12 +2,11 @@ import ActivityClient
 import Dependencies
 import Foundation
 import HTML
-import Models
 import Vue
 
 @Vue.Component
 public struct HomePage: Page, Sendable {
-  public let title = "Portfolio | Erik Bautista Santibanez"
+  public let title = "Portfolio | erikb.dev"
 
   @Vue.Reactive let codeLang: CodeLang
 
