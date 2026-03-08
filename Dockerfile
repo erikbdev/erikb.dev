@@ -31,11 +31,19 @@ RUN swift build -c release \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
+RUN swift build -c release \
+        --product SSHServer \
+        --static-swift-stdlib \
+        -Xlinker -ljemalloc
+
 # Switch to the staging area
 WORKDIR /staging
 
-# Copy main executable to staging area
+# Copy HTTP Server executable to staging area
 RUN cp "$(swift build --package-path /build -c release --show-bin-path)/Server" ./
+
+# Copy SSH Server exutable to staging
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SSHServer" ./
 
 # Copy resources bundled by SPM to staging area
 RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
@@ -45,9 +53,9 @@ RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -
 # RUN [ -d /build/Public ] && { mv /build/Public ./Public && chmod -R a-w ./Public; } || true
 
 # ================================
-# Run image
+# Run HTTP Image
 # ================================
-FROM debian:bookworm-slim AS deploy
+FROM debian:bookworm-slim AS deploy-http
 
 # Make sure all system packages are up to date, and install only essential packages.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -80,4 +88,42 @@ EXPOSE 8080
 
 # Start the service when the image is run, default to listening on 8080 in production environment
 ENTRYPOINT ["./Server"]
+CMD ["--hostname", "0.0.0.0", "--port", "8080"]
+
+# ================================
+# Run SSH Image
+# ================================
+FROM debian:bookworm-slim AS deploy-ssh
+
+# Make sure all system packages are up to date, and install only essential packages.
+RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    && apt-get -q update \
+    && apt-get -q dist-upgrade -y \
+    && apt-get -q install -y \
+    libjemalloc2 \
+    ca-certificates \
+    tzdata \
+    libcurl4 \
+    && rm -r /var/lib/apt/lists/*
+
+# Create a deploy user and group with /server as its home directory
+RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /server deploy
+
+# Switch to the new home directory
+WORKDIR /server
+
+# Copy built executable and any staged resources from builder
+COPY --from=build --chown=deploy:deploy /staging /server
+
+# Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
+ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
+
+# Ensure all further commands run as the deploy user
+USER deploy:deploy
+
+# Let Docker bind to port 8080
+EXPOSE 8080
+
+# Start the service when the image is run, default to listening on 8080 in production environment
+ENTRYPOINT ["./SSHServer"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
