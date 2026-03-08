@@ -2,7 +2,7 @@ import NIOCore
 import TauTUI
 import TinyStore
 
-final class App: Container {
+final class App: Component {
   let store: StoreOf<Feature>
   let title = Text(text: """
                      ███  █████      █████            █████                        
