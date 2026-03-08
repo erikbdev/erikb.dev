@@ -15,13 +15,11 @@ final class App: Component {
  ░░░░░░  ░░░░░     ░░░░░ ░░░░ ░░░░░ ░░░░░░░░  ░░  ░░░░░░░░  ░░░░░░     ░░░░░       
 """
   )
-  let input = Input(value: "")
 
   init(store: StoreOf<Feature>) {
     self.store = store
     super.init()
     self.addChild(title)
-    self.addChild(input)
   }
 
   override func render(width: Int) -> [String] {
@@ -30,13 +28,10 @@ final class App: Component {
 
   override func handle(input: TerminalInput) {
     switch input {
-    case .key(.enter, _):
-      // self.store.isActive.toggle()
-      break
     case .key(.character("c"), modifiers: .control):
       Task { [store] in await store.send(.close) }
     default:
-      self.input.handle(input: input)
+      break
     }
   }
 }
