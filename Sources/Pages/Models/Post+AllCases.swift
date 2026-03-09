@@ -1,14 +1,13 @@
-import Dependencies
-import Foundation
-import PublicAssets
+// import Foundation
+// import PublicAssets
 
 extension Post: CaseIterable {
   static var allCases: [Self] {
-    @Dependency(\.publicAssets) var assetsDir
+    // @Dependency(\.publicAssets) var assetsDir
 
     return [
       Self(
-        header: .video(assetsDir.assets.posts.wledAppDemo.videoWebm),
+        // header: .video(assetsDir.assets.posts.wledAppDemo.videoWebm),
         title: "A WLED Client for iOS",
         content: """
           I built a native iOS app for [WLED](https://github.com/wled/WLED), an open-source LED controller for ESP32, to control my RGB LED strips.
@@ -43,10 +42,10 @@ extension Post: CaseIterable {
         ]
       ),
       Self(
-        header: .image(
-          assetsDir.assets.posts.animeNowReleased.anDiscoverWebp,
-          label: "Anime Now! discover image"
-        ),
+        // header: .image(
+        //   assetsDir.assets.posts.animeNowReleased.anDiscoverWebp,
+        //   label: "Anime Now! discover image"
+        // ),
         title: "Anime Now! \u{2014} An iOS and macOS App",
         content: """
 

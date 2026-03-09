@@ -1,49 +1,52 @@
-import Foundation
-import HTML
-import PublicAssets
+// import Foundation
+// import PublicAssets
 
 struct Post: Sendable {
   var header: Header?
   let title: String
-  let content: HTMLMarkdown
+  let content: String
   let date: Date
   var lastUpdated: Date?
   let kind: Kind
   var links: [Link] = []
   var hidden = false
 
-  private static let dateCreatedFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(languageCode: .english, languageRegion: .unitedStates)
-    formatter.timeZone = TimeZone(abbreviation: "PST") ?? formatter.timeZone
-    formatter.dateFormat = "MMM d, yyyy"
-    return formatter
-  }()
+  struct Date: Hashable, Comparable {
+    let month: Int
+    let day: Int
+    let year: Int
+
+    static func < (lhs: Post.Date, rhs: Post.Date) -> Bool {
+      if lhs.year < rhs.year, lhs.month < rhs.month {
+        return lhs.day < rhs.day
+      } else if lhs.year < rhs.year {
+        return lhs.month < rhs.month
+      } else {
+        return false
+      }
+    }
+  }
 
   var datePosted: String {
-    Self.dateCreatedFormatter.string(from: self.date)
+    "\(self.date.month)/\(self.date.day)/\(self.date.year)"
   }
 
   var dateUpdated: String? {
-    self.lastUpdated.flatMap(Self.dateCreatedFormatter.string(from:))
+    if let lastUpdated {
+      "\(lastUpdated.month)/\(lastUpdated.day)/\(lastUpdated.year)"
+    } else {
+      nil
+    }
   }
 
-  private static let timestampFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    formatter.dateFormat = "yyyyMMdd"
-    return formatter
-  }()
-
   var slug: String {
-    "\(Self.timestampFormatter.string(from: self.date))-\(self.title.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
+    "\(self.date.year)\(self.date.month)\(self.date.day)-\(self.title.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
   }
 
   enum Header {
     case link(String)
-    case image(GeneratedPublicAssets.ImageFile, label: String)
-    case video(GeneratedPublicAssets.VideoFile)
+    case image(String, label: String)
+    case video(String)
     case code(String, lang: CodeLang)
   }
 

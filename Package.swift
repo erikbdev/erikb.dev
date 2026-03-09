@@ -8,8 +8,8 @@ let package = Package(
     .macOS(.v14)
   ],
   products: [
-    .executable(name: "SSHServer", targets: ["SSHServer"]),
-    .executable(name: "Server", targets: ["Server"])
+    .executable(name: "SiteSSHServer", targets: ["SiteSSHServer"]),
+    .executable(name: "SiteServer", targets: ["SiteServer"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.4.0"),
@@ -18,6 +18,11 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
+
+    .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
+    .package(url: "https://github.com/elementary-swift/elementary-ui", from: "0.1.0"),
+    .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.3.0"),
+
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
@@ -25,9 +30,9 @@ let package = Package(
 
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
     .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
-    // TODO: use git version 
+    // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
-    .package(path: "./swift-tau-tui")
+    .package(path: "./swift-tau-tui"),
 
   ],
   targets: [
@@ -52,16 +57,23 @@ let package = Package(
         .product(name: "CasePaths", package: "swift-case-paths"),
       ]
     ),
+    .executableTarget(
+      name: "SiteApp",
+      dependencies: [
+        "Pages",
+        .product(name: "ElementaryUI", package: "elementary-ui"),
+      ]
+    ),
     .target(
       name: "Pages",
       dependencies: [
-        "Routes",
-        "ActivityClient",
-        "PublicAssets",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "HTML", package: "swift-web"),
-        .product(name: "Vue", package: "swift-web"),
-        .product(name: "Hummingbird", package: "hummingbird"),
+        // "Routes",
+        // "ActivityClient",
+        // "PublicAssets",
+        // .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "Elementary", package: "elementary"),
+        // .product(name: "Hummingbird", package: "hummingbird"),
+        .product(name: "ElementaryUI", package: "elementary-ui", condition: .when(platforms: [.wasi])),
       ]
     ),
     .target(
@@ -71,14 +83,15 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ]
     ),
-    /// Server
+    /// SiteServer
     .executableTarget(
-      name: "Server",
+      name: "SiteServer",
       dependencies: [
         "Routes",
-        "Pages",
+        // "Pages",
         "ActivityClient",
         "PublicAssets",
+        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
@@ -88,7 +101,7 @@ let package = Package(
     ),
     // SSH Server
     .executableTarget(
-      name: "SSHServer",
+      name: "SiteSSHServer",
       dependencies: [
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
@@ -109,7 +122,7 @@ let package = Package(
         .product(name: "Logging", package: "swift-log"),
         .product(name: "CasePaths", package: "swift-case-paths"),
       ]
-    )
+    ),
   ],
   swiftLanguageModes: [.v6]
 )
@@ -117,12 +130,13 @@ let package = Package(
 package.targets
   .filter { $0.type != .binary && $0.type != .plugin && $0.type != .system }
   .forEach {
-    $0.swiftSettings = [
-      .unsafeFlags([
-        "-Xfrontend",
-        "-warn-long-function-bodies=500",
-        "-Xfrontend",
-        "-warn-long-expression-type-checking=250",
-      ])
-    ]
+    $0.swiftSettings =
+      ($0.swiftSettings ?? []) + [
+        .unsafeFlags([
+          "-Xfrontend",
+          "-warn-long-function-bodies=500",
+          "-Xfrontend",
+          "-warn-long-expression-type-checking=250",
+        ])
+      ]
   }

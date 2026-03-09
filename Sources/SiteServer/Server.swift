@@ -3,7 +3,7 @@ import Dependencies
 import Hummingbird
 import HummingbirdRouter
 import Logging
-import Pages
+// import Pages
 import Routes
 
 private let logger = Logger(label: "portfolio-server")
@@ -43,7 +43,7 @@ struct Server: AsyncParsableCommand {
       router: router,
       configuration: ApplicationConfiguration(
         address: .hostname(self.hostname, port: self.port),
-        serverName: "portfolio"
+        serverName: "erikb.dev"
       ),
       logger: logger
     )
