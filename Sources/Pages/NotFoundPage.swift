@@ -1,32 +1,30 @@
-// import Dependencies
-// import HTML
-// import Vue
+import ElementaryUI
 
-// @Vue.Component
-// public struct NotFoundPage: Page, Sendable {
-//   public let title = "404 | erikb.dev"
+@View
+public struct NotFoundPage: Page {
+  public let title = "404 | erikb.dev"
 
-//   @Vue.Reactive let codeLang: CodeLang
+  @State var codeLang: CodeLang
 
-//   public init(codeLang: CodeLang = .markdown) {
-//     self.codeLang = codeLang
-//   }
+  public init(codeLang: CodeLang = .markdown) {
+    self.codeLang = codeLang
+  }
 
-//   public var body: some HTML {
-//     div {
-//       HeaderView(selected: $codeLang)
-//       Spacer()
-//       main {
+  public var body: some View {
+    div {
+      HeaderView(selected: $codeLang)
+      Spacer()
+      main {
 //         InnerView(codeLang: $codeLang)
-//       }
-//       Spacer()
-//       FooterView()
-//     }
+      }
+      Spacer()
+      FooterView()
+    }
 //     .inlineStyle("display", "flex")
 //     .inlineStyle("flex-direction", "column")
 //     .inlineStyle("height", "100%")
-//   }
-// }
+  }
+}
 
 // private struct InnerView: HTML {
 //   let codeLang: Expression<CodeLang>

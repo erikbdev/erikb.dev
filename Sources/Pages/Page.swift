@@ -1,5 +1,5 @@
-// import HTML
+import ElementaryUI
 
-// public protocol Page: AsyncHTML, Sendable {
-//   var title: String { get }
-// }
+public protocol Page: View {
+  var title: String { get }
+}

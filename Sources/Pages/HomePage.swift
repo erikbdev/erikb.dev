@@ -1,39 +1,31 @@
-// import ActivityClient
-// import Dependencies
-// // import HTML
-// // import Vue
-// import Elementary
-// import Foundation
+import ElementaryUI
 
-// #if hasFeature(Embbedded)
-//   import ElementaryUI
-// #endif
+@View
+public struct HomePage {
+  public let title = "Portfolio | erikb.dev"
 
-// @Vue.Component
-// public struct HomePage: Page, Sendable {
-//   public let title = "Portfolio | erikb.dev"
+  @State var codeLang: CodeLang
+  // @Environment(#Key(\.test)) var test
 
-//   @Vue.Reactive let codeLang: CodeLang
+  public init(codeLang: CodeLang) {
+    self.codeLang = codeLang
+  }
 
-//   public init(codeLang: CodeLang) {
-//     self.codeLang = codeLang
-//   }
-
-//   public var body: some HTML {
-//     div {
-//       HeaderView(selected: $codeLang)
-//       main {
-//         Spacer()
-//         UserView(selected: $codeLang)
-//         Spacer()
-//         PostsView(selected: $codeLang)
-//         Spacer()
-//       }
-//       FooterView()
-//     }
-//     .inlineStyle("overflow-x", "hidden")
-//   }
-// }
+  public var body: some View {
+    div {
+      HeaderView(selected: $codeLang)
+      main {
+        Spacer()
+        // UserView(selected: $codeLang)
+        Spacer()
+        // PostsView(selected: $codeLang)
+        Spacer()
+      }
+      FooterView()
+    }
+    // .inlineStyle("overflow-x", "hidden")
+  }
+}
 
 // private struct UserView: HTML {
 //   @Dependency(\.activityClient) private var activityClient
@@ -474,7 +466,7 @@
 //   }
 // }
 
-// extension AsyncHTML {
+// extension HTML {
 //   fileprivate func postCodeBlockStyling() -> HTMLInlineStyle<Self> {
 //     self.inlineStyle("padding", "0.75rem", post: " pre")
 //       .inlineStyle("background", "#242424", post: " pre")

@@ -1,3 +1,4 @@
+import ElementaryUI
 // import ConcurrencyExtras
 // import Dependencies
 // @_spi(Render) import HTML
@@ -6,63 +7,65 @@
 // import Routes
 // import Vue
 
-// public struct PageLayout<Content: Page & Sendable>: HTMLDocument, Sendable {
+@View
+public struct PageLayout<Content: Page> {
 //   @Dependency(\.publicAssets) private var assets
 //   @Dependency(\.currentRoute) private var currentRoute
 //   @Dependency(\.siteRouter) private var siteRouter
 
-//   let metadata: Metadata
-//   let page: Content
+  let metadata: Metadata
+  let page: Content
 
-//   public init(
-//     metadata: Metadata,
-//     @HTMLBuilder content: () -> Content
-//   ) {
-//     self.metadata = metadata
-//     self.page = content()
-//   }
+  public init(
+    metadata: Metadata,
+    @HTMLBuilder content: () -> Content
+  ) {
+    self.metadata = metadata
+    self.page = content()
+  }
 
-//   public var head: some AsyncHTML & Sendable {
-//     tag("title") { page.title }
-//     meta(.charset(.utf8))
-//     meta(.name("viewport"), .content("width=device-width, initial-scale=1.0, viewport-fit=cover"))
-//     meta(.name("robots"), .content("index, follow"))
+
+  @HTMLBuilder public var head: some View {
+    title { page.title }
+    meta(.charset(.utf8))
+    meta(.name("viewport"), .content("width=device-width, initial-scale=1.0, viewport-fit=cover"))
+    meta(.name("robots"), .content("index, follow"))
 //     BaseStyles()
 //     FavIcons()
 
-//     if let title = metadata.title {
-//       meta(.name(title))
-//       meta(.property("og:title"), .content(title))
-//       meta(.property("twitter:title"), .content(title))
-//     }
+    if let title = metadata.title {
+      // meta(.name(title))
+      meta(.property("og:title"), .content(title))
+      meta(.property("twitter:title"), .content(title))
+    }
 
-//     if let description = metadata.description {
-//       meta(.property("description"), .content(description))
-//       meta(.property("og:description"), .content(metadata.description))
-//       meta(.property("twitter:description"), .content(metadata.description))
-//     }
+    if let description = metadata.description {
+      meta(.property("description"), .content(description))
+      meta(.property("og:description"), .content(description))
+      meta(.property("twitter:description"), .content(description))
+    }
 
-//     if let image = metadata.image {
-//       meta(.property("og:image"), .content(image))
-//       meta(.property("twitter:image"), .content(image))
-//     }
+    if let image = metadata.image {
+      meta(.property("og:image"), .content(image))
+      meta(.property("twitter:image"), .content(image))
+    }
 
-//     if let twitterCard = metadata.twitterCard {
-//       meta(.property("twitter:card"), .content(twitterCard))
-//     }
+    if let twitterCard = metadata.twitterCard {
+      meta(.property("twitter:card"), .content(twitterCard))
+    }
 
-//     if let twitterSite = metadata.twitterSite {
-//       meta(.property("twitter:site"), .content(twitterSite))
-//     }
+    if let twitterSite = metadata.twitterSite {
+      meta(.property("twitter:site"), .content(twitterSite))
+    }
 
-//     if let url = metadata.url {
-//       meta(.property("og:url"), .content(url))
-//       meta(.property("twitter:url"), .content(url))
-//     }
+    if let url = metadata.url {
+      meta(.property("og:url"), .content(url))
+      meta(.property("twitter:url"), .content(url))
+    }
 
-//     meta(.property("og:type"), .content("website"))
+    meta(.property("og:type"), .content("website"))
 
-//     /// Xcode Styling
+    /// Xcode Styling
 //     style {
 //       ".xml .hljs-meta{color:#6C7986}.hljs-comment,.hljs-quote{color:#6C7986}.hljs-tag,.hljs-attribute,.hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-name{color:#FC5FA3}.hljs-template-variable{color:#FC5FA3}.hljs-code,.hljs-string,.hljs-meta-string{color:#FC6A5D}.hljs-regexp,.hljs-link{color:#5482FF}.hljs-title,.hljs-symbol,.hljs-bullet,.hljs-number{color:#41A1C0}.hljs-section,.hljs-meta{color:#FC5FA3}.hljs-class .hljs-title,.hljs-type,.hljs-built_in,.hljs-builtin-name,.hljs-params{color:#D0A8FF}.hljs-attr{color:#BF8555}.hljs-subst{color:#FFF}.hljs-formula{font-style:italic}.hljs-selector-id,.hljs-selector-class{color:#9b703f}.hljs-doctag,.hljs-strong{font-weight:bold}.hljs-emphasis{font-style:italic}"
 //     }
@@ -82,17 +85,17 @@
 //       .attribute(.src("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"))
 //       .attribute(.defer)
 //     script(.type(.module)) { "hljs.highlightAll();" }
-//   }
+  }
 
-//   public var body: some AsyncHTML & Sendable {
-//     page
-//     script(.type(.module), .defer) {
-//       """
-//       import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
-//       createApp().mount();
-//       """
-//     }
-//   }
+  public var body: some View {
+    page
+    script(.type(.module), .defer) {
+      """
+      import { createApp } from "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js";
+      createApp().mount();
+      """
+    }
+  }
 
 //   public static func _render<Output>(_ html: consuming Self, into output: inout Output) async throws where Output: AsyncHTMLOutputStream {
 //     let base = Base(document: html)
@@ -113,30 +116,30 @@
 //   }
 // }
 
-// public struct Metadata: Hashable, Sendable {
-//   public let title: String?
-//   public let description: String?
-//   public let image: String?
-//   public let url: String?
-//   public let twitterSite: String?
-//   public let twitterCard: String?
+public struct Metadata: Hashable, Sendable {
+  public let title: String?
+  public let description: String?
+  public let image: String?
+  public let url: String?
+  public let twitterSite: String?
+  public let twitterCard: String?
 
-//   public init(
-//     title: String? = nil,
-//     description: String? = nil,
-//     image: String? = nil,
-//     url: String? = nil,
-//     twitterSite: String? = nil,
-//     twitterCard: String? = nil
-//   ) {
-//     self.title = title
-//     self.description = description
-//     self.image = image
-//     self.url = url
-//     self.twitterSite = twitterSite
-//     self.twitterCard = twitterCard
-//   }
-// }
+  public init(
+    title: String? = nil,
+    description: String? = nil,
+    image: String? = nil,
+    url: String? = nil,
+    twitterSite: String? = nil,
+    twitterCard: String? = nil
+  ) {
+    self.title = title
+    self.description = description
+    self.image = image
+    self.url = url
+    self.twitterSite = twitterSite
+    self.twitterCard = twitterCard
+  }
+}
 
 // private struct BaseStyles: HTML {
 //   var body: some HTML {
@@ -206,7 +209,7 @@
 //       """
 //     }
 //   }
-// }
+}
 
 // private struct FavIcons: HTML {
 //   @Dependency(\.publicAssets) private var assets
