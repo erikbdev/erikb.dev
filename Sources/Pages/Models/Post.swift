@@ -1,6 +1,3 @@
-// import Foundation
-// import PublicAssets
-
 struct Post: Sendable {
   var header: Header?
   let title: String

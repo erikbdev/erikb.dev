@@ -1,11 +1,10 @@
 import ElementaryUI
 
 @View
-public struct HomePage {
+public struct HomePage: Page {
   public let title = "Portfolio | erikb.dev"
 
   @State var codeLang: CodeLang
-  // @Environment(#Key(\.test)) var test
 
   public init(codeLang: CodeLang) {
     self.codeLang = codeLang
@@ -27,10 +26,10 @@ public struct HomePage {
   }
 }
 
-// private struct UserView: HTML {
+private struct UserView: HTML {
 //   @Dependency(\.activityClient) private var activityClient
 
-//   let selected: Vue.Expression<CodeLang>
+  @Binding var selected: CodeLang
 
 //   var location: ActivityClient.Location? {
 //     self.activityClient.location()
@@ -239,14 +238,15 @@ public struct HomePage {
 //       }
 //     }
 //   }
-// }
+}
 
-// private struct PostsView: HTML {
-//   let selected: Vue.Expression<CodeLang>
+@View
+private struct PostsView {
+  @Binding var selected: CodeLang
 
-//   static let description = "A curated list of projects I've worked on."
+  static let description = "A curated list of projects I've worked on."
 
-//   var body: some HTML {
+  var body: some View {
 //     SectionView(id: "dev-logs", selected: selected) { lang in
 //       switch lang {
 //       case .swift:
@@ -284,7 +284,7 @@ public struct HomePage {
 //         PostView(number: num, post: post, selected: selected)
 //       }
 //     }
-//   }
+  }
 
 //   struct PostView: HTML {
 //     let number: Int
@@ -373,7 +373,7 @@ public struct HomePage {
 //       .inlineStyle("background-repeat", "repeat-x")
 //       .inlineStyle("background-size", "100% 1px")
 //     }
-//   }
+  }
 
 //   struct PostHeaderView: HTML {
 //     let postHeader: Post.Header

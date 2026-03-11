@@ -1,5 +1,5 @@
 import ElementaryUI
 
-public protocol Page: View {
+public protocol Page: HTML {
   var title: String { get }
 }

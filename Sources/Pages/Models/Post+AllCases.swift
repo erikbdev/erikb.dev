@@ -1,11 +1,6 @@
-// import Foundation
-// import PublicAssets
-
 extension Post: CaseIterable {
   static var allCases: [Self] {
-    // @Dependency(\.publicAssets) var assetsDir
-
-    return [
+    [
       Self(
         // header: .video(assetsDir.assets.posts.wledAppDemo.videoWebm),
         title: "A WLED Client for iOS",

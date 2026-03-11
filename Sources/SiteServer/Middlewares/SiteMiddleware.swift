@@ -1,10 +1,12 @@
 import ActivityClient
 import Dependencies
+import Elementary
 import Hummingbird
+import HummingbirdElementary
 import HummingbirdRouter
 import HummingbirdURLRouting
 import MiddlewareUtils
-// import Pages
+import Pages
 import PublicAssets
 import Routes
 
@@ -35,7 +37,11 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
       } operation: {
         switch route {
         case .home:
-          return Response(status: .notFound)
+          return HTMLResponse {
+            PageLayout(metadata: .default()) {
+              HomePage(codeLang: .resolve(req))
+            }
+          }
         case .api(.activity(.all)):
           do {
             return try ActivityClient.Activity.encoder.encode(self.activityClient.redactedActivity(), from: req, context: ctx)
@@ -75,33 +81,34 @@ private struct NotFoundMiddleware<Context: RequestContext>: RouterMiddleware {
         throw error
       }
 
-      return Response(status: .notFound)
-      // return PageLayout(metadata: .default()) {
-      //   NotFoundPage(codeLang: .resolve(input))
-      // }
-      // .response(from: input, context: context, status: .notFound)
+      return try HTMLResponse {
+        PageLayout(metadata: .default()) {
+          NotFoundPage(codeLang: .resolve(input))
+        }
+      }
+      .response(from: input, context: context)
     }
   }
 }
 
-// extension Metadata {
-//   fileprivate static func `default`() -> Metadata {
-//     @Dependency(\.publicAssets) var assets
+extension PageMetadata {
+  fileprivate static func `default`() -> Self {
+    @Dependency(\.publicAssets) var assets
 
-//     return Metadata(
-//       title: "Erik Bautista Santibanez",
-//       description: "A software developer specialized in mobile and web applications.",
-//       image: assets.assets.og.cardPng.url.assetString,
-//       url: "https://erikb.dev"
-//     )
-//   }
-// }
+    return Self(
+      title: "Erik Bautista Santibanez",
+      description: "A software developer specialized in mobile and web applications.",
+      image: assets.assets.og.cardPng.url.assetString,
+      url: "https://erikb.dev"
+    )
+  }
+}
 
-// extension CodeLang {
-//   fileprivate static func resolve(_ req: Request) -> CodeLang {
-//     req.uri.queryParameters["codeLang"]
-//       .flatMap {
-//         CodeLang(rawValue: $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
-//       } ?? .markdown
-//   }
-// }
+extension CodeLang {
+  fileprivate static func resolve(_ req: Request) -> CodeLang {
+    req.uri.queryParameters["codeLang"]
+      .flatMap {
+        CodeLang(rawValue: $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
+      } ?? .markdown
+  }
+}

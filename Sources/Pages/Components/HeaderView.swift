@@ -41,9 +41,9 @@ private struct CodeSelector {
         code { "</>" }
       }
       .attributes(.custom(name: "aria-pressed", value: visible ? "true" : "false"))
-      .onClick {
-        visible.toggle()
-      }
+      // .onClick {
+      //   visible.toggle()
+      // }
       //       .inlineStyle("font-weight", "bold")
       //       .inlineStyle("font-size", "0.8em")
       //       .inlineStyle("background", "unset")

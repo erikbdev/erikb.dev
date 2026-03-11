@@ -1,5 +1,5 @@
 {
-  "originHash" : "b0c91292af4c77d2970afec97c625abeb9f4670e06109d2523ad17fbae066b21",
+  "originHash" : "4eb792bbb0353cfb8675ea97056af7882d0a1316257efc82ec8207cc3fdb27bf",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -33,7 +33,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/erikbdev/elementary-ui",
       "state" : {
-        "revision" : "9703e79dac2b7fbc5aaf23a2ca1649334e0b28e8"
+        "revision" : "b3e3115e756cdb021acd5d117a47104730808a3d"
       }
     },
     {
