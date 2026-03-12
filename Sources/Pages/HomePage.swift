@@ -394,7 +394,6 @@ private struct PostsView {
         case let .code(rawCode, lang):
           pre {
             code(.class("hljs language-\(lang.rawValue)")) {
-              HTMLRaw(rawCode)
               // HTMLRaw(rawCode)
             }
           }
