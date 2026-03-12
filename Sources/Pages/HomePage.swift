@@ -15,9 +15,9 @@ public struct HomePage: Page {
       HeaderView(selected: $codeLang)
       main {
         Spacer()
-        // UserView(selected: $codeLang)
+        UserView(selected: codeLang)
         Spacer()
-        // PostsView(selected: $codeLang)
+        PostsView(selected: codeLang)
         Spacer()
       }
       FooterView()
@@ -26,10 +26,11 @@ public struct HomePage: Page {
   }
 }
 
-private struct UserView: HTML {
+@View
+private struct UserView {
 //   @Dependency(\.activityClient) private var activityClient
 
-  @Binding var selected: CodeLang
+  var selected: CodeLang
 
 //   var location: ActivityClient.Location? {
 //     self.activityClient.location()
@@ -66,70 +67,60 @@ private struct UserView: HTML {
 //     return nowPlayingText
 //   }
 
-//   static let aboutDescription = """
-//     A passionate software developer who builds applications using Swift and modern web technologies.
-//     """
+  static let aboutDescription = """
+    A software developer who builds applications using Swift and modern web technologies.
+    """
 
-//   @HTMLBuilder
-//   var body: some HTML {
-//     SectionView(id: "user", selected: selected) { lang in
-//       switch lang {
-//       case .swift:
-//         """
-//         let user = User(
-//           name: "Erik Bautista Santibanez",
-//           role: [.mobile, .web],
-//           home: "\(residency ?? .default)"\
-//         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
-//         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
-//         )
+  var body: some View {
+    SectionView(id: "user", selected: selected) { lang in
+      switch lang {
+      case .swift:
+        """
+        let user = User(
+          name: "Erik Bautista Santibanez",
+          role: [.mobile, .web]
+        )
 
-//         > print(user.about())
-//         // \(Self.aboutDescription)
-//         """
-//       case .typescript:
-//         """
-//         const user: User = {
-//           name: "Erik Bautista Santibanez",
-//           role: [Role.Mobile, Role.Web],
-//           home: "\(residency ?? .default)"\
-//         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
-//         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
-//         };
+        > print(user.about())
+        // \(Self.aboutDescription)
+        """
+      case .typescript:
+        """
+        const user: User = {
+          name: "Erik Bautista Santibanez",
+          role: [Role.Mobile, Role.Web]
+        };
 
-//         > console.log(user.about());
-//         // \(Self.aboutDescription)
-//         """
-//       case .rust:
-//         """
-//         let user = User {
-//           name: "Erik Bautista Santibanez",
-//           role: [Role::Mobile, Role::Web],
-//           home: "\(residency ?? .default)"\
-//         \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
-//         \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
-//         };
+        > console.log(user.about());
+        // \(Self.aboutDescription)
+        """
+      case .rust:
+        """
+        let user = User {
+          name: "Erik Bautista Santibanez",
+          role: [Role::Mobile, Role::Web]
+        };
 
-//         > println!("{}", user.about());
-//         // \(Self.aboutDescription)
-//         """
-//       case .markdown:
-//         h1(.aria.label("name")) {
-//           span { "#" }
+        > println!("{}", user.about());
+        // \(Self.aboutDescription)
+        """
+      case .markdown:
+        h1(.aria("label", value: "name")) {
+          span { "#" }
 //             .inlineStyle("color", "#808080")
 //             .inlineStyle("font-weight", "700")
-//           " "
-//           "Erik Bautista Santibanez"
-//         }
+          " "
+          "Erik Bautista Santibanez"
+        }
 //         .inlineStyle("margin-bottom", "0.25rem")
 
-//         HTMLGroup {
-//           p(.aria.label("occupation")) { "Mobile & Web Developer" }
+        div {
+          p(.aria("label", value: "occupation")) { "Mobile & Web Developer" }
 
-//           p(.aria.label("residency")) {
+          p(.aria("label", value: "residency")) {
 //             MapPinIcon()
 //             "\(residency ?? .default)"
-//           }
+          }
 
 //           if let currentLocation {
 //             p(.aria.label("current location")) {
@@ -166,170 +157,164 @@ private struct UserView: HTML {
 //             }
 //           }
 
-//           p(.aria.label("about me")) {
-//             Self.aboutDescription
-//           }
+          p(.aria("label", value: "about me")) {
+            Self.aboutDescription
+          }
 //           .inlineStyle("margin-top", "0.75rem")
-//         }
+        }
 //         .inlineStyle("color", "#d8d8d8")
-//       }
-//     } content: {
-//       div {
-//         div {
-//           a(.href("mailto:me@erikb.dev")) {
-//             ConditionalCodeLabel(
-//               label: "email",
-//               value: "me@erikb.dev",
-//               selected: selected
-//             )
-//           }
-//           .primaryButtonStyle()
+      }
+    } content: {
+      div {
+        div {
+          a(.href("mailto:me@erikb.dev")) {
+            UserPropertyButton(
+              label: "email",
+              value: "me@erikb.dev",
+              codeLang: selected
+            )
+          }
+          // .primaryButtonStyle()
 
-//           a(
-//             .href("https://github.com/erikbdev"),
-//             .target(.blank),
-//             .rel("noopener noreferrer")
-//           ) {
-//             ConditionalCodeLabel(
-//               label: "github",
-//               value: "/erikbdev",
-//               selected: selected
-//             )
-//           }
-//           .secondaryButtonStyle()
+          a(
+            .href("https://github.com/erikbdev"),
+            .target(.blank),
+            .rel("noopener noreferrer")
+          ) {
+            UserPropertyButton(
+              label: "github",
+              value: "/erikbdev",
+              codeLang: selected
+            )
+          }
+          // .secondaryButtonStyle()
 
-//           a(
-//             .href("https://www.linkedin.com/in/erikbautista"),
-//             .target(.blank),
-//             .rel("noopener noreferrer")
-//           ) {
-//             ConditionalCodeLabel(
-//               label: "linkedin",
-//               value: "/erikbautista",
-//               selected: selected
-//             )
-//           }
+          a(
+            .href("https://www.linkedin.com/in/erikbautista"),
+            .target(.blank),
+            .rel("noopener noreferrer")
+          ) {
+            UserPropertyButton(
+              label: "linkedin",
+              value: "/erikbautista",
+              codeLang: selected
+            )
+          }
 //           .secondaryButtonStyle()
-//         }
+        }
 //         .inlineStyle("display", "flex")
 //         .inlineStyle("flex-direction", "row")
 //         .inlineStyle("flex-wrap", "wrap")
 //         .inlineStyle("gap", "0.625rem")
-//       }
+      }
 //       .inlineStyle("margin-top", "-1rem")
 //       .inlineStyle("padding", "0 1.5rem 1.5rem")
-//     }
-//   }
+    }
+  }
 
-//   struct ConditionalCodeLabel: HTML {
-//     let label: String
-//     let value: String
-//     let selected: Vue.Expression<CodeLang>
+  @View
+  struct UserPropertyButton {
+    let label: String
+    let value: String
+    let codeLang: CodeLang
 
-//     var body: some HTML {
-//       CodeLang.conditionalCases(initial: selected) { lang in
-//         code {
-//           if lang == .markdown {
-//             "[\(label)](\(value))"
-//           } else {
-//             "user.\(label)()\(lang.hasSemiColon ? ";" : "")"
-//           }
-//         }
-//       }
-//     }
-//   }
+    var body: some HTML {
+      if codeLang == .markdown {
+        "[\(label)](\(value))"
+      } else {
+        "user.\(label)()\(codeLang.hasSemiColon ? ";" : "")"
+      }
+    }
+  }
 }
 
 @View
 private struct PostsView {
-  @Binding var selected: CodeLang
+  let selected: CodeLang
 
   static let description = "A curated list of projects I've worked on."
 
   var body: some View {
-//     SectionView(id: "dev-logs", selected: selected) { lang in
-//       switch lang {
-//       case .swift:
-//         """
-//         // \(Self.description)
-//         let logs: [DevLog] = await fetch(.all)
-//         """
-//       case .typescript:
-//         """
-//         // \(Self.description)
-//         const logs = await fetch(Filter.All);
-//         """
-//       case .rust:
-//         """
-//         // \(Self.description)
-//         let logs = fetch(Filter::All).await;
-//         """
-//       case .markdown:
-//         h1 {
-//           span { "#" }
-//             .inlineStyle("color", "#808080")
-//             .inlineStyle("font-weight", "700")
-//           " "
-//           "Dev Logs"
-//         }
-//         .inlineStyle("margin-bottom", "0.25rem")
+    SectionView(id: "dev-logs", selected: selected) { lang in
+      switch lang {
+      case .swift:
+        """
+        // \(Self.description)
+        let logs: [DevLog] = await fetch(.all)
+        """
+      case .typescript:
+        """
+        // \(Self.description)
+        const logs = await fetch(Filter.All);
+        """
+      case .rust:
+        """
+        // \(Self.description)
+        let logs = fetch(Filter::All).await;
+        """
+      case .markdown:
+        h1 {
+          span { "#" }
+            // .inlineStyle("color", "#808080")
+            // .inlineStyle("font-weight", "700")
+          " "
+          "Dev Logs"
+        }
+        // .inlineStyle("margin-bottom", "0.25rem")
 
-//         HTMLGroup {
-//           p { Self.description }
-//         }
+          p { Self.description }
 //         .inlineStyle("color", "#d8d8d8")
-//       }
-//     } content: {
-//       for (num, post) in Post.allCases.enumerated().reversed() {
-//         PostView(number: num, post: post, selected: selected)
-//       }
-//     }
+      }
+    } content: {
+      for (num, post) in Post.allCases.enumerated().reversed() {
+        PostView(number: num, post: post, selected: selected)
+      }
+    }
   }
 
-//   struct PostView: HTML {
-//     let number: Int
-//     let post: Post
-//     let selected: Vue.Expression<CodeLang>
+  @View
+  struct PostView {
+    let number: Int
+    let post: Post
+    let selected: CodeLang
 
-//     var body: some HTML {
-//       article(.id(self.post.slug)) {
-//         header {
-//           hgroup {
-//             span { self.post.datePosted.uppercased() }
+    var body: some View {
+      article(.id(self.post.slug)) {
+        header {
+          hgroup {
+            span { self.post.datePosted.uppercased() }
 //               .inlineStyle("flex-grow", "1")
 //               .inlineStyle("color", "#9A9A9A")
 //               .inlineStyle("font-size", "0.75em")
 //               .inlineStyle("font-weight", "600")
 
-//             pre {
-//               a(.href("#\(self.post.slug)")) {
-//                 CodeLang.conditionalCases(initial: selected) { lang in
-//                   code(.class("hljs \("language-\(lang.rawValue)")")) {
-//                     switch lang {
-//                     case .markdown: "log-\(self.number).md"
-//                     default: "logs[\(self.number)]"
-//                     }
-//                   }
-//                 }
-//               }
+            pre {
+              a(.href("#\(self.post.slug)")) {
+                code(.class("hljs \("language-\(selected.rawValue)")")) {
+                  switch selected {
+                  case .markdown: "log-\(self.number).md"
+                  default: "logs[\(self.number)]"
+                  }
+                }
+              }
 //               .inlineStyle("font-size", "0.75em")
 //               .inlineStyle("color", "#777")
 //               .inlineStyle("font-weight", "500")
-//             }
-//           }
+            }
+          }
 //           .inlineStyle("display", "flex")
 //           .inlineStyle("align-items", "baseline")
 
-//           if let postHeader = post.header {
-//             PostHeaderView(postHeader: postHeader)
-//           }
-//         }
-//         h3 { self.post.title }
+          if let postHeader = post.header {
+            PostHeaderView(postHeader: postHeader)
+          }
+        }
+        h3 { self.post.title }
 //           .inlineStyle("margin-top", "0.5rem")
 
-//         section {
-//           self.post.content
-//         }
+        section {
+          self.post.content
+        }
 //         .postCodeBlockStyling()
 //         .inlineStyle("margin", "revert", post: " *")
 //         .inlineStyle("display", "block", post: " blockquote")
@@ -339,30 +324,30 @@ private struct PostsView {
 //         .inlineStyle("margin-left", "0", post: " blockquote")
 //         .inlineStyle("margin-right", "0", post: " blockquote")
 
-//         footer {
-//           if !self.post.links.isEmpty {
-//             section {
-//               for link in self.post.links {
-//                 PostLinkView(link: link)
-//               }
-//             }
+        footer {
+          if !self.post.links.isEmpty {
+            section {
+              for link in self.post.links {
+                // PostLinkView(link: link)
+              }
+            }
 //             .inlineStyle("display", "flex")
 //             .inlineStyle("gap", "0.75rem")
 //             .inlineStyle("margin-top", "1.5rem")
-//           }
+          }
 
-//           if let dateUpdated = self.post.dateUpdated {
-//             p {
-//               em {
+          if let dateUpdated = self.post.dateUpdated {
+            p {
+              em {
 //                 "Last updated: \(dateUpdated)"
-//               }
-//             }
+              }
+            }
 //             .inlineStyle("color", "#7A7A7A")
 //             .inlineStyle("font-size", "0.73em")
 //             .inlineStyle("margin-top", "0.75rem")
-//           }
-//         }
-//       }
+          }
+        }
+      }
 //       .inlineStyle("width", "100%")
 //       .inlineStyle("display", "inline-block")
 //       .inlineStyle("padding", "1.5rem")
@@ -372,66 +357,70 @@ private struct PostsView {
 //       )
 //       .inlineStyle("background-repeat", "repeat-x")
 //       .inlineStyle("background-size", "100% 1px")
-//     }
+    }
   }
 
-//   struct PostHeaderView: HTML {
-//     let postHeader: Post.Header
+  @View
+  struct PostHeaderView {
+    let postHeader: Post.Header
 
-//     var body: some HTML {
-//       section {
-//         switch self.postHeader {
-//         case let .link(link):
-//           a(
-//             .href(link),
-//             .target(.blank),
-//             .rel("noopener noreferrer")
-//           ) {
-//             figure {
-//               // TODO: add OpenGraph link
-//             }
-//           }
-//         case let .image(asset, label):
-//           img(.src(asset.url.assetString), .custom(name: "alt", value: label), .aria.label(label))
-//         case let .video(asset):
-//           video(
-//             .custom(name: "autoplay", value: ""),
-//             .custom(name: "playsinline", value: ""),
-//             .custom(name: "muted", value: ""),
-//             .custom(name: "controls", value: ""),
-//             .custom(name: "loop", value: "")
-//           ) {
-//             source(.src(asset.url.assetString), .custom(name: "type", value: asset.mime))
-//             "Your browser does not support playing this video"
-//           }
-//         case let .code(rawCode, lang):
-//           pre {
-//             code(.class("hljs language-\(lang.rawValue)")) {
-//               HTMLRaw(rawCode)
-//             }
-//           }
-//         }
-//       }
+    var body: some View {
+      section {
+        switch self.postHeader {
+        case let .link(link):
+          a(
+            .href(link),
+            .target(.blank),
+            .rel("noopener noreferrer")
+          ) {
+            figure {
+              // TODO: add OpenGraph link
+            }
+          }
+        case let .image(asset, label):
+          img(.src(asset), .aria("alt", value: label), .aria("label", value: label))
+        case let .video(asset):
+          video(
+            .custom(name: "autoplay", value: ""),
+            .custom(name: "playsinline", value: ""),
+            .custom(name: "muted", value: ""),
+            .custom(name: "controls", value: ""),
+            .custom(name: "loop", value: "")
+          ) {
+            source(.src(asset), .custom(name: "type", value: ""))
+            // source(.src(asset.url.assetString), .custom(name: "type", value: asset.mime))
+            "Your browser does not support playing this video"
+          }
+        case let .code(rawCode, lang):
+          pre {
+            code(.class("hljs language-\(lang.rawValue)")) {
+              HTMLRaw(rawCode)
+              // HTMLRaw(rawCode)
+            }
+          }
+        }
+      }
 //       .inlineStyle("width", "100%", post: " > *")
 //       .inlineStyle("margin-top", "1.25rem", post: " > *")
 //       .inlineStyle("margin-bottom", "1.25rem", post: " > *")
 //       .inlineStyle("border", "1.5px solid #3A3A3A", post: " > *")
 //       .postCodeBlockStyling()
-//     }
-//   }
+    }
+  }
 
-//   struct PostLinkView: HTML {
-//     let link: Post.Link
+  @View
+  struct PostLinkView {
+    let link: Post.Link
 
-//     @HTMLBuilder var body: some HTML {
-//       a(
-//         .href(self.link.href),
-//         .target(.blank),
-//         .rel("noopener noreferrer")
-//       ) {
-//         HTMLText(self.link.title)
-//         " "
-//         if self.link.isExternal {
+    var body: some View {
+      a(
+        .href(self.link.href),
+        .target(.blank),
+        .rel("noopener noreferrer")
+      ) {
+        HTMLText(self.link.title)
+        " "
+        if self.link.isExternal {
 //           svg(
 //             .xmlns(),
 //             .fill("currentColor"),
@@ -445,7 +434,7 @@ private struct PostsView {
 //             )
 //           }
 //           .svgIconStyling()
-//         } else {
+        } else {
 //           svg(
 //             .xmlns(),
 //             .fill("currentColor"),
@@ -457,14 +446,14 @@ private struct PostsView {
 //                 "M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"
 //               )
 //             )
-//           }
+          }
 //           .svgIconStyling()
-//         }
+        }
 //       }
 //       .buttonStyle(isPrimary: self.link.role == .primary)
-//     }
-//   }
-// }
+    }
+  }
+}
 
 // extension HTML {
 //   fileprivate func postCodeBlockStyling() -> HTMLInlineStyle<Self> {

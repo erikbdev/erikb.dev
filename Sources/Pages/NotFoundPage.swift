@@ -23,7 +23,7 @@ public struct NotFoundPage: Page {
               pre {
                 a(.href("/not-found")) {
                   code {
-                    // CodeLang.slugToFileName("not-found", lang: lang)
+                    CodeLang.slugToFileName("not-found", lang: codeLang)
                   }
                 }
                 // .inlineStyle("color", "#777")

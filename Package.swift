@@ -20,7 +20,8 @@ let package = Package(
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
 
     .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
-    .package(url: "https://github.com/erikbdev/elementary-ui", revision: "b3e3115e756cdb021acd5d117a47104730808a3d"),
+    .package(path: "./elementary-ui"),
+    // .package(url: "https://github.com/erikbdev/elementary-ui", revision: "b3e3115e756cdb021acd5d117a47104730808a3d"),
     .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.3.0"),
 
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),

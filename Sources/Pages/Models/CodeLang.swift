@@ -32,4 +32,36 @@ public enum CodeLang: String, Hashable, CaseIterable, Sendable, RawRepresentable
     default: true
     }
   }
+
+  static func slugToFileName(_ slug: String, lang: CodeLang) -> String {
+    let fileName =
+      switch lang {
+      case .markdown: slug
+      case .swift:
+        slug.split(separator: "-")
+          .map { component -> String in
+            if let first = component.first {
+              String(first.uppercased() + component.dropFirst())
+            } else {
+              String(component)
+            }
+          }
+          .joined()
+      case .rust: slug
+      case .typescript:
+        slug.split(separator: "-")
+          .enumerated()
+          .map { (idx, component) -> String in
+            if idx == 0 {
+              String(component)
+            } else if let first = component.first {
+              String(first.uppercased() + component.dropFirst())
+            } else {
+              String(component)
+            }
+          }
+          .joined()
+      }
+    return fileName + "." + lang.ext
+  }
 }
