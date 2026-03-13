@@ -22,6 +22,8 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
       LiveReloadMiddleware()
     #endif
 
+    CORSMiddleware(allowOrigin: .all)
+
     NotFoundMiddleware()
 
     if self.publicAssets.baseURL.isFileURL {

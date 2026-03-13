@@ -26,12 +26,12 @@ public struct NotFoundPage: Page {
                     CodeLang.slugToFileName("not-found", lang: codeLang)
                   }
                 }
-                // .inlineStyle("color", "#777")
+                .style("color", "#777")
               }
-              // .inlineStyle("font-size", "0.75em")
-              // .inlineStyle("font-weight", "500")
-              // .inlineStyle("text-align", "end")
-              // .inlineStyle("padding-bottom", "0.5rem")
+              .style("font-size", "0.75em")
+              .style("font-weight", "500")
+              .style("text-align", "end")
+              .style("padding-bottom", "0.5rem")
 
               div {
                 if codeLang != .markdown {
@@ -62,38 +62,39 @@ public struct NotFoundPage: Page {
                 } else {
                   h1 {
                     span { "#" }
-                    // .inlineStyle("color", "#808080")
-                    // .inlineStyle("font-weight", "700")
+                      .style("color", "#808080")
+                      .style("font-weight", "700")
                     " "
                     "Not Found"
                   }
-                  // .inlineStyle("margin-bottom", "0.125rem")
+                  .style("margin-bottom", "0.125rem")
 
                   p { Self.notFoundDescription }
-                  // .inlineStyle("color", "#d0d0d0")
-                  // .inlineStyle("font-weight", "normal")
+                    .style("color", "#d0d0d0")
+                    .style("font-weight", "normal")
                 }
               }
-              // .inlineStyle("padding", "160px 32px")
-              // .inlineStyle("align-self", "center")
+              .style("padding", "160px 32px")
+              .style("align-self", "center")
             }
-            //   .inlineStyle("display", "flex")
-            //   .inlineStyle("flex-direction", "column")
+            .style("display", "flex")
+            .style("flex-direction", "column")
           }
-          // .containerStyling()
-          // .inlineStyle("width", "100%")
-          // .inlineStyle("padding", "1.5rem")
-          // .inlineStyle("background-image", "radial-gradient(#2A2A2A 1px, transparent 0)")
-          // .inlineStyle("background-size", "12px 12px")
+          .containerStyling()
+          .style("width", "100%")
+          .style("padding", "1.5rem")
+          .style("background-image", "radial-gradient(#2A2A2A 1px, transparent 0)")
+          .style("background-size", "12px 12px")
         }
-        // .wrappedStyling()
+        .wrappedStyling()
 
       }
       Spacer()
       FooterView()
     }
-    //     .inlineStyle("display", "flex")
-    //     .inlineStyle("flex-direction", "column")
-    //     .inlineStyle("height", "100%")
+    .style("display", "flex")
+    .style("display", "flex")
+    .style("flex-direction", "column")
+    .style("height", "100%")
   }
 }

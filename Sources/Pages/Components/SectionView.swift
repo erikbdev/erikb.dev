@@ -18,12 +18,12 @@ struct SectionView<Header: View, Content: View> {
                   CodeLang.slugToFileName(self.id, lang: selected)
                 }
               }
-              // .inlineStyle("color", "#777")
+              .style("color", "#777")
             }
-            // .inlineStyle("font-size", "0.75em")
-            // .inlineStyle("font-weight", "500")
-            // .inlineStyle("text-align", "end")
-            // .inlineStyle("padding-bottom", "0.5rem")
+            .style("font-size", "0.75em")
+            .style("font-weight", "500")
+            .style("text-align", "end")
+            .style("padding-bottom", "0.5rem")
 
             div {
               if selected != .markdown {
@@ -32,22 +32,22 @@ struct SectionView<Header: View, Content: View> {
                     self.header(selected)
                   }
                 }
-                // .inlineStyle("white-space", "pre-wrap")
+                .style("white-space", "pre-wrap")
               } else {
                 hgroup {
                   self.header(.markdown)
                 }
               }
             }
-            // .inlineStyle("padding-bottom", "0.75rem")
+            .style("padding-bottom", "0.75rem")
           }
         }
-        // .inlineStyle("padding", "1.5rem")
+        .style("padding", "1.5rem")
 
         self.content()
       }
-//       .containerStyling()
+      .containerStyling()
     }
-//     .wrappedStyling()
+    .wrappedStyling()
   }
 }

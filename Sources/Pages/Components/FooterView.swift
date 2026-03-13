@@ -21,12 +21,12 @@ struct FooterView {
           ) { "Elementary" }
         }
       }
-      // .containerStyling()
-      // .inlineStyle("padding", "1rem 1.5rem")
-      // .inlineStyle("height", "100%")
+      .containerStyling()
+      .style("padding", "1rem 1.5rem")
+      .style("height", "100%")
     }
-    // .inlineStyle("text-align", "center")
-    // .inlineStyle("flex-grow", "0")
-    // .wrappedStyling()
+    .style("text-align", "center")
+    .style("flex-grow", "0")
+    .wrappedStyling()
   }
 }

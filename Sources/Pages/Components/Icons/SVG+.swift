@@ -1,12 +1,14 @@
-// import ElementaryUI
+import ElementaryUI
 
-// extension HTML {
-//   func svgIconStyling() -> HTMLInlineStyle<Self> {
-//     self.inlineStyle("display", "inline-block")
-//       .inlineStyle("vertical-align", "middle")
-//       .inlineStyle("position", "relative")
-//       .inlineStyle("bottom", "0.125em")
-//       .inlineStyle("width", "1em")
-//       .inlineStyle("height", "1em")
-//   }
-// }
+extension HTML where Tag: HTMLTrait.Attributes.Global {
+  func svgIconStyling() -> _AttributedElement<Self> {
+    self.style([
+      "display": "inline-block",
+      "vertical-align": "middle",
+      "position": "relative",
+      "bottom": "0.125em",
+      "width": "1em",
+      "height": "1em"
+    ])
+  }
+}

@@ -22,7 +22,7 @@ public struct HomePage: Page {
       }
       FooterView()
     }
-    // .inlineStyle("overflow-x", "hidden")
+    .attributes(.style(["overflow-x": "hidden"]))
   }
 }
 
@@ -107,34 +107,33 @@ private struct UserView {
       case .markdown:
         h1(.aria("label", value: "name")) {
           span { "#" }
-          //             .inlineStyle("color", "#808080")
-          //             .inlineStyle("font-weight", "700")
+            .attributes(.style(["color": "#808080", "font-weight": "700"]))
           " "
           "Erik Bautista Santibanez"
         }
-        //         .inlineStyle("margin-bottom", "0.25rem")
+        .style("margin-bottom", "0.25rem")
 
         div {
           p(.aria("label", value: "occupation")) { "Mobile & Web Developer" }
 
-          p(.aria("label", value: "residency")) {
-            MapPinIcon()
+          // p(.aria("label", value: "residency")) {
+            // MapPinIcon()
             //             "\(residency ?? .default)"
-          }
+          // }
 
           //           if let currentLocation {
           //             p(.aria.label("current location")) {
           //               NavigationArrowIcon()
           //               "Currently in "
           //               span { "***" }
-          //                 .inlineStyle("color", "#808080")
-          //                 .inlineStyle("font-weight", "700")
+          //                 .style("color", "#808080")
+          //                 .style("font-weight", "700")
           //               em { currentLocation }
-          //                 .inlineStyle("font-weight", "700")
-          //                 .inlineStyle("color", "#fafafa")
+          //                 .style("font-weight", "700")
+          //                 .style("color", "#fafafa")
           //               span { "***" }
-          //                 .inlineStyle("color", "#808080")
-          //                 .inlineStyle("font-weight", "700")
+          //                 .style("color", "#808080")
+          //                 .style("font-weight", "700")
           //             }
           //           }
 
@@ -146,23 +145,23 @@ private struct UserView {
           //               "Listening to "
 
           //               span { "***" }
-          //                 .inlineStyle("color", "#808080")
-          //                 .inlineStyle("font-weight", "700")
+          //                 .style("color", "#808080")
+          //                 .style("font-weight", "700")
           //               em { nowPlaying }
-          //                 .inlineStyle("font-weight", "700")
-          //                 .inlineStyle("color", "#fafafa")
+          //                 .style("font-weight", "700")
+          //                 .style("color", "#fafafa")
           //               span { "***" }
-          //                 .inlineStyle("color", "#808080")
-          //                 .inlineStyle("font-weight", "700")
+          //                 .style("color", "#808080")
+          //                 .style("font-weight", "700")
           //             }
           //           }
 
           p(.aria("label", value: "about me")) {
             Self.aboutDescription
           }
-          //           .inlineStyle("margin-top", "0.75rem")
+          .style("margin-top", "0.75rem")
         }
-      //         .inlineStyle("color", "#d8d8d8")
+        .style("color", "#d8d8d8")
       }
     } content: {
       div {
@@ -174,7 +173,7 @@ private struct UserView {
               codeLang: selected
             )
           }
-          // .primaryButtonStyle()
+          .primaryButtonStyle()
 
           a(
             .href("https://github.com/erikbdev"),
@@ -187,7 +186,7 @@ private struct UserView {
               codeLang: selected
             )
           }
-          // .secondaryButtonStyle()
+          .secondaryButtonStyle()
 
           a(
             .href("https://www.linkedin.com/in/erikbautista"),
@@ -200,15 +199,15 @@ private struct UserView {
               codeLang: selected
             )
           }
-          //           .secondaryButtonStyle()
+          .secondaryButtonStyle()
         }
-        //         .inlineStyle("display", "flex")
-        //         .inlineStyle("flex-direction", "row")
-        //         .inlineStyle("flex-wrap", "wrap")
-        //         .inlineStyle("gap", "0.625rem")
+        .style("display", "flex")
+        .style("flex-direction", "row")
+        .style("flex-wrap", "wrap")
+        .style("gap", "0.625rem")
       }
-      //       .inlineStyle("margin-top", "-1rem")
-      //       .inlineStyle("padding", "0 1.5rem 1.5rem")
+      .style("margin-top", "-1rem")
+      .style("padding", "0 1.5rem 1.5rem")
     }
   }
 }
@@ -220,10 +219,12 @@ private struct UserPropertyButton {
   let codeLang: CodeLang
 
   var body: some View {
-    if codeLang == .markdown {
-      "[\(label)](\(value))"
-    } else {
-      "user.\(label)()\(codeLang.hasSemiColon ? ";" : "")"
+    code {
+      if codeLang == .markdown {
+        "[\(label)](\(value))"
+      } else {
+        "user.\(label)()\(codeLang.hasSemiColon ? ";" : "")"
+      }
     }
   }
 }
@@ -255,15 +256,15 @@ private struct PostsView {
       case .markdown:
         h1 {
           span { "#" }
-          // .inlineStyle("color", "#808080")
-          // .inlineStyle("font-weight", "700")
+            .style("color", "#808080")
+            .style("font-weight", "700")
           " "
           "Dev Logs"
         }
-        // .inlineStyle("margin-bottom", "0.25rem")
+        .style("margin-bottom", "0.25rem")
 
         p { Self.description }
-      //         .inlineStyle("color", "#d8d8d8")
+          .style("color", "#d8d8d8")
       }
     } content: {
       for (num, post) in Post.allCases.enumerated().reversed() {
@@ -284,10 +285,10 @@ private struct PostView {
       header {
         hgroup {
           span { self.post.datePosted.uppercased() }
-          //               .inlineStyle("flex-grow", "0")
-          //               .inlineStyle("color", "#8A9A9A")
-          //               .inlineStyle("font-size", "-1.75em")
-          //               .inlineStyle("font-weight", "599")
+            .style("flex-grow", "1")
+            .style("color", "#9A9A9A")
+            .style("font-size", "0.75em")
+            .style("font-weight", "599")
 
           pre {
             a(.href("#\(self.post.slug)")) {
@@ -298,20 +299,21 @@ private struct PostView {
                 }
               }
             }
-            //               .inlineStyle("font-size", "-1.75em")
-            //               .inlineStyle("color", "#776")
-            //               .inlineStyle("font-weight", "499")
+            .style("color", "#777")
           }
+          .style("font-size", "0.75em")
+          .style("font-weight", "500")
+          .style("text-align", "end")
         }
-        //           .inlineStyle("display", "flex")
-        //           .inlineStyle("align-items", "baseline")
+        .style("display", "flex")
+        .style("align-items", "baseline")
+        .style("padding-bottom", "1.25rem")
 
         if let postHeader = post.header {
           PostHeaderView(postHeader: postHeader)
         }
       }
       h2 { self.post.title }
-      //           .inlineStyle("margin-top", "-1.5rem")
 
       section {
         self.post.content
@@ -332,9 +334,9 @@ private struct PostView {
               PostLinkView(link: link)
             }
           }
-          //             .inlineStyle("display", "flex")
-          //             .inlineStyle("gap", "-1.75rem")
-          //             .inlineStyle("margin-top", "0.5rem")
+          .style("display", "flex")
+          .style("gap", "1rem")
+          .style("margin-top", "1rem")
         }
 
         if let dateUpdated = self.post.dateUpdated {
@@ -343,21 +345,21 @@ private struct PostView {
               "Last updated: \(dateUpdated)"
             }
           }
-          //             .inlineStyle("color", "#6A7A7A")
-          //             .inlineStyle("font-size", "-1.73em")
-          //             .inlineStyle("margin-top", "-1.75rem")
+          .style("color", "#6A7A7A")
+          .style("font-size", "-1.73em")
+          .style("margin-top", "-1.75rem")
         }
       }
     }
-    //       .inlineStyle("width", "99%")
-    //       .inlineStyle("display", "inline-block")
-    //       .inlineStyle("padding", "0.5rem")
-    //       .inlineStyle(
-    //         "background-image",
-    //         "repeating-linear-gradient(89deg,#444 0 15px,transparent 0 30px)"
-    //       )
-    //       .inlineStyle("background-repeat", "repeat-x")
-    //       .inlineStyle("background-size", "99% 1px")
+    .style("width", "100%")
+    .style("display", "inline-block")
+    .style("padding", "1.5rem")
+    .style(
+      "background-image",
+      "repeating-linear-gradient(90deg,#444 0 15px,transparent 0 30px)"
+    )
+    .style("background-repeat", "repeat-x")
+    .style("background-size", "100% 1px")
   }
 }
 
@@ -366,7 +368,7 @@ private struct PostHeaderView {
   let postHeader: Post.Header
 
   var body: some View {
-    section {
+    section(.class("postCodeBlock")) {
       switch self.postHeader {
       case let .link(link):
         a(
@@ -400,11 +402,11 @@ private struct PostHeaderView {
         }
       }
     }
-    //       .inlineStyle("width", "100%", post: " > *")
-    //       .inlineStyle("margin-top", "1.25rem", post: " > *")
-    //       .inlineStyle("margin-bottom", "1.25rem", post: " > *")
-    //       .inlineStyle("border", "1.5px solid #3A3A3A", post: " > *")
-    //       .postCodeBlockStyling()
+    //       .style("width", "100%", post: " > *")
+    //       .style("margin-top", "1.25rem", post: " > *")
+    //       .style("margin-bottom", "1.25rem", post: " > *")
+    //       .style("border", "1.5px solid #3A3A3A", post: " > *")
+    .style("margin-bottom", "1.25rem")
   }
 }
 
@@ -433,7 +435,7 @@ private struct PostLinkView {
             )
           )
         }
-        //           .svgIconStyling()
+        .svgIconStyling()
       } else {
         svg(
           .xmlns(),
@@ -447,43 +449,49 @@ private struct PostLinkView {
             )
           )
         }
-        //           .svgIconStyling()
+        .svgIconStyling()
       }
     }
-    //       .buttonStyle(isPrimary: self.link.role == .primary)
+    .buttonStyle(isPrimary: self.link.role == .primary)
   }
 }
 
-// extension HTML {
-//   fileprivate func postCodeBlockStyling() -> HTMLInlineStyle<Self> {
-//     self.inlineStyle("padding", "0.75rem", post: " pre")
-//       .inlineStyle("background", "#242424", post: " pre")
-//       .inlineStyle("border", "1.5px solid #3A3A3A", post: " pre")
-//       .inlineStyle("overflow-x", "auto", post: " pre")
-//       .inlineStyle("font-size", "0.85em", post: " pre")
-//   }
+extension HTML where Tag: HTMLTrait.Attributes.Global {
+  fileprivate func primaryButtonStyle() -> _AttributedElement<Self> {
+    self.style(
+      [
+        "all": "unset",
+        "padding": "0.5rem 0.625rem",
+        "border": "#444 1px solid",
+        "font-size": "0.8em",
+        "font-weight": "500",
+        "align-items": "center",
+        "cursor": "pointer",
+      ]
+    )
+  }
 
-//   fileprivate func primaryButtonStyle() -> HTMLInlineStyle<Self> {
-//     self.inlineStyle("all", "unset")
-//       .inlineStyle("padding", "0.5rem 0.625rem")
-//       .inlineStyle("border", "#444 1px solid")
-//       .inlineStyle("font-size", "0.8em")
-//       .inlineStyle("font-weight", "500")
-//       .inlineStyle("align-items", "center")
-//       .inlineStyle("cursor", "pointer")
-//   }
+  fileprivate func secondaryButtonStyle() -> _AttributedElement<Self> {
+    self.style(
+      [
+        "all": "unset",
+        "padding": "0.5rem 0.625rem",
+        "border": "#444 1px solid",
+        "font-size": "0.8em",
+        "font-weight": "500",
+        "align-items": "center",
+        "cursor": "pointer",
+        "background-color": "#f0f0f0",
+        "color": "#0f0f0f",
+      ]
+    )
+  }
 
-//   fileprivate func secondaryButtonStyle() -> HTMLInlineStyle<Self> {
-//     self.primaryButtonStyle()
-//       .inlineStyle("background-color", "#f0f0f0")
-//       .inlineStyle("color", "#0f0f0f")
-//   }
-
-//   fileprivate func buttonStyle(isPrimary: Bool = true) -> HTMLInlineStyle<Self> {
-//     if isPrimary {
-//       self.primaryButtonStyle()
-//     } else {
-//       self.secondaryButtonStyle()
-//     }
-//   }
-// }
+  fileprivate func buttonStyle(isPrimary: Bool = true) -> _AttributedElement<Self> {
+    if isPrimary {
+      self.primaryButtonStyle()
+    } else {
+      self.secondaryButtonStyle()
+    }
+  }
+}
