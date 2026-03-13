@@ -7,7 +7,7 @@ struct SectionView<Header: View, Content: View> {
   @HTMLBuilder let header: @Sendable (CodeLang) -> Header
   @HTMLBuilder let content: @Sendable () -> Content
 
-  var body: some HTML {
+  var body: some View {
     section(.id(self.id)) {
       div {
         ElementaryUI.header {
