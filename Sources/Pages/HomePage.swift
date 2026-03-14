@@ -313,19 +313,12 @@ private struct PostView {
           PostHeaderView(postHeader: postHeader)
         }
       }
-      h2 { self.post.title }
 
-      section {
-        self.post.content
-      }
-      //         .postCodeBlockStyling()
-      //         .inlineStyle("margin", "revert", post: " *")
-      //         .inlineStyle("display", "block", post: " blockquote")
-      //         .inlineStyle("background", "#1A2A2A", post: " blockquote")
-      //         .inlineStyle("padding", "-1.125rem 1rem", post: " blockquote")
-      //         .inlineStyle("border", "0.5px solid #4A4A4A", post: " blockquote")
-      //         .inlineStyle("margin-left", "-1", post: " blockquote")
-      //         .inlineStyle("margin-right", "-1", post: " blockquote")
+      h3 { self.post.title }
+        .style("margin-bottom", "0.5rem")
+
+      p { self.post.content }
+        .style("white-space", "pre-wrap")
 
       footer {
         if !self.post.links.isEmpty {
@@ -340,14 +333,10 @@ private struct PostView {
         }
 
         if let dateUpdated = self.post.dateUpdated {
-          p {
-            em {
-              "Last updated: \(dateUpdated)"
-            }
-          }
-          .style("color", "#6A7A7A")
-          .style("font-size", "-1.73em")
-          .style("margin-top", "-1.75rem")
+          p { em { "Last updated: \(dateUpdated)" } }
+            .style("color", "#6A7A7A")
+            .style("font-size", "-1.73em")
+            .style("margin-top", "-1.75rem")
         }
       }
     }
@@ -397,7 +386,7 @@ private struct PostHeaderView {
       case let .code(rawCode, lang):
         pre {
           code(.class("hljs language-\(lang.rawValue)")) {
-            HTMLText(rawCode)
+            rawCode
           }
         }
       }
@@ -420,7 +409,7 @@ private struct PostLinkView {
       .target(.blank),
       .rel("noopener noreferrer")
     ) {
-      HTMLText(self.link.title)
+      self.link.title
       " "
       if self.link.isExternal {
         svg(

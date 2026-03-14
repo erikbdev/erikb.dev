@@ -15,7 +15,7 @@ extension Post: CaseIterable {
         // header: .link("https://github.com/PrismMSI/PrismUI"),
         title: "PrismUI \u{2014} Controlling MSI RGB Keyboard on macOS",
         content: """
-          When I set up my Hackintosh, I couldn't control the RGB keyboard on my MSI laptop since the software was supported on Windows only. To fix this issue, my first approach was to build an app using AppKit, C++, and Objective-C to communicate with the HID keyboard, which was ultimately called [SSKeyboardHue](https://github.com/erikbdev/SSKeyboardHue).
+          When I configured my Hackintosh, I was unable to control the RGB keyboard on my MSI laptop due to the software only being supported on Windows. To resolve this issue, my first approach was to build an app using AppKit, C++, and Objective-C to communicate with the HID keyboard, which was ultimately called [SSKeyboardHue](https://github.com/erikbdev/SSKeyboardHue).
 
           Later, I decided to switch the communication protocol to Swift and redesign the front end using SwiftUI.
 
