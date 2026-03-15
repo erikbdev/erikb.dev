@@ -1,3 +1,4 @@
+import ActivityClient
 import ElementaryUI
 
 @View
@@ -22,57 +23,57 @@ public struct HomePage: Page {
       }
       FooterView()
     }
-    .attributes(.style(["overflow-x": "hidden"]))
+    .style("overflow-x", "hidden")
   }
 }
 
 @View
 private struct UserView {
-  //   @Dependency(\.activityClient) private var activityClient
+  @Environment(#Key(\.activityClient)) private var activityClient
 
-  var selected: CodeLang
+  let selected: CodeLang
 
-  //   var location: ActivityClient.Location? {
-  //     self.activityClient.location()
-  //   }
+  var location: ActivityClient.Location? {
+    self.activityClient.location()
+  }
 
-  //   var residency: ActivityClient.Location.Residency? {
-  //     self.location?.residency
-  //   }
+  var residency: ActivityClient.Location.Residency? {
+    self.location?.residency
+  }
 
-  //   var currentLocation: String? {
-  //     let residency = self.residency ?? .default
-  //     guard let location, location.city != residency.city || location.state != residency.state else {
-  //       return nil
-  //     }
-  //     return [
-  //       location.city, location.state, location.region == "United States" ? nil : location.region,
-  //     ]
-  //     .compactMap(\.self)
-  //     .joined(separator: ", ")
-  //   }
+  var currentLocation: String? {
+    let residency = self.residency ?? .default
+    guard let location, location.city != residency.city || location.state != residency.state else {
+      return nil
+    }
+    return [
+      location.city, location.state, location.region == "United States" ? nil : location.region,
+    ]
+    .compactMap { $0 }
+    .joined(separator: ", ")
+  }
 
-  //   var nowPlaying: String? {
-  //     guard let nowPlaying = activityClient.nowPlaying() else {
-  //       return nil
-  //     }
+  var nowPlaying: String? {
+    guard let nowPlaying = activityClient.nowPlaying() else {
+      return nil
+    }
 
-  //     let nowPlayingText = [
-  //       nowPlaying.title,
-  //       nowPlaying.artist?.isEmpty == false ? "—" : nil,
-  //       nowPlaying.artist,
-  //     ]
-  //     .compactMap { $0 }
-  //     .joined(separator: " ")
-  //     return nowPlayingText
-  //   }
+    let nowPlayingText = [
+      nowPlaying.title,
+      nowPlaying.artist?.isEmpty == false ? "—" : nil,
+      nowPlaying.artist,
+    ]
+    .compactMap { $0 }
+    .joined(separator: " ")
+    return nowPlayingText
+  }
 
   static let aboutDescription = """
     A software developer who builds applications using Swift and modern web technologies.
     """
 
   var body: some View {
-    SectionView(id: "user", selected: selected) { lang in
+    SectionView(id: "user", selected: selected) { [residency, currentLocation, nowPlaying] lang in
       switch lang {
       case .swift:
         """
@@ -115,46 +116,44 @@ private struct UserView {
 
         div {
           p(.aria("label", value: "occupation")) { "Mobile & Web Developer" }
+          p(.aria("label", value: "residency")) {
+            MapPinIcon()
+            "\(residency ?? .default)"
+          }
 
-          // p(.aria("label", value: "residency")) {
-            // MapPinIcon()
-            //             "\(residency ?? .default)"
-          // }
+          if let currentLocation {
+            p(.aria("label", value: "current location")) {
+              NavigationArrowIcon()
+              "Currently in "
+              span { "***" }
+                .style("color", "#808080")
+                .style("font-weight", "700")
+              em { currentLocation }
+                .style("font-weight", "700")
+                .style("color", "#fafafa")
+              span { "***" }
+                .style("color", "#808080")
+                .style("font-weight", "700")
+            }
+          }
 
-          //           if let currentLocation {
-          //             p(.aria.label("current location")) {
-          //               NavigationArrowIcon()
-          //               "Currently in "
-          //               span { "***" }
-          //                 .style("color", "#808080")
-          //                 .style("font-weight", "700")
-          //               em { currentLocation }
-          //                 .style("font-weight", "700")
-          //                 .style("color", "#fafafa")
-          //               span { "***" }
-          //                 .style("color", "#808080")
-          //                 .style("font-weight", "700")
-          //             }
-          //           }
+          if let nowPlaying {
+            p(.aria("label", value: "music playing")) {
+              WaveFormIcon()
 
-          //           if let nowPlaying {
-          //             p(.aria.label("music playing")) {
-          //               // <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d=""></path></svg>
-          //               WaveFormIcon()
+              "Listening to "
 
-          //               "Listening to "
-
-          //               span { "***" }
-          //                 .style("color", "#808080")
-          //                 .style("font-weight", "700")
-          //               em { nowPlaying }
-          //                 .style("font-weight", "700")
-          //                 .style("color", "#fafafa")
-          //               span { "***" }
-          //                 .style("color", "#808080")
-          //                 .style("font-weight", "700")
-          //             }
-          //           }
+              span { "***" }
+                .style("color", "#808080")
+                .style("font-weight", "700")
+              em { nowPlaying }
+                .style("font-weight", "700")
+                .style("color", "#fafafa")
+              span { "***" }
+                .style("color", "#808080")
+                .style("font-weight", "700")
+            }
+          }
 
           p(.aria("label", value: "about me")) {
             Self.aboutDescription
@@ -163,7 +162,7 @@ private struct UserView {
         }
         .style("color", "#d8d8d8")
       }
-    } content: {
+    } content: { [selected] in
       div {
         div {
           a(.href("mailto:me@erikb.dev")) {
@@ -343,10 +342,7 @@ private struct PostView {
     .style("width", "100%")
     .style("display", "inline-block")
     .style("padding", "1.5rem")
-    .style(
-      "background-image",
-      "repeating-linear-gradient(90deg,#444 0 15px,transparent 0 30px)"
-    )
+    .style("background-image", "repeating-linear-gradient(90deg,#444 0 15px,transparent 0 30px)")
     .style("background-repeat", "repeat-x")
     .style("background-size", "100% 1px")
   }

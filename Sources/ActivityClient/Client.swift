@@ -1,8 +1,9 @@
-import Dependencies
-import DependenciesMacros
-import Foundation
+import ClientDependency
 
-@DependencyClient
+#if canImport(Foundation)
+  import Foundation
+#endif
+
 public struct ActivityClient: Sendable {
   public var location: @Sendable () -> Location? = { nil }
   public var updateLocation: @Sendable (_ location: Location?) -> Void = { _ in }
@@ -18,7 +19,7 @@ extension ActivityClient {
         city: $0.city,
         state: $0.state,
         region: $0.region,
-        timestamp: $0.timestamp,
+        // timestamp: $0.timestamp,
         residency: nil
       )
     }
@@ -28,15 +29,15 @@ extension ActivityClient {
     )
   }
 
-  public struct Location: Sendable, Equatable, Codable {
+  public struct Location: Sendable, Equatable {
     public let city: String?
     public let state: String?
     public let region: String?
-    public let timestamp: Date
+    // public let timestamp: Date
 
     public let residency: Residency?
 
-    public struct Residency: Sendable, Equatable, Codable, CustomStringConvertible {
+    public struct Residency: Sendable, Equatable, CustomStringConvertible {
       public let city: String
       public let state: String
       public var description: String { "\(city), \(state)" }
@@ -45,7 +46,7 @@ extension ActivityClient {
     }
   }
 
-  public struct NowPlaying: Sendable, Equatable, Codable {
+  public struct NowPlaying: Sendable, Equatable {
 
     /// track title
     public let title: String
@@ -57,26 +58,34 @@ extension ActivityClient {
     public let album: String?
 
     /// time elapsed
-    public let progress: TimeInterval
+    public let progress: Double
 
     /// total duration
-    public let duration: TimeInterval
+    public let duration: Double
 
     /// timestamp of the request sent
-    public let timestamp: Date
+    // public let timestamp: Date
 
     /// service used
     public let service: Service
 
-    public enum Service: String, Sendable, Equatable, Codable {
+    public enum Service: String, Sendable, Equatable {
       case apple
     }
   }
 
-  public struct Activity: Sendable, Equatable, Codable {
+  public struct Activity: Sendable, Equatable {
     public let location: Location?
     public let nowPlaying: NowPlaying?
+  }
+}
 
+#if canImport(Foundation)
+  extension ActivityClient.Location: Codable {}
+  extension ActivityClient.Location.Residency: Codable {}
+  extension ActivityClient.NowPlaying.Service: Codable {}
+  extension ActivityClient.NowPlaying: Codable {}
+  extension ActivityClient.Activity: Codable {
     public static let encoder = {
       let encoder = JSONEncoder()
       encoder.dateEncodingStrategy = .iso8601
@@ -89,11 +98,8 @@ extension ActivityClient {
       return decoder
     }()
   }
-}
+#endif
 
-extension DependencyValues {
-  public var activityClient: ActivityClient {
-    get { self[ActivityClient.self] }
-    set { self[ActivityClient.self] = newValue }
-  }
+extension ClientValues {
+  @Entry public var activityClient = ActivityClient.defaultClient
 }

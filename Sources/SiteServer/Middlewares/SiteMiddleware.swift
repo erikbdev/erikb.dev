@@ -14,7 +14,7 @@ import class Foundation.JSONEncoder
 
 struct SiteMiddleware<Context: RequestContext>: RouterController {
   @Dependency(\.siteRouter) private var siteRouter
-  @Dependency(\.activityClient) private var activityClient
+  @Dependency(ActivityClient.self) private var activityClient
   @Dependency(\.publicAssets) private var publicAssets
 
   var body: some RouterMiddleware<Context> {

@@ -19,7 +19,8 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
 
-    .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
+    .package(path: "./elementary"),
+    // .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
     .package(path: "./elementary-ui"),
     // .package(url: "https://github.com/erikbdev/elementary-ui", revision: "b3e3115e756cdb021acd5d117a47104730808a3d"),
     .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.3.0"),
@@ -40,8 +41,7 @@ let package = Package(
     .target(
       name: "PublicAssets",
       dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+        "ClientDependency"
       ],
       resources: [.copy("assets")],
       // plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
@@ -50,6 +50,7 @@ let package = Package(
       name: "Routes",
       dependencies: [
         "ActivityClient",
+        "ClientDependency",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
@@ -69,7 +70,7 @@ let package = Package(
       name: "Pages",
       dependencies: [
         // "Routes",
-        // "ActivityClient",
+        "ActivityClient",
         // "PublicAssets",
         .product(name: "Elementary", package: "elementary"),
         .product(name: "ElementaryUI", package: "elementary-ui"),
@@ -78,8 +79,15 @@ let package = Package(
     .target(
       name: "ActivityClient",
       dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+        "ClientDependency"
+      ]
+    ),
+    .target(
+      name: "ClientDependency",
+      dependencies: [
+        .product(name: "ElementaryUI", package: "elementary-ui"),
+        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS]))
       ]
     ),
     /// SiteServer
