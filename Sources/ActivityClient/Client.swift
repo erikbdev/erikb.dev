@@ -42,7 +42,7 @@ extension ActivityClient {
       public let state: String
       public var description: String { "\(city), \(state)" }
 
-      public static let `default` = Residency(city: "Redacted", state: "Redacted")
+      public static let `default` = Residency(city: "Irvine", state: "CA")
     }
   }
 

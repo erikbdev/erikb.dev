@@ -28,13 +28,7 @@ struct Post: Sendable {
     let year: Int
 
     static func < (lhs: Post.Date, rhs: Post.Date) -> Bool {
-      if lhs.year < rhs.year, lhs.month < rhs.month {
-        return lhs.day < rhs.day
-      } else if lhs.year < rhs.year {
-        return lhs.month < rhs.month
-      } else {
-        return false
-      }
+      (lhs.year, lhs.month, lhs.day) < (rhs.year, rhs.month, rhs.day) 
     }
   }
 

@@ -2,18 +2,23 @@ import Dependencies
 import Hummingbird
 
 private enum EnvKeys {
-  static let appSecret = "APP_SECRET"
   static let basicAuthUsername = "BASIC_AUTH_USER"
   static let basicAuthPassword = "BASIC_AUTH_PASSWD"
 }
 
 extension Environment {
-  public var appSecret: String {
-    self.get(EnvKeys.appSecret) ?? "deadbeefdeadbeefdeadbeefdeadbeef"
-  }
-
   public var basicAuth: (String, String) {
-    (self.get(EnvKeys.basicAuthUsername) ?? "dead", self.get(EnvKeys.basicAuthPassword) ?? "beef")
+    guard let username = self.get(EnvKeys.basicAuthUsername),
+      let password = self.get(EnvKeys.basicAuthPassword),
+      !username.isEmpty,
+      !password.isEmpty else {
+        #if DEBUG
+        return ("deadbeef", "deadbeef")
+        #else
+        fatalError("Basic auth is empty")
+        #endif
+      }
+      return (username, password)
   }
 }
 

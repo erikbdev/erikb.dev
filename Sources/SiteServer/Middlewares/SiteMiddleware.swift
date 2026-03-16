@@ -41,7 +41,10 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
         case .home:
           return HTMLResponse {
             PageLayout(metadata: .default()) {
-              HomePage(codeLang: .resolve(req))
+              HomePage(
+                codeLang: .resolve(req), 
+                activity: activityClient.redactedActivity()
+              )
             }
           }
         case .api(.activity(.all)):

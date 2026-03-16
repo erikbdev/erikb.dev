@@ -6,9 +6,11 @@ public struct HomePage: Page {
   public let title = "Portfolio | erikb.dev"
 
   @State var codeLang: CodeLang
+  let activity: ActivityClient.Activity?
 
-  public init(codeLang: CodeLang) {
+  public init(codeLang: CodeLang, activity: ActivityClient.Activity?) {
     self.codeLang = codeLang
+    self.activity = activity
   }
 
   public var body: some View {
@@ -16,7 +18,7 @@ public struct HomePage: Page {
       HeaderView(selected: $codeLang)
       main {
         Spacer()
-        UserView(selected: codeLang)
+        UserView(selected: codeLang, activity: activity)
         Spacer()
         PostsView(selected: codeLang)
         Spacer()
@@ -29,13 +31,10 @@ public struct HomePage: Page {
 
 @View
 private struct UserView {
-  @Environment(#Key(\.activityClient)) private var activityClient
-
   let selected: CodeLang
+  let activity: ActivityClient.Activity?
 
-  var location: ActivityClient.Location? {
-    self.activityClient.location()
-  }
+  var location: ActivityClient.Location? { self.activity?.location }
 
   var residency: ActivityClient.Location.Residency? {
     self.location?.residency
@@ -54,7 +53,7 @@ private struct UserView {
   }
 
   var nowPlaying: String? {
-    guard let nowPlaying = activityClient.nowPlaying() else {
+    guard let nowPlaying = activity?.nowPlaying else {
       return nil
     }
 
@@ -79,7 +78,10 @@ private struct UserView {
         """
         let user = User(
           name: "Erik Bautista Santibanez",
-          role: [.mobile, .web]
+          role: [.mobile, .web],
+          home: "\(residency ?? .default)"\
+        \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
+        \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
         )
 
         > print(user.about())
@@ -89,7 +91,10 @@ private struct UserView {
         """
         const user: User = {
           name: "Erik Bautista Santibanez",
-          role: [Role.Mobile, Role.Web]
+          role: [Role.Mobile, Role.Web],
+          home: "\(residency ?? .default)"\
+        \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
+        \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
         };
 
         > console.log(user.about());
@@ -99,7 +104,10 @@ private struct UserView {
         """
         let user = User {
           name: "Erik Bautista Santibanez",
-          role: [Role::Mobile, Role::Web]
+          role: [Role::Mobile, Role::Web],
+          home: "\(residency ?? .default)"\
+        \(currentLocation.flatMap { ",\n  location: \"Currently in \($0)\"" } ?? "")\
+        \(nowPlaying.flatMap { ",\n  listeningTo: \"\($0)\"" } ?? "")
         };
 
         > println!("{}", user.about());
