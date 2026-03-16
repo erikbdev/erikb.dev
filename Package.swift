@@ -35,9 +35,9 @@ let package = Package(
     // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
     .package(path: "./swift-tau-tui"),
-
   ],
   targets: [
+    .target(name: "Shared"),
     .target(
       name: "PublicAssets",
       dependencies: [
@@ -69,6 +69,7 @@ let package = Package(
     .target(
       name: "Pages",
       dependencies: [
+        "Shared",
         // "Routes",
         "ActivityClient",
         // "PublicAssets",
@@ -94,6 +95,7 @@ let package = Package(
     .executableTarget(
       name: "SiteServer",
       dependencies: [
+        "Shared",
         "Routes",
         "Pages",
         "ActivityClient",
@@ -110,6 +112,7 @@ let package = Package(
     .executableTarget(
       name: "SiteSSHServer",
       dependencies: [
+        "Shared",
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
         .product(name: "NIOSSH", package: "swift-nio-ssh"),

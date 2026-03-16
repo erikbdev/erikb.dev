@@ -1,5 +1,6 @@
 import ActivityClient
 import ElementaryUI
+import Shared
 
 @View
 public struct HomePage: Page {
@@ -321,10 +322,10 @@ private struct PostView {
         }
       }
 
-      h3 { self.post.title }
+      h3 { PostTextContentView(textContent: self.post.title) }
         .style("margin-bottom", "0.5rem")
 
-      p { self.post.content }
+      p { PostTextContentView(textContent: self.post.content) }
         .style("white-space", "pre-wrap")
 
       footer {
@@ -400,6 +401,23 @@ private struct PostHeaderView {
     //       .style("margin-bottom", "1.25rem", post: " > *")
     //       .style("border", "1.5px solid #3A3A3A", post: " > *")
     .style("margin-bottom", "1.25rem")
+  }
+}
+
+@View
+private struct PostTextContentView {
+  let textContent: Post.TextContent
+
+  var body: some View {
+    for element in textContent.content {
+      switch element {
+      case .text(let text): HTMLText(text)
+      case let .link(title, url):
+        a(.target(.blank), .href(url)) {
+          HTMLText(title)
+        }
+      }
+    }
   }
 }
 

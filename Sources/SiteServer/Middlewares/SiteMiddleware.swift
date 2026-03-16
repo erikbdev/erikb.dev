@@ -9,6 +9,7 @@ import MiddlewareUtils
 import Pages
 import PublicAssets
 import Routes
+import Shared
 
 import class Foundation.JSONEncoder
 

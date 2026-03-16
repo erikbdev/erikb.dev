@@ -1,11 +1,11 @@
 extension Post: CaseIterable {
-  static var allCases: [Self] {
+  public static var allCases: [Self] {
     [
       Self(
         // header: .video(assetsDir.assets.posts.wledAppDemo.videoWebm),
         title: "A WLED Client for iOS",
         content: """
-          I built a native iOS app for [WLED](https://github.com/wled/WLED), an open-source LED controller for ESP32, to control my RGB LED strips.
+          I built a native iOS app for \("WLED", url: "https://github.com/wled/WLED"), an open-source LED controller for ESP32, to control my RGB LED strips.
           """,
         date: Date(month: 8, day: 4, year: 2022),
         kind: .project,
@@ -15,7 +15,8 @@ extension Post: CaseIterable {
         // header: .link("https://github.com/PrismMSI/PrismUI"),
         title: "PrismUI \u{2014} Controlling MSI RGB Keyboard on macOS",
         content: """
-          When I configured my Hackintosh, I was unable to control the RGB keyboard on my MSI laptop due to the software only being supported on Windows. To resolve this issue, my first approach was to build an app using AppKit, C++, and Objective-C to communicate with the HID keyboard, which was ultimately called [SSKeyboardHue](https://github.com/erikbdev/SSKeyboardHue).
+          When I configured my Hackintosh, I was unable to control the RGB keyboard on my MSI laptop due to the software only being supported on Windows. \
+          To resolve this issue, my first approach was to build an app using AppKit, C++, and Objective-C to communicate with the HID keyboard, which was ultimately called \("SSKeyboardHue", url: "https://github.com/erikbdev/SSKeyboardHue"). 
 
           Later, I decided to switch the communication protocol to Swift and redesign the front end using SwiftUI.
 
@@ -76,7 +77,7 @@ extension Post: CaseIterable {
         title: "Website Redesign",
         content: """
           I redesigned my website, but instead of using traditional web frameworks, I used Swift! \
-          I've also built a library called [swift-web](https://github.com/erikbdev/swift-web) which contains tools used to build \
+          I've also built a library called \("swift-web", url: "https://github.com/erikbdev/swift-web") which contains tools used to build \
           this website.
 
           Feel free to check out both projects on GitHub. 😊
@@ -98,9 +99,9 @@ extension Post: CaseIterable {
         ]
       ),
       Self(
-        title: "XTool is Awesome",
+        title: "xtool is Awesome!",
         content: """
-          [xtool](https://github.com/xtool-org/xtool) is a tool that attempts to replace Xcode and use Swift Package Manager to \
+          \("xtool", url: "https://github.com/xtool-org/xtool") is a tool that attempts to replace Xcode by using Swift Package Manager to \
           build and deploy iOS apps on macOS, Linux, and Windows! \
           I have been working closely with the developer to support for App Extensions and also resolve additional issues.
 
@@ -109,7 +110,13 @@ extension Post: CaseIterable {
           """,
         date: Date(month: 7, day: 20, year: 2025),
         kind: .blog,
-        hidden: true
+        links: [
+          Post.Link(
+            title: "xtool on GitHub", 
+            href: "https://github.com/xtool-org/xtool", 
+            role: .primary
+          )
+        ]
       ),
     ]
     .sorted { $0.date < $1.date }

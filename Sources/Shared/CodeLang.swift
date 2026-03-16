@@ -26,14 +26,14 @@ public enum CodeLang: String, Hashable, CaseIterable, Sendable, RawRepresentable
     }
   }
 
-  var hasSemiColon: Bool {
+  public var hasSemiColon: Bool {
     switch self {
     case .swift, .markdown: false
     default: true
     }
   }
 
-  static func slugToFileName(_ slug: String, lang: CodeLang) -> String {
+  public static func slugToFileName(_ slug: String, lang: CodeLang) -> String {
     let fileName =
       switch lang {
       case .markdown: slug

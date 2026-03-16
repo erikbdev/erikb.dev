@@ -1,4 +1,5 @@
 import ElementaryUI
+import Shared
 
 @View
 public struct NotFoundPage: Page {
