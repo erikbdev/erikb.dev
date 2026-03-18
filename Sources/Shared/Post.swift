@@ -1,6 +1,6 @@
 public struct Post: Sendable {
   public enum Header: Hashable, Sendable {
-    case link(String)
+    // case link(String)
     case image(String, label: String)
     case video(String)
     case code(String, lang: CodeLang)
@@ -26,6 +26,7 @@ public struct Post: Sendable {
     public enum Element: Hashable, Sendable {
       case text(String)
       case link(title: String, url: String)
+      // case code()
 
       var rawValue: String {
         switch self {
@@ -38,7 +39,7 @@ public struct Post: Sendable {
     public private(set) var content: [Element] = []
 
     public var rawValue: String {
-      content.compactMap(\.rawValue)
+      content.compactMap { $0.rawValue }
         .joined()
     }
   }

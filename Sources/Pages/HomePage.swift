@@ -364,16 +364,16 @@ private struct PostHeaderView {
   var body: some View {
     section(.class("postCodeBlock")) {
       switch self.postHeader {
-      case let .link(link):
-        a(
-          .href(link),
-          .target(.blank),
-          .rel("noopener noreferrer")
-        ) {
-          figure {
-            // TODO: add OpenGraph link
-          }
-        }
+      // case let .link(link):
+      //   a(
+      //     .href(link),
+      //     .target(.blank),
+      //     .rel("noopener noreferrer")
+      //   ) {
+      //     figure {
+      //       // TODO: add OpenGraph link
+      //     }
+      //   }
       case let .image(asset, label):
         img(.src(asset), .aria("alt", value: label), .aria("label", value: label))
       case let .video(asset):
@@ -396,11 +396,10 @@ private struct PostHeaderView {
         }
       }
     }
-    //       .style("width", "100%", post: " > *")
-    //       .style("margin-top", "1.25rem", post: " > *")
-    //       .style("margin-bottom", "1.25rem", post: " > *")
-    //       .style("border", "1.5px solid #3A3A3A", post: " > *")
+    .style("width", "100%")
+    .style("margin-top", "1.25rem")
     .style("margin-bottom", "1.25rem")
+    .style("border", "1.5px solid #3A3A3A")
   }
 }
 
@@ -483,19 +482,13 @@ extension HTML where Tag: HTMLTrait.Attributes.Global {
   }
 
   fileprivate func secondaryButtonStyle() -> _AttributedElement<Self> {
-    self.style(
-      [
-        "all": "unset",
-        "padding": "0.5rem 0.625rem",
-        "border": "#444 1px solid",
-        "font-size": "0.8em",
-        "font-weight": "500",
-        "align-items": "center",
-        "cursor": "pointer",
-        "background-color": "#f0f0f0",
-        "color": "#0f0f0f",
-      ]
-    )
+    self.primaryButtonStyle()
+      .style(
+        [
+          "background-color": "#f0f0f0",
+          "color": "#0f0f0f",
+        ]
+      )
   }
 
   fileprivate func buttonStyle(isPrimary: Bool = true) -> _AttributedElement<Self> {

@@ -83,7 +83,6 @@ extension Post: CaseIterable {
           Feel free to check out both projects on GitHub. 😊
           """,
         date: Date(month: 2, day: 2, year: 2025),
-        // lastUpdated: Date(month: 3, day: 15, year: 2025),
         kind: .blog,
         links: [
           Post.Link(

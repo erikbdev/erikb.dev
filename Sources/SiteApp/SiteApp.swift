@@ -8,7 +8,7 @@ struct SiteApp {
     // TODO: ideally make it similar to petite-vue.
     // make it so that all components are reactive with data inside of each
     // element
-    Application(HomePage(codeLang: .swift))
-      .mount(in: .body)
+    // Application(HomePage(codeLang: .swift))
+    //   .mount(in: .body)
   }
 }
