@@ -315,7 +315,7 @@ private struct PostView {
         }
         .style("display", "flex")
         .style("align-items", "baseline")
-        .style("padding-bottom", "1.25rem")
+        .style("margin-bottom", "1rem")
 
         if let postHeader = post.header {
           PostHeaderView(postHeader: postHeader)
@@ -323,28 +323,31 @@ private struct PostView {
       }
 
       h3 { PostTextContentView(textContent: self.post.title) }
-        .style("margin-bottom", "0.5rem")
+        .style("margin-bottom", self.post.content.rawValue.isEmpty && self.post.links.isEmpty && self.post.lastUpdated == nil ? "0rem" : "0.5rem")
 
-      p { PostTextContentView(textContent: self.post.content) }
-        .style("white-space", "pre-wrap")
+      if !self.post.content.rawValue.isEmpty {
+        p { PostTextContentView(textContent: self.post.content) }
+          .style("white-space", "pre-wrap")
+          .style("margin-bottom",  self.post.lastUpdated == nil ? "0rem" : "1rem")
+      }
 
-      footer {
-        if !self.post.links.isEmpty {
-          section {
-            for link in self.post.links {
-              PostLinkView(link: link)
+      if !self.post.links.isEmpty || self.post.lastUpdated != nil {
+        footer {
+          if !self.post.links.isEmpty {
+            section {
+              for link in self.post.links {
+                PostLinkView(link: link)
+              }
             }
+            .style("display", "flex")
+            .style("gap", "1rem")
           }
-          .style("display", "flex")
-          .style("gap", "1rem")
-          .style("margin-top", "1rem")
-        }
 
-        if let dateUpdated = self.post.dateUpdated {
-          p { em { "Last updated: \(dateUpdated)" } }
-            .style("color", "#6A7A7A")
-            .style("font-size", "-1.73em")
-            .style("margin-top", "-1.75rem")
+          if let dateUpdated = self.post.dateUpdated {
+            p { em { "Last updated: \(dateUpdated)" } }
+              .style("color", "#6A7A7A")
+              .style("font-size", "-1.73em")
+          }
         }
       }
     }
@@ -397,7 +400,6 @@ private struct PostHeaderView {
       }
     }
     .style("width", "100%")
-    .style("margin-top", "1.25rem")
     .style("margin-bottom", "1.25rem")
     .style("border", "1.5px solid #3A3A3A")
   }
