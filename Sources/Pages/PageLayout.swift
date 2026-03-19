@@ -1,4 +1,6 @@
+import Dependencies
 import ElementaryUI
+import PublicAssets
 
 public struct PageLayout<Content: Page>: HTMLDocument {
   let metadata: PageMetadata
@@ -19,7 +21,7 @@ public struct PageLayout<Content: Page>: HTMLDocument {
       meta(.charset(.utf8))
       meta(.name("viewport"), .content("width=device-width, initial-scale=1.0, viewport-fit=cover"))
       meta(.name("robots"), .content("index, follow"))
-      //     FavIcons()
+      FavIcons()
 
       if let title = metadata.title {
         // meta(.name(title))
@@ -63,73 +65,73 @@ public struct PageLayout<Content: Page>: HTMLDocument {
       Elementary.style {
         HTMLRaw(
           """
-          @font-face {
-            font-family: "CommitMono";
-            src: url("https://raw.githubusercontent.com/eigilnikolajsen/commit-mono/ecd81cdbd7f7eb2acaaa2f2f7e1a585676f9beff/src/fonts/fontlab/CommitMonoV143-VF.woff2");
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-          }
-          html {
-            line-height: 1.5;
-            height: 100%;
-          }
-          body {
-            background-color: #1c1c1c;
-            color: #fafafa;
-            height: 100%;
-            font-optical-sizing: auto;
-            font-size: 0.78em;
-          }
-          pre a {
-            text-decoration: none;
-          }
-          h1, h2, h3, h4, h5, figure, p, ol, ul, pre {
-            margin: 0;
-          }
-          ol[role="list"], ul[role="list"] {
-            list-style: none;
-            padding-inline: 0;
-          }
-          img, video {
-            display: block;
-            max-inline-size: 100%;
-          }
-          code {
-            font-family: "CommitMono", monospace;
-            font-feature-settings: "ss03", "ss04", "ss05";
-            line-height: 1;
-          }
-          a {
-            color: inherit;
-          }
-          @media (min-width: 390px) {
+            @font-face {
+              font-family: "CommitMono";
+              src: url("https://raw.githubusercontent.com/eigilnikolajsen/commit-mono/ecd81cdbd7f7eb2acaaa2f2f7e1a585676f9beff/src/fonts/fontlab/CommitMonoV143-VF.woff2");
+              font-style: normal;
+              font-weight: 400;
+              font-display: swap;
+            }
+            html {
+              line-height: 1.5;
+              height: 100%;
+            }
             body {
-              font-size: 0.86em;
+              background-color: #1c1c1c;
+              color: #fafafa;
+              height: 100%;
+              font-optical-sizing: auto;
+              font-size: 0.78em;
             }
-          }
-          @media (min-width: 480px) {
-            body {
-              font-size: 0.94em;
+            pre a {
+              text-decoration: none;
             }
-          }
-          /* auto-layout */ 
-          @media (min-width: 712px) {
+            h1, h2, h3, h4, h5, figure, p, ol, ul, pre {
+              margin: 0;
+            }
+            ol[role="list"], ul[role="list"] {
+              list-style: none;
+              padding-inline: 0;
+            }
+            img, video {
+              display: block;
+              max-inline-size: 100%;
+            }
+            code {
+              font-family: "CommitMono", monospace;
+              font-feature-settings: "ss03", "ss04", "ss05";
+              line-height: 1;
+            }
+            a {
+              color: inherit;
+            }
+            @media (min-width: 390px) {
+              body {
+                font-size: 0.86em;
+              }
+            }
+            @media (min-width: 480px) {
+              body {
+                font-size: 0.94em;
+              }
+            }
+            /* auto-layout */ 
+            @media (min-width: 712px) {
+              .auto-container {
+                max-width: 40rem;
+              }
+            }
+            @media (min-width: 640px) {
+              .auto-container {
+                border-left: 1px solid #303030;
+                border-right: 1px solid #303030;
+              }
+            }
             .auto-container {
-              max-width: 40rem;
+              margin-right: auto;
+              margin-left: auto;
             }
-          }
-          @media (min-width: 640px) {
-            .auto-container {
-              border-left: 1px solid #303030;
-              border-right: 1px solid #303030;
-            }
-          }
-          .auto-container {
-            margin-right: auto;
-            margin-left: auto;
-          }
-        """
+          """
         )
       }
       /// Xcode Styling
@@ -165,42 +167,42 @@ public struct PageLayout<Content: Page>: HTMLDocument {
   }
 }
 
-// private struct FavIcons: HTML {
-//   @Dependency(\.publicAssets) private var assets
+private struct FavIcons: HTML {
+  @Dependency(\.publicAssets) private var assets
 
-//   var body: some HTML {
-//     link(
-//       .rel("icon"),
-//       .custom(name: "type", value: "image/png"),
-//       .custom(name: "sizes", value: "16x16"),
-//       .href(assets.assets.favicon16x16Png.url.assetString)
-//     )
-//     link(
-//       .rel("icon"),
-//       .custom(name: "type", value: "image/png"),
-//       .custom(name: "sizes", value: "32x32"),
-//       .href(assets.assets.favicon32x32Png.url.assetString)
-//     )
-//     link(
-//       .rel("icon"),
-//       .custom(name: "type", value: "image/png"),
-//       .custom(name: "sizes", value: "96x96"),
-//       .href(assets.assets.favicon96x96Png.url.assetString)
-//     )
-//     link(
-//       .rel("icon"),
-//       .custom(name: "type", value: "image/png"),
-//       .custom(name: "sizes", value: "128x128"),
-//       .href(assets.assets.favicon128x128Png.url.assetString)
-//     )
-//     link(
-//       .rel("icon"),
-//       .custom(name: "type", value: "image/png"),
-//       .custom(name: "sizes", value: "196x196"),
-//       .href(assets.assets.favicon196x196Png.url.assetString)
-//     )
-//   }
-// }
+  var body: some HTML {
+    link(
+      .rel("icon"),
+      .custom(name: "type", value: "image/png"),
+      .custom(name: "sizes", value: "16x16"),
+      .href(assets.assets.favicon16x16Png.url.assetString)
+    )
+    link(
+      .rel("icon"),
+      .custom(name: "type", value: "image/png"),
+      .custom(name: "sizes", value: "32x32"),
+      .href(assets.assets.favicon32x32Png.url.assetString)
+    )
+    link(
+      .rel("icon"),
+      .custom(name: "type", value: "image/png"),
+      .custom(name: "sizes", value: "96x96"),
+      .href(assets.assets.favicon96x96Png.url.assetString)
+    )
+    link(
+      .rel("icon"),
+      .custom(name: "type", value: "image/png"),
+      .custom(name: "sizes", value: "128x128"),
+      .href(assets.assets.favicon128x128Png.url.assetString)
+    )
+    link(
+      .rel("icon"),
+      .custom(name: "type", value: "image/png"),
+      .custom(name: "sizes", value: "196x196"),
+      .href(assets.assets.favicon196x196Png.url.assetString)
+    )
+  }
+}
 
 public struct PageMetadata: Hashable, Sendable {
   public let title: String?

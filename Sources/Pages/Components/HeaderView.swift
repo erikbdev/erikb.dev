@@ -39,9 +39,11 @@ private struct CodeSelector {
       button(.aria("pressed", value: visible ? "true" : "false")) {
         code { "</>" }
       }
-      // .onClick {
-      //   visible.toggle()
-      // }
+      #if os(WASI)
+      .onClick {
+        visible.toggle()
+      }
+      #endif
       .style("font-weight", "bold")
       .style("font-size", "0.8em")
       .style("background", "unset")

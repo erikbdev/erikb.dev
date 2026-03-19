@@ -66,7 +66,7 @@ let package = Package(
       name: "Pages",
       dependencies: [
         "Shared",
-        "Routes",
+        // "Routes",
         "ActivityClient",
         "PublicAssets",
         .product(name: "ElementaryUI", package: "elementary-ui")
