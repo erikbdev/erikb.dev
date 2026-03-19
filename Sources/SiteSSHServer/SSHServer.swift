@@ -25,7 +25,7 @@ let logger = {
 @main
 struct SSHServer: AsyncParsableCommand {
   @Option(name: .shortAndLong)
-  var host = "127.0.0.1"
+  var hostname = "127.0.0.1"
 
   @Option(name: .shortAndLong)
   var port = 2222
@@ -57,7 +57,7 @@ struct SSHServer: AsyncParsableCommand {
       .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
       .childChannelOption(.allowRemoteHalfClosure, value: true)
       .childChannelOption(.socketOption(.so_reuseaddr), value: 1)
-      .bind(host: host, port: port) { channel in
+      .bind(host: hostname, port: port) { channel in
         channel.configureSSHPipeline(
           role: .server(
             SSHServerConfiguration(
@@ -77,7 +77,7 @@ struct SSHServer: AsyncParsableCommand {
         }
       }
 
-    logger.info("SSH Server started", metadata: ["host": "\(host)", "port": "\(port)"])
+    logger.info("SSH Server started", metadata: ["host": "\(hostname)", "port": "\(port)"])
 
     try await withThrowingDiscardingTaskGroup { group in
       try await serverChannel.executeThenClose { inbound in

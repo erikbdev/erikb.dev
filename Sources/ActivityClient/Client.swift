@@ -1,9 +1,8 @@
-import ClientDependency
+import Dependencies
+import DependenciesMacros
+import Foundation
 
-#if canImport(Foundation)
-  import Foundation
-#endif
-
+@DependencyClient
 public struct ActivityClient: Sendable {
   public var location: @Sendable () -> Location? = { nil }
   public var updateLocation: @Sendable (_ location: Location?) -> Void = { _ in }
@@ -19,7 +18,7 @@ extension ActivityClient {
         city: $0.city,
         state: $0.state,
         region: $0.region,
-        // timestamp: $0.timestamp,
+        timestamp: $0.timestamp,
         residency: nil
       )
     }
@@ -33,7 +32,7 @@ extension ActivityClient {
     public let city: String?
     public let state: String?
     public let region: String?
-    // public let timestamp: Date
+    public let timestamp: Date
 
     public let residency: Residency?
 
@@ -80,26 +79,27 @@ extension ActivityClient {
   }
 }
 
-#if canImport(Foundation)
-  extension ActivityClient.Location: Codable {}
-  extension ActivityClient.Location.Residency: Codable {}
-  extension ActivityClient.NowPlaying.Service: Codable {}
-  extension ActivityClient.NowPlaying: Codable {}
-  extension ActivityClient.Activity: Codable {
-    public static let encoder = {
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      return encoder
-    }()
+extension ActivityClient.Location: Codable {}
+extension ActivityClient.Location.Residency: Codable {}
+extension ActivityClient.NowPlaying.Service: Codable {}
+extension ActivityClient.NowPlaying: Codable {}
+extension ActivityClient.Activity: Codable {
+  public static let encoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+  }()
 
-    public static let decoder = {
-      let decoder = JSONDecoder()
-      decoder.dateDecodingStrategy = .iso8601
-      return decoder
-    }()
+  public static let decoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+  }()
+}
+
+extension DependencyValues {
+  public var activityClient: ActivityClient {
+    get { self[ActivityClient.self] }
+    set { self[ActivityClient.self] = newValue }
   }
-#endif
-
-extension ClientValues {
-  @Entry public var activityClient = ActivityClient.defaultClient
 }

@@ -1,8 +1,12 @@
+import Dependencies
+import PublicAssets
+
 extension Post: CaseIterable {
-  public static var allCases: [Self] {
-    [
+  public static let allCases = {
+    @Dependency(\.publicAssets) var publicAssets
+    return [
       Self(
-        // header: .video(assetsDir.assets.posts.wledAppDemo.videoWebm),
+        header: .video(publicAssets.assets.posts.wledAppDemo.videoWebm),
         title: "A WLED Client for iOS",
         content: """
           I built a native iOS app for \("WLED", url: "https://github.com/wled/WLED"), an open-source LED controller for ESP32, to control my RGB LED strips.
@@ -38,13 +42,12 @@ extension Post: CaseIterable {
         ]
       ),
       Self(
-        // header: .image(
-        //   assetsDir.assets.posts.animeNowReleased.anDiscoverWebp,
-        //   label: "Anime Now! discover image"
-        // ),
+        header: .image(
+          publicAssets.assets.posts.animeNowReleased.anDiscoverWebp,
+          label: "Anime Now! discover image"
+        ),
         title: "Anime Now! \u{2014} An iOS and macOS App",
         content: """
-
           """,
         date: Date(month: 9, day: 15, year: 2022),
         kind: .project
@@ -111,8 +114,8 @@ extension Post: CaseIterable {
         kind: .blog,
         links: [
           Post.Link(
-            title: "xtool on GitHub", 
-            href: "https://github.com/xtool-org/xtool", 
+            title: "xtool on GitHub",
+            href: "https://github.com/xtool-org/xtool",
             role: .primary
           )
         ]
@@ -120,5 +123,5 @@ extension Post: CaseIterable {
     ]
     .sorted { $0.date < $1.date }
     .filter { !$0.hidden }
-  }
+  }()
 }

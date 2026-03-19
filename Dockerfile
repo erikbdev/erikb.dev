@@ -27,23 +27,20 @@ COPY . .
 # Build the application, with optimizations, with static linking, and using jemalloc
 # N.B.: The static version of jemalloc is incompatible with the static Swift runtime.
 RUN swift build -c release \
-        --product Server \
+        --product SiteServer \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
 RUN swift build -c release \
-        --product SSHServer \
+        --product SiteSSHServer \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
 # Switch to the staging area
-WORKDIR /staging
+WORKDIR /staging-site-server
 
 # Copy HTTP Server executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/Server" ./
-
-# Copy SSH Server exutable to staging
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SSHServer" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SiteServer" ./
 
 # Copy resources bundled by SPM to staging area
 RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
@@ -52,10 +49,18 @@ RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -
 # Ensure that by default, neither the directory nor any of its contents are writable.
 # RUN [ -d /build/Public ] && { mv /build/Public ./Public && chmod -R a-w ./Public; } || true
 
+WORKDIR /staging-site-ssh-server
+
+# Copy SSH Server exutable to staging
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SiteSSHServer" ./
+
+# Copy resources bundled by SPM to staging area
+RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
+
 # ================================
-# Run HTTP Image
+# Run HTTP Server
 # ================================
-FROM debian:bookworm-slim AS deploy-http
+FROM debian:bookworm-slim AS deploy-http-server
 
 # Make sure all system packages are up to date, and install only essential packages.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -75,7 +80,7 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /ser
 WORKDIR /server
 
 # Copy built executable and any staged resources from builder
-COPY --from=build --chown=deploy:deploy /staging /server
+COPY --from=build --chown=deploy:deploy /staging-site-server /server
 
 # Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
@@ -83,17 +88,17 @@ ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=n
 # Ensure all further commands run as the deploy user
 USER deploy:deploy
 
-# Let Docker bind to port 8080
+# Let Docker bind to port
 EXPOSE 8080
 
 # Start the service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./Server"]
+ENTRYPOINT ["./SiteServer"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
 
 # ================================
 # Run SSH Image
 # ================================
-FROM debian:bookworm-slim AS deploy-ssh
+FROM debian:bookworm-slim AS deploy-ssh-server
 
 # Make sure all system packages are up to date, and install only essential packages.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -113,7 +118,7 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /ser
 WORKDIR /server
 
 # Copy built executable and any staged resources from builder
-COPY --from=build --chown=deploy:deploy /staging /server
+COPY --from=build --chown=deploy:deploy /staging-site-ssh-server /server
 
 # Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
@@ -121,9 +126,9 @@ ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=n
 # Ensure all further commands run as the deploy user
 USER deploy:deploy
 
-# Let Docker bind to port 8080
-EXPOSE 8080
+# Let Docker bind to port 
+EXPOSE 2222
 
-# Start the service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./SSHServer"]
-CMD ["--hostname", "0.0.0.0", "--port", "8080"]
+# Start the service when the image is run, default to listening on 2222 in production environment
+ENTRYPOINT ["./SiteSSHServer"]
+CMD ["--hostname", "0.0.0.0", "--port", "2222"]

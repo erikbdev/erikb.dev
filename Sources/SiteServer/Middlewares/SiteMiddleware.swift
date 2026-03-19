@@ -21,15 +21,14 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
   var body: some RouterMiddleware<Context> {
     #if DEBUG
       LiveReloadMiddleware()
+      CORSMiddleware(allowOrigin: .all)
     #endif
-
-    CORSMiddleware(allowOrigin: .all)
 
     NotFoundMiddleware()
 
     if self.publicAssets.baseURL.isFileURL {
       FileMiddleware(
-        self.publicAssets.baseURL.path(),
+        self.publicAssets.baseURL.path(percentEncoded: false),
         searchForIndexHtml: false
       )
     }
@@ -39,13 +38,19 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
         $0.currentRoute = route
       } operation: {
         switch route {
-        case .home:
+        case .pages(.home):
           return HTMLResponse {
             PageLayout(metadata: .default()) {
               HomePage(
-                codeLang: .resolve(req), 
+                codeLang: .resolve(req),
                 activity: activityClient.redactedActivity()
               )
+            }
+          }
+        case .pages(.notFound):
+          return HTMLResponse {
+            PageLayout(metadata: .default()) {
+              NotFoundPage(codeLang: .resolve(req))
             }
           }
         case .api(.activity(.all)):

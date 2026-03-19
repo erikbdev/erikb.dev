@@ -1,7 +1,7 @@
 import Dependencies
 
 extension SiteRoute: DependencyKey {
-  public static let liveValue = SiteRoute.home
+  public static let liveValue = SiteRoute.pages(.home)
 }
 
 extension SiteRoute.Router: DependencyKey {

@@ -4,10 +4,10 @@ import URLRouting
 
 @CasePathable
 public enum SiteRoute: Sendable, Equatable {
-  case home
+  case pages(PageRoute)
   case api(APIRoute)
 
-  public static let index = Self.home
+  public static let index = Self.pages(.home)
 }
 
 extension SiteRoute {
@@ -16,7 +16,9 @@ extension SiteRoute {
 
     public var body: some URLRouting.Router<SiteRoute> {
       OneOf {
-        Route(.case(SiteRoute.home))
+        Route(.case(SiteRoute.pages)) {
+          PageRoute.Router()
+        }
 
         Route(.case(SiteRoute.api)) {
           Path { "api" }

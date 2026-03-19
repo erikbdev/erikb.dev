@@ -1,8 +1,10 @@
+import PublicAssets
+
 public struct Post: Sendable {
-  public enum Header: Hashable, Sendable {
+  public enum Header: Sendable {
     // case link(String)
-    case image(String, label: String)
-    case video(String)
+    case image(GeneratedPublicAssets.ImageFile, label: String)
+    case video(GeneratedPublicAssets.VideoFile)
     case code(String, lang: CodeLang)
   }
 

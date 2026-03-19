@@ -1,5 +1,6 @@
 import ActivityClient
 import ElementaryUI
+import Routes
 import Shared
 
 @View
@@ -324,7 +325,7 @@ private struct PostView {
 
       h3 { PostTextContentView(textContent: self.post.title) }
         .style(
-          "margin-bottom", 
+          "margin-bottom",
           !self.post.content.rawValue.isEmpty ? "0.5rem" : !self.post.links.isEmpty || self.post.lastUpdated != nil ? "1rem" : "0rem"
         )
 
@@ -381,7 +382,7 @@ private struct PostHeaderView {
       //     }
       //   }
       case let .image(asset, label):
-        img(.src(asset), .aria("alt", value: label), .aria("label", value: label))
+        img(.src(asset.url.assetString), .aria("alt", value: label), .aria("label", value: label))
       case let .video(asset):
         video(
           .custom(name: "autoplay", value: ""),
@@ -390,8 +391,7 @@ private struct PostHeaderView {
           .custom(name: "controls", value: ""),
           .custom(name: "loop", value: "")
         ) {
-          source(.src(asset), .custom(name: "type", value: ""))
-          // source(.src(asset.url.assetString), .custom(name: "type", value: asset.mime))
+          source(.src(asset.url.assetString), .custom(name: "type", value: asset.mime))
           "Your browser does not support playing this video"
         }
       case let .code(rawCode, lang):

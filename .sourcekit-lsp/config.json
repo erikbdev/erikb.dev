@@ -1,5 +1,4 @@
 {
   "swiftPM": {
-    "swiftSDK": "swift-6.2.4-RELEASE_wasm-embedded"
   }
 }

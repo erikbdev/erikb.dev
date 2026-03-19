@@ -37,11 +37,17 @@ let package = Package(
     .package(path: "./swift-tau-tui"),
   ],
   targets: [
-    .target(name: "Shared"),
+    .target(
+      name: "Shared",
+      dependencies: [
+        "PublicAssets",
+      ]
+    ),
     .target(
       name: "PublicAssets",
       dependencies: [
-        "ClientDependency"
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
       ],
       resources: [.copy("assets")],
       // plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
@@ -50,45 +56,35 @@ let package = Package(
       name: "Routes",
       dependencies: [
         "ActivityClient",
-        "ClientDependency",
         .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "Hummingbird", package: "hummingbird"),
-        .product(name: "HummingbirdRouter", package: "hummingbird"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "URLRouting", package: "swift-url-routing"),
-        .product(name: "HummingbirdURLRouting", package: "swift-web"),
         .product(name: "CasePaths", package: "swift-case-paths"),
       ]
     ),
-    .executableTarget(
-      name: "SiteApp",
-      dependencies: [
-        "Pages",
-        .product(name: "ElementaryUI", package: "elementary-ui"),
-      ]
-    ),
-    .target(
+   .target(
       name: "Pages",
       dependencies: [
         "Shared",
-        // "Routes",
+        "Routes",
         "ActivityClient",
-        // "PublicAssets",
-        .product(name: "Elementary", package: "elementary"),
-        .product(name: "ElementaryUI", package: "elementary-ui"),
+        "PublicAssets",
+        .product(name: "ElementaryUI", package: "elementary-ui")
       ]
     ),
     .target(
       name: "ActivityClient",
       dependencies: [
-        "ClientDependency"
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies")
       ]
     ),
-    .target(
-      name: "ClientDependency",
+    /// SiteApp (WASM)
+    .executableTarget(
+      name: "SiteApp",
       dependencies: [
-        .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS]))
+        "Pages",
+        .product(name: "ElementaryUI", package: "elementary-ui")
       ]
     ),
     /// SiteServer
@@ -100,11 +96,12 @@ let package = Package(
         "Pages",
         "ActivityClient",
         "PublicAssets",
-        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
+        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "HummingbirdURLRouting", package: "swift-web"),
         .product(name: "MiddlewareUtils", package: "swift-web"),
       ]
     ),
@@ -113,10 +110,10 @@ let package = Package(
       name: "SiteSSHServer",
       dependencies: [
         "Shared",
+        .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Logging", package: "swift-log"),
         .product(name: "TauTUI", package: "swift-tau-tui"),
         "TinyStore",
@@ -125,12 +122,12 @@ let package = Package(
     .target(
       name: "TinyStore",
       dependencies: [
-        .product(name: "SwiftNavigation", package: "swift-navigation"),
-        .product(name: "Perception", package: "swift-perception"),
         .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
         .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "Logging", package: "swift-log"),
         .product(name: "CasePaths", package: "swift-case-paths"),
+        .product(name: "Perception", package: "swift-perception"),
+        .product(name: "Logging", package: "swift-log"),
+        .product(name: "SwiftNavigation", package: "swift-navigation"),
       ]
     ),
   ],

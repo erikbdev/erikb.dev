@@ -1,7 +1,7 @@
-import ClientDependency
+import Dependencies 
 
-extension ActivityClient: ClientKey {
-  public static var defaultClient: ActivityClient {
+extension ActivityClient: DependencyKey {
+  public static let liveValue: ActivityClient = {
     let state = LockIsolated((Location?.none, NowPlaying?.none))
     return ActivityClient(
       location: { state.withValue { $0.0 } },
@@ -13,5 +13,5 @@ extension ActivityClient: ClientKey {
         state.withValue { $0.1 = nowPlaying }
       }
     )
-  }
+  }()
 }
