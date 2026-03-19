@@ -78,6 +78,8 @@ public struct PageLayout<Content: Page>: HTMLDocument {
             background-color: #1c1c1c;
             color: #fafafa;
             height: 100%;
+            font-optical-sizing: auto;
+            font-size: 0.78em;
           }
           pre a {
             text-decoration: none;
@@ -98,16 +100,8 @@ public struct PageLayout<Content: Page>: HTMLDocument {
             font-feature-settings: "ss03", "ss04", "ss05";
             line-height: 1;
           }
-          [v-cloak] {
-            display: none;
-          }
           a {
             color: inherit;
-          }
-
-          body {
-            font-optical-sizing: auto;
-            font-size: 0.78em;
           }
 
           @media (min-width: 390px) {
@@ -120,14 +114,6 @@ public struct PageLayout<Content: Page>: HTMLDocument {
             body {
               font-size: 0.94em;
             }
-          }
-
-          .postCodeBlock {
-            padding: 0.75rem;
-            background: #242424;
-            border: 1.5px solid #3A3A3A;
-            overflow-x: auto;
-            font-size: 0.85em;
           }
           """
         )

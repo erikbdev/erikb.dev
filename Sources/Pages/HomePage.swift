@@ -323,12 +323,15 @@ private struct PostView {
       }
 
       h3 { PostTextContentView(textContent: self.post.title) }
-        .style("margin-bottom", self.post.content.rawValue.isEmpty && self.post.links.isEmpty && self.post.lastUpdated == nil ? "0rem" : "0.5rem")
+        .style(
+          "margin-bottom", 
+          !self.post.content.rawValue.isEmpty ? "0.5rem" : !self.post.links.isEmpty || self.post.lastUpdated != nil ? "1rem" : "0rem"
+        )
 
       if !self.post.content.rawValue.isEmpty {
         p { PostTextContentView(textContent: self.post.content) }
           .style("white-space", "pre-wrap")
-          .style("margin-bottom",  self.post.lastUpdated == nil ? "0rem" : "1rem")
+          .style("margin-bottom", self.post.links.isEmpty && self.post.lastUpdated == nil ? "0rem" : "1rem")
       }
 
       if !self.post.links.isEmpty || self.post.lastUpdated != nil {
@@ -365,7 +368,7 @@ private struct PostHeaderView {
   let postHeader: Post.Header
 
   var body: some View {
-    section(.class("postCodeBlock")) {
+    section {
       switch self.postHeader {
       // case let .link(link):
       //   a(
@@ -397,11 +400,15 @@ private struct PostHeaderView {
             rawCode
           }
         }
+        .style("padding", "0.75rem")
+        .style("font-size", "0.85em")
       }
     }
+    .style("background", "#242423")
+    .style("border", "1.5px solid #3A3A3A")
+    .style("overflow-x", "auto")
     .style("width", "100%")
     .style("margin-bottom", "1.25rem")
-    .style("border", "1.5px solid #3A3A3A")
   }
 }
 
