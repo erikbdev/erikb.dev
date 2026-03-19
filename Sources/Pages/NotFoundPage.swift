@@ -88,7 +88,6 @@ public struct NotFoundPage: Page {
           .style("background-size", "12px 12px")
         }
         .wrappedStyling()
-
       }
       Spacer()
       FooterView()

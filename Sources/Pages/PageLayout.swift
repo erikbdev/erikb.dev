@@ -103,19 +103,33 @@ public struct PageLayout<Content: Page>: HTMLDocument {
           a {
             color: inherit;
           }
-
           @media (min-width: 390px) {
             body {
               font-size: 0.86em;
             }
           }
-
           @media (min-width: 480px) {
             body {
               font-size: 0.94em;
             }
           }
-          """
+          /* auto-layout */ 
+          @media (min-width: 712px) {
+            .auto-container {
+              max-width: 40rem;
+            }
+          }
+          @media (min-width: 640px) {
+            .auto-container {
+              border-left: 1px solid #303030;
+              border-right: 1px solid #303030;
+            }
+          }
+          .auto-container {
+            margin-right: auto;
+            margin-left: auto;
+          }
+        """
         )
       }
       /// Xcode Styling
