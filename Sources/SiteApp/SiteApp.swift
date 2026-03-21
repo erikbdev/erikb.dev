@@ -36,10 +36,10 @@ struct SiteApp {
     } operation: {
       switch page {
       case .home:
-        Application(HomePage(codeLang: .swift, activity: nil))
+        Application(HomePage(codeLang: .markdown, activity: nil))
           .mount(in: .body)
       case .notFound:
-        Application(NotFoundPage(codeLang: .swift))
+        Application(NotFoundPage(codeLang: .markdown))
           .mount(in: .body)
       }
     }
