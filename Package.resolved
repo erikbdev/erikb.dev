@@ -1,5 +1,5 @@
 {
-  "originHash" : "53f14082c1be0f86a638751e539fc5b441e08c9b65d0ebac0725750961bd329d",
+  "originHash" : "d2ed55f74d533919020e9bfd238e4b0a244d03d339bc3fcf249a6f87e4b1f958",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -345,10 +345,9 @@
     {
       "identity" : "swift-url-routing",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-url-routing.git",
+      "location" : "https://github.com/erikbdev/swift-url-routing.git",
       "state" : {
-        "revision" : "1cfd564259ecb1d324bb718a8f03e513dab738d2",
-        "version" : "0.6.2"
+        "revision" : "459063d23b1dd726972309e47d681c45763b55d1"
       }
     },
     {

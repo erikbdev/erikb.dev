@@ -8,7 +8,7 @@ public struct HomePage: Page {
   public let title = "Portfolio | erikb.dev"
 
   @State var codeLang: CodeLang
-  let activity: ActivityClient.Activity?
+  @State var activity: ActivityClient.Activity?
 
   public init(codeLang: CodeLang, activity: ActivityClient.Activity?) {
     self.codeLang = codeLang

@@ -8,8 +8,9 @@ let package = Package(
     .macOS(.v14)
   ],
   products: [
-    .executable(name: "SiteSSHServer", targets: ["SiteSSHServer"]),
+    .executable(name: "SiteApp", targets: ["SiteApp"]),
     .executable(name: "SiteServer", targets: ["SiteServer"]),
+    .executable(name: "SiteSSHServer", targets: ["SiteSSHServer"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.4.0"),
@@ -18,6 +19,7 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
+    .package(url: "https://github.com/erikbdev/swift-url-routing.git", revision: "459063d23b1dd726972309e47d681c45763b55d1"),
 
     .package(path: "./elementary"),
     // .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
@@ -28,10 +30,12 @@ let package = Package(
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
-    .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.6.2"),
 
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
     .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
+
+    .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.40.0"),
+
     // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
     .package(path: "./swift-tau-tui"),
@@ -66,10 +70,11 @@ let package = Package(
       name: "Pages",
       dependencies: [
         "Shared",
-        // "Routes",
+        "Routes",
         "ActivityClient",
         "PublicAssets",
-        .product(name: "ElementaryUI", package: "elementary-ui")
+        .product(name: "ElementaryUI", package: "elementary-ui"),
+        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi]))
       ]
     ),
     .target(
@@ -84,7 +89,9 @@ let package = Package(
       name: "SiteApp",
       dependencies: [
         "Pages",
-        .product(name: "ElementaryUI", package: "elementary-ui")
+        "Routes",
+        .product(name: "ElementaryUI", package: "elementary-ui"),
+        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi]))
       ]
     ),
     /// SiteServer

@@ -164,6 +164,16 @@ public struct PageLayout<Content: Page>: HTMLDocument {
 
   public var body: some HTML {
     page
+
+    // WASM
+    script(.type(.module)) {
+      HTMLRaw(
+        """
+        import { init } from "/assets/wasm/index.js";
+        init();
+        """
+      )
+    }
   }
 }
 
