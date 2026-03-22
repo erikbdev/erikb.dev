@@ -1,7 +1,7 @@
-import ActivityClient
 import CasePaths
 import Foundation
 import URLRouting
+import Models
 
 extension SiteRoute {
   @CasePathable
@@ -14,8 +14,8 @@ extension SiteRoute.APIRoute {
   @CasePathable
   public enum ActivityRoute: Sendable, Equatable {
     case all
-    case location(ActivityClient.Location?)
-    case nowPlaying(ActivityClient.NowPlaying?)
+    case location(Activity.Location?)
+    case nowPlaying(Activity.NowPlaying?)
   }
 }
 
@@ -33,7 +33,7 @@ extension SiteRoute.APIRoute {
               Method.post
               Path { "location" }
               Optionally {
-                Body(.json(ActivityClient.Location.self, decoder: ActivityClient.Activity.decoder, encoder: ActivityClient.Activity.encoder))
+                Body(.json(Activity.Location.self, decoder: Activity.decoder, encoder: Activity.encoder))
               }
             }
 
@@ -41,7 +41,7 @@ extension SiteRoute.APIRoute {
               Method.post
               Path { "now-playing" }
               Optionally {
-                Body(.json(ActivityClient.NowPlaying.self, decoder: ActivityClient.Activity.decoder, encoder: ActivityClient.Activity.encoder))
+                Body(.json(Activity.NowPlaying.self, decoder: Activity.decoder, encoder: Activity.encoder))
               }
             }
           }

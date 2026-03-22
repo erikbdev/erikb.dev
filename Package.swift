@@ -42,9 +42,9 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "Shared",
+      name: "Models",
       dependencies: [
-        "PublicAssets",
+        "PublicAssets"
       ]
     ),
     .target(
@@ -59,29 +59,21 @@ let package = Package(
     .target(
       name: "Routes",
       dependencies: [
-        "ActivityClient",
+        "Models",
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "URLRouting", package: "swift-url-routing"),
         .product(name: "CasePaths", package: "swift-case-paths"),
       ]
     ),
-   .target(
+    .target(
       name: "Pages",
       dependencies: [
-        "Shared",
+        "Models",
         "Routes",
-        "ActivityClient",
         "PublicAssets",
         .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi]))
-      ]
-    ),
-    .target(
-      name: "ActivityClient",
-      dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies")
+        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
       ]
     ),
     /// SiteApp (WASM)
@@ -91,20 +83,20 @@ let package = Package(
         "Pages",
         "Routes",
         .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi]))
+        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
       ]
     ),
     /// SiteServer
     .executableTarget(
       name: "SiteServer",
       dependencies: [
-        "Shared",
+        "Models",
         "Routes",
         "Pages",
-        "ActivityClient",
         "PublicAssets",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
@@ -116,7 +108,7 @@ let package = Package(
     .executableTarget(
       name: "SiteSSHServer",
       dependencies: [
-        "Shared",
+        "Models",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),

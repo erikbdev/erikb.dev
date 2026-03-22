@@ -1,5 +1,5 @@
 import ElementaryUI
-import Shared
+import Models
 
 @View
 struct SectionView<Header: View, Content: View> {

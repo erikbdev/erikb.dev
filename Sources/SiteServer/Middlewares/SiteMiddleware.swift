@@ -1,4 +1,3 @@
-import ActivityClient
 import Dependencies
 import Elementary
 import Hummingbird
@@ -9,13 +8,13 @@ import MiddlewareUtils
 import Pages
 import PublicAssets
 import Routes
-import Shared
+import Models 
 
 import class Foundation.JSONEncoder
 
 struct SiteMiddleware<Context: RequestContext>: RouterController {
   @Dependency(\.siteRouter) private var siteRouter
-  @Dependency(ActivityClient.self) private var activityClient
+  @Dependency(\.activity) private var activityClient
   @Dependency(\.publicAssets) private var publicAssets
 
   var body: some RouterMiddleware<Context> {
@@ -43,7 +42,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
             PageLayout(metadata: .default()) {
               HomePage(
                 codeLang: .resolve(req),
-                activity: activityClient.redactedActivity()
+                activity: activityClient.activity()?.redacted
               )
             }
           }
@@ -55,7 +54,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
           }
         case .api(.activity(.all)):
           do {
-            return try ActivityClient.Activity.encoder.encode(self.activityClient.redactedActivity(), from: req, context: ctx)
+            return try Activity.encoder.encode(self.activityClient.activity()?.redacted, from: req, context: ctx)
           } catch {
             throw HTTPError(.forbidden)
           }
@@ -118,8 +117,7 @@ extension PageMetadata {
 extension CodeLang {
   fileprivate static func resolve(_ req: Request) -> CodeLang {
     req.uri.queryParameters["codeLang"]
-      .flatMap {
-        CodeLang(rawValue: $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
-      } ?? .markdown
+      .flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+      .flatMap(CodeLang.init(rawValue:)) ?? .markdown
   }
 }

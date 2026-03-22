@@ -1,16 +1,15 @@
-import ActivityClient
 import ElementaryUI
 // import Routes
-import Shared
+import Models
 
 @View
 public struct HomePage: Page {
   public let title = "Portfolio | erikb.dev"
 
   @State var codeLang: CodeLang
-  @State var activity: ActivityClient.Activity?
+  @State var activity: Activity?
 
-  public init(codeLang: CodeLang, activity: ActivityClient.Activity?) {
+  public init(codeLang: CodeLang, activity: Activity?) {
     self.codeLang = codeLang
     self.activity = activity
   }
@@ -34,11 +33,11 @@ public struct HomePage: Page {
 @View
 private struct UserView {
   let selected: CodeLang
-  let activity: ActivityClient.Activity?
+  let activity: Activity?
 
-  var location: ActivityClient.Location? { self.activity?.location }
+  var location: Activity.Location? { self.activity?.location }
 
-  var residency: ActivityClient.Location.Residency? {
+  var residency: Activity.Location.Residency? {
     self.location?.residency
   }
 
