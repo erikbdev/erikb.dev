@@ -1,5 +1,4 @@
 import ElementaryUI
-// import Routes
 import Models
 
 @View
@@ -27,6 +26,13 @@ public struct HomePage: Page {
       FooterView()
     }
     .style("overflow-x", "hidden")
+    #if os(WASI)
+      .task {
+        // TODO: fetch latest activity information.
+        print("Task ran.")
+        
+      }
+    #endif
   }
 }
 
@@ -343,7 +349,8 @@ private struct PostView {
               }
             }
             .style("display", "flex")
-            .style("gap", "1rem")
+            .style("gap", "0.75rem")
+            .style("flex-wrap", "wrap")
           }
 
           if let dateUpdated = self.post.dateUpdated {
