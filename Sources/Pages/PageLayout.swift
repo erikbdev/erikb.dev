@@ -1,6 +1,5 @@
-import Dependencies
+import Models
 import ElementaryUI
-import PublicAssets
 
 public struct PageLayout<Content: Page>: HTMLDocument {
   let metadata: PageMetadata
@@ -178,38 +177,38 @@ public struct PageLayout<Content: Page>: HTMLDocument {
 }
 
 private struct FavIcons: HTML {
-  @Dependency(\.publicAssets) private var assets
+  var publicAssets: GeneratedPublicAssets { GeneratedPublicAssets.publicAssets }
 
   var body: some HTML {
     link(
       .rel("icon"),
       .custom(name: "type", value: "image/png"),
       .custom(name: "sizes", value: "16x16"),
-      .href(assets.assets.favicon16x16Png.url.assetString)
+      .href(publicAssets.assets.favicon16x16Png.path)
     )
     link(
       .rel("icon"),
       .custom(name: "type", value: "image/png"),
       .custom(name: "sizes", value: "32x32"),
-      .href(assets.assets.favicon32x32Png.url.assetString)
+      .href(publicAssets.assets.favicon32x32Png.path)
     )
     link(
       .rel("icon"),
       .custom(name: "type", value: "image/png"),
       .custom(name: "sizes", value: "96x96"),
-      .href(assets.assets.favicon96x96Png.url.assetString)
+      .href(publicAssets.assets.favicon96x96Png.path)
     )
     link(
       .rel("icon"),
       .custom(name: "type", value: "image/png"),
       .custom(name: "sizes", value: "128x128"),
-      .href(assets.assets.favicon128x128Png.url.assetString)
+      .href(publicAssets.assets.favicon128x128Png.path)
     )
     link(
       .rel("icon"),
       .custom(name: "type", value: "image/png"),
       .custom(name: "sizes", value: "196x196"),
-      .href(assets.assets.favicon196x196Png.url.assetString)
+      .href(publicAssets.assets.favicon196x196Png.path)
     )
   }
 }

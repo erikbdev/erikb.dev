@@ -9,4 +9,4 @@
 # vscode
 .vscode
 
-Sources/PublicAssets/assets/wasm
+public/assets/wasm

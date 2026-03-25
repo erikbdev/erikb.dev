@@ -1,17 +1,23 @@
+#if !os(WASI)
 import CasePaths
 import Foundation
 import URLRouting
+#endif
 import Models
 
 extension SiteRoute {
+  #if !os(WASI)
   @CasePathable
+  #endif
   public enum APIRoute: Sendable, Equatable {
     case activity(ActivityRoute)
   }
 }
 
 extension SiteRoute.APIRoute {
+  #if !os(WASI)
   @CasePathable
+  #endif
   public enum ActivityRoute: Sendable, Equatable {
     case all
     case location(Activity.Location?)
@@ -19,6 +25,8 @@ extension SiteRoute.APIRoute {
   }
 }
 
+
+#if !os(WASI)
 extension SiteRoute.APIRoute {
   struct Router: Sendable, ParserPrinter {
     var body: some URLRouting.Router<SiteRoute.APIRoute> {
@@ -50,3 +58,4 @@ extension SiteRoute.APIRoute {
     }
   }
 }
+#endif

@@ -1,9 +1,6 @@
-import Dependencies
-import PublicAssets
-
 extension Post: CaseIterable {
   public static let allCases = {
-    @Dependency(\.publicAssets) var publicAssets
+    let publicAssets = GeneratedPublicAssets.publicAssets
     return [
       Self(
         header: .video(publicAssets.assets.posts.wledAppDemo.videoWebm),

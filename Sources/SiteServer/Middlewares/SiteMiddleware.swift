@@ -6,7 +6,6 @@ import HummingbirdRouter
 import HummingbirdURLRouting
 import MiddlewareUtils
 import Pages
-import PublicAssets
 import Routes
 import Models 
 
@@ -15,7 +14,6 @@ import class Foundation.JSONEncoder
 struct SiteMiddleware<Context: RequestContext>: RouterController {
   @Dependency(\.siteRouter) private var siteRouter
   @Dependency(\.activity) private var activityClient
-  @Dependency(\.publicAssets) private var publicAssets
 
   var body: some RouterMiddleware<Context> {
     #if DEBUG
@@ -25,12 +23,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
 
     NotFoundMiddleware()
 
-    if self.publicAssets.baseURL.isFileURL {
-      FileMiddleware(
-        self.publicAssets.baseURL.path(percentEncoded: false),
-        searchForIndexHtml: false
-      )
-    }
+    FileMiddleware(searchForIndexHtml: false)
 
     URLRoutingMiddleware(self.siteRouter) { req, ctx, route in
       try withDependencies {
@@ -103,12 +96,10 @@ private struct NotFoundMiddleware<Context: RequestContext>: RouterMiddleware {
 
 extension PageMetadata {
   fileprivate static func `default`() -> Self {
-    @Dependency(\.publicAssets) var assets
-
-    return Self(
+    Self(
       title: "Erik Bautista Santibanez",
       description: "A software developer specialized in mobile and web applications.",
-      image: assets.assets.og.cardPng.url.assetString,
+      image: GeneratedPublicAssets.publicAssets.assets.og.cardPng.path,
       url: "https://erikb.dev"
     )
   }

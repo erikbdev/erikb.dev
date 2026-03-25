@@ -1,8 +1,13 @@
+#if !os(WASI)
 import CasePaths
 import Foundation
 import URLRouting
+#endif
 
+
+#if !os(WASI)
 @CasePathable
+#endif
 public enum SiteRoute: Sendable, Equatable {
   case pages(PageRoute)
   case api(APIRoute)
@@ -10,6 +15,7 @@ public enum SiteRoute: Sendable, Equatable {
   public static let index = Self.pages(.home)
 }
 
+#if !os(WASI)
 extension SiteRoute {
   public struct Router: Sendable, ParserPrinter {
     public init() {}
@@ -28,3 +34,4 @@ extension SiteRoute {
     }
   }
 }
+#endif

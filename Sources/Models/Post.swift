@@ -1,5 +1,3 @@
-import PublicAssets
-
 public struct Post: Sendable {
   public enum Header: Sendable {
     // case link(String)

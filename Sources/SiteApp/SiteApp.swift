@@ -1,5 +1,4 @@
-import Dependencies
-import ElementaryUI
+// import ElementaryUI
 import JavaScriptKit
 import Pages
 import Routes
@@ -8,8 +7,6 @@ import Routes
 @main
 struct SiteApp {
   static func main() throws {
-    @Dependency(\.siteRouter) var siteRouter
-
     // TODO: ideally make it similar to petite-vue.
     // make it so that all components are reactive with data inside of each
     // element.
@@ -24,24 +21,24 @@ struct SiteApp {
       return
     }
 
-    guard case .pages(let page) = (try? siteRouter.match(path: url)) ?? .pages(.notFound) else {
-      print("Failed to identify page")
-      return
-    }
+    // guard case .pages(let page) = (try? siteRouter.match(path: url)) ?? .pages(.notFound) else {
+    //   print("Failed to identify page")
+    //   return
+    // }
 
-    print("matched route with page: \(page)")
+    // print("matched route with page: \(page)")
 
-    withDependencies {
-      $0.currentRoute = .pages(page)
-    } operation: {
-      switch page {
-      case .home:
-        Application(HomePage(codeLang: .markdown, activity: nil))
-          .mount(in: .body)
-      case .notFound:
-        Application(NotFoundPage(codeLang: .markdown))
-          .mount(in: .body)
-      }
-    }
+    // withDependencies {
+    //   $0.currentRoute = .pages(page)
+    // } operation: {
+    //   switch page {
+    //   case .home:
+    //     Application(HomePage(codeLang: .markdown, activity: nil))
+    //       .mount(in: .body)
+    //   case .notFound:
+    //     Application(NotFoundPage(codeLang: .markdown))
+    //       .mount(in: .body)
+    //   }
+    // }
   }
 }

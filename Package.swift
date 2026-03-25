@@ -44,26 +44,18 @@ let package = Package(
     .target(
       name: "Models",
       dependencies: [
-        "PublicAssets"
+        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
       ]
-    ),
-    .target(
-      name: "PublicAssets",
-      dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
-      ],
-      resources: [.copy("assets")],
-      // plugins: [.plugin(name: "TypedAssetsPlugin", package: "swift-web")]
     ),
     .target(
       name: "Routes",
       dependencies: [
         "Models",
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "DependenciesMacros", package: "swift-dependencies"),
-        .product(name: "URLRouting", package: "swift-url-routing"),
-        .product(name: "CasePaths", package: "swift-case-paths"),
+        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "URLRouting", package: "swift-url-routing", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "CasePaths", package: "swift-case-paths", condition: .when(platforms: [.linux, .macOS])),
       ]
     ),
     .target(
@@ -71,7 +63,6 @@ let package = Package(
       dependencies: [
         "Models",
         "Routes",
-        "PublicAssets",
         .product(name: "ElementaryUI", package: "elementary-ui"),
         .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
       ]
@@ -93,7 +84,6 @@ let package = Package(
         "Models",
         "Routes",
         "Pages",
-        "PublicAssets",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
