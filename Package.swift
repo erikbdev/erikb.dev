@@ -74,7 +74,7 @@ let package = Package(
         "Pages",
         "Routes",
         .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
+        .product(name: "JavaScriptKit", package: "JavaScriptKit"),
       ]
     ),
     /// SiteServer

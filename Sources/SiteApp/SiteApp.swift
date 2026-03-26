@@ -1,6 +1,6 @@
-// import ElementaryUI
+import ElementaryUI
 import JavaScriptKit
-import Pages
+// import Pages
 import Routes
 
 /// The entry for Client-side rendering using WASM
