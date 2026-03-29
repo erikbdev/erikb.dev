@@ -1,11 +1,11 @@
-#if !os(WASI)
+#if !hasFeature(Embedded)
 import CasePaths
 import Foundation
 import URLRouting
 #endif
 
 
-#if !os(WASI)
+#if !hasFeature(Embedded)
 @CasePathable
 #endif
 public enum SiteRoute: Sendable, Equatable {
@@ -15,7 +15,7 @@ public enum SiteRoute: Sendable, Equatable {
   public static let index = Self.pages(.home)
 }
 
-#if !os(WASI)
+#if !hasFeature(Embedded)
 extension SiteRoute {
   public struct Router: Sendable, ParserPrinter {
     public init() {}

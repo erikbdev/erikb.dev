@@ -26,18 +26,11 @@ public struct HomePage: Page {
       FooterView()
     }
     .style("overflow-x", "hidden")
-    #if os(WASI)
-      .task {
-        // TODO: fetch latest activity information.
-        print("Task ran.")
-        
-      }
-    #endif
   }
 }
 
 @View
-private struct UserView {
+struct UserView {
   let selected: CodeLang
   let activity: Activity?
 
@@ -79,7 +72,10 @@ private struct UserView {
     """
 
   var body: some View {
-    SectionView(id: "user", selected: selected) { [residency, currentLocation, nowPlaying] lang in
+    SectionView(
+      id: "user",
+      selected: selected
+    ) { [residency, currentLocation, nowPlaying] lang in
       switch lang {
       case .swift:
         """
@@ -227,7 +223,7 @@ private struct UserView {
 }
 
 @View
-private struct UserPropertyButton {
+struct UserPropertyButton {
   let label: String
   let value: String
   let codeLang: CodeLang
@@ -244,7 +240,7 @@ private struct UserPropertyButton {
 }
 
 @View
-private struct PostsView {
+struct PostsView {
   let selected: CodeLang
 
   static let description = "A curated list of projects I've worked on."
@@ -289,7 +285,7 @@ private struct PostsView {
 }
 
 @View
-private struct PostView {
+struct PostView {
   let number: Int
   let post: Post
   let selected: CodeLang
@@ -371,7 +367,7 @@ private struct PostView {
 }
 
 @View
-private struct PostHeaderView {
+struct PostHeaderView {
   let postHeader: Post.Header
 
   var body: some View {
@@ -419,16 +415,16 @@ private struct PostHeaderView {
 }
 
 @View
-private struct PostTextContentView {
+struct PostTextContentView {
   let textContent: Post.TextContent
 
   var body: some View {
     for element in textContent.content {
       switch element {
-      case .text(let text): HTMLText(text)
+      case .text(let text): HTMLText("\(text)")
       case let .link(title, url):
-        a(.target(.blank), .href(url)) {
-          HTMLText(title)
+        a(.target(.blank), .href("\(url)")) {
+          HTMLText("\(title)")
         }
       }
     }
@@ -436,7 +432,7 @@ private struct PostTextContentView {
 }
 
 @View
-private struct PostLinkView {
+struct PostLinkView {
   let link: Post.Link
 
   var body: some View {
@@ -481,8 +477,8 @@ private struct PostLinkView {
   }
 }
 
-extension HTML where Tag: HTMLTrait.Attributes.Global {
-  fileprivate func primaryButtonStyle() -> _AttributedElement<Self> {
+extension HTML where Self: _Attributed, Tag: HTMLTrait.Attributes.Global {
+  fileprivate func primaryButtonStyle() -> Self {
     self.style(
       [
         "all": "unset",
@@ -496,7 +492,7 @@ extension HTML where Tag: HTMLTrait.Attributes.Global {
     )
   }
 
-  fileprivate func secondaryButtonStyle() -> _AttributedElement<Self> {
+  fileprivate func secondaryButtonStyle() -> Self {
     self.primaryButtonStyle()
       .style(
         [
@@ -506,7 +502,7 @@ extension HTML where Tag: HTMLTrait.Attributes.Global {
       )
   }
 
-  fileprivate func buttonStyle(isPrimary: Bool = true) -> _AttributedElement<Self> {
+  fileprivate func buttonStyle(isPrimary: Bool = true) -> Self {
     if isPrimary {
       self.primaryButtonStyle()
     } else {

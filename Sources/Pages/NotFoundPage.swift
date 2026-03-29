@@ -21,10 +21,20 @@ public struct NotFoundPage: Page {
         section {
           div {
             div {
+              // file tag
               pre {
                 a(.href("/not-found")) {
                   code {
-                    CodeLang.slugToFileName("not-found", lang: codeLang)
+                    switch codeLang {
+                    case .swift:
+                      "NotFound.swift"
+                    case .typescript:
+                      "notFound.ts"
+                    case .markdown:
+                      "not-found.md"
+                    case .rust:
+                      "not-found.rs"
+                    }
                   }
                 }
                 .style("color", "#777")

@@ -3,7 +3,7 @@ import Models
 
 @View
 struct SectionView<Header: View, Content: View> {
-  let id: String
+  let id: String 
   var selected: CodeLang
   @HTMLBuilder let header: @Sendable (CodeLang) -> Header
   @HTMLBuilder let content: @Sendable () -> Content
@@ -16,7 +16,7 @@ struct SectionView<Header: View, Content: View> {
             pre {
               a(.href("#\(self.id)")) {
                 code {
-                  CodeLang.slugToFileName(self.id, lang: selected)
+                  // self.selected.slug(id)
                 }
               }
               .style("color", "#777")

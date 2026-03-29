@@ -12,7 +12,7 @@ public struct Post: Sendable {
     case education
     case experience
 
-    public var tabTitle: String {
+    public var tabTitle: StaticString {
       switch self {
       case .blog: "Blog"
       case .project: "Projects"
@@ -22,13 +22,13 @@ public struct Post: Sendable {
     }
   }
 
-  public struct TextContent: Hashable, Sendable {
-    public enum Element: Hashable, Sendable {
-      case text(String)
-      case link(title: String, url: String)
+  public struct TextContent: Sendable {
+    public enum Element: Sendable {
+      case text(StaticString)
+      case link(title: StaticString, url: StaticString)
       // case code()
 
-      var rawValue: String {
+      var rawValue: StaticString {
         switch self {
         case .text(let value): value
         case .link(let value, _): value
@@ -39,12 +39,12 @@ public struct Post: Sendable {
     public private(set) var content: [Element] = []
 
     public var rawValue: String {
-      content.compactMap { $0.rawValue }
+      content.compactMap {$0.rawValue.withUTF8Buffer { ptr in String(decoding: ptr, as: UTF8.self) }}
         .joined()
     }
   }
 
-  public struct Date: Hashable, Comparable, Sendable {
+  public struct Date: Comparable, Sendable {
     let month: Int
     let day: Int
     let year: Int
@@ -54,7 +54,7 @@ public struct Post: Sendable {
     }
   }
 
-  public struct Link: Hashable, Sendable {
+  public struct Link: Sendable {
     public enum Role: String, CaseIterable, Hashable, Sendable {
       case primary
       case secondary
@@ -64,7 +64,7 @@ public struct Post: Sendable {
     public let href: String
     public let role: Role
 
-    public var isExternal: Bool { !self.href.hasPrefix("/") }
+    public var isExternal: Bool { self.href.utf8.first != 0x2F }
   }
 
   public internal(set) var header: Header?
@@ -89,34 +89,33 @@ public struct Post: Sendable {
   }
 
   public var slug: String {
-    "\(self.date.year)\(self.date.month)\(self.date.day)-\(self.title.rawValue.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
+    // "\(self.date.year)\(self.date.month)\(self.date.day)-\(self.title.rawValue.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
+    ""
   }
 }
 
 extension Post.TextContent: ExpressibleByStringInterpolation {
   public struct StringInterpolation: StringInterpolationProtocol {
-    public typealias StringLiteralType = String
-
     var storage: [Post.TextContent.Element] = []
 
     public init(literalCapacity: Int, interpolationCount: Int) {
       self.storage.reserveCapacity(literalCapacity + interpolationCount)
     }
 
-    public mutating func appendLiteral(_ literal: String) {
+    public mutating func appendLiteral(_ literal: StaticString) {
       self.storage.append(.text(literal))
     }
 
-    public mutating func appendInterpolation(_ value: String) {
+    public mutating func appendInterpolation(_ value: StaticString) {
       self.storage.append(.text(value))
     }
 
-    public mutating func appendInterpolation(_ title: String, url: String) {
+    public mutating func appendInterpolation(_ title: StaticString, url: StaticString) {
       self.storage.append(.link(title: title, url: url))
     }
   }
 
-  public init(stringLiteral value: String) {
+  public init(stringLiteral value: StaticString) {
     self.init()
     self.content.append(.text(value))
   }

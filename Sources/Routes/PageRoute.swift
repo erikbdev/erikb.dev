@@ -1,10 +1,10 @@
-#if !os(WASI)
+#if !hasFeature(Embedded)
 import CasePaths
 import URLRouting
 #endif
 
 extension SiteRoute {
-  #if !os(WASI)
+  #if !hasFeature(Embedded)
   @CasePathable
   #endif
   public enum PageRoute: Sendable, Equatable {
@@ -13,7 +13,7 @@ extension SiteRoute {
   }
 }
 
-#if !os(WASI)
+#if !hasFeature(Embedded)
 extension SiteRoute.PageRoute {
   struct Router: Sendable, ParserPrinter {
     var body: some URLRouting.Router<SiteRoute.PageRoute> {

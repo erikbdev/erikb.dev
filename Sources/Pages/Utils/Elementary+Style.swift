@@ -1,23 +1,19 @@
 import ElementaryUI
 
-extension _AttributedElement where Tag: HTMLTrait.Attributes.Global {
-  func style(_ name: String, _ value: String) -> Self { 
-    self.attributes(.style([name: value]))
+extension HTML where Self: _Attributed, Tag: HTMLTrait.Attributes.Global {
+  func style(_ name: String, _ value: String, condition: Bool = true) -> Self {
+    if condition {
+      self.attributes(.style([name: value]))
+    } else {
+      self
+    }
   }
 
-  func style(_ nameValuePair: KeyValuePairs<String, String>) -> Self {
-    self.attributes(.style(nameValuePair))
-  }
-}
-
-extension HTML where Tag: HTMLTrait.Attributes.Global {
-  @_disfavoredOverload
-  func style(_ name: String, _ value: String) -> _AttributedElement<Self> { 
-    self.attributes(.style([name: value]))
-  }
-
-  @_disfavoredOverload
-  func style(_ nameValuePair: KeyValuePairs<String, String>) -> _AttributedElement<Self> {
-    self.attributes(.style(nameValuePair))
+  func style(_ nameValuePair: KeyValuePairs<String, String>, condition: Bool = true) -> Self {
+    if condition {
+      self.attributes(.style(nameValuePair))
+    } else {
+      self
+    }
   }
 }

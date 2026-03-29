@@ -4,6 +4,3 @@
 [submodule "elementary-ui"]
 	path = elementary-ui
 	url = git@github.com:erikbdev/elementary-ui
-[submodule "elementary"]
-	path = elementary
-	url = git@github.com:erikbdev/elementary

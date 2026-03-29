@@ -1,7 +1,7 @@
 import ElementaryUI
 
-extension HTML where Tag: HTMLTrait.Attributes.Global {
-  func svgIconStyling() -> _AttributedElement<Self> {
+extension HTML where Self: _Attributed, Tag: HTMLTrait.Attributes.Global {
+  func svgIconStyling() -> Self {
     self.style([
       "display": "inline-block",
       "vertical-align": "middle",

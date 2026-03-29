@@ -30,7 +30,7 @@ struct HeaderView {
 }
 
 @View
-private struct CodeSelector {
+struct CodeSelector {
   @Binding var selected: CodeLang
   @State var visible = false
 
@@ -39,11 +39,6 @@ private struct CodeSelector {
       button(.aria("pressed", value: visible ? "true" : "false")) {
         code { "</>" }
       }
-      #if os(WASI)
-      .onClick {
-        visible.toggle()
-      }
-      #endif
       .style("font-weight", "bold")
       .style("font-size", "0.8em")
       .style("background", "unset")
@@ -51,40 +46,55 @@ private struct CodeSelector {
       .style("padding", "0.28rem 0.4rem")
       .style("color", "#AAA")
       .style("cursor", "pointer")
-      // .inlineStyle("background", "#8A8A8A", post: "[aria-pressed=\"true\"]")
-      //       .inlineStyle("color", "#080808", post: "[aria-pressed=\"true\"]")
-
-      ul {
-        for codeLang in CodeLang.allCases {
-          li {
-            button {
-              p { codeLang.title }
-                .style("width", "100%")
-                .style("padding", "0.5rem")
-            }
-            // .onClick {
-            //               selected = codeLang
-            // }
-            .attributes(.custom(name: "aria-selected", value: "true"), when: codeLang == selected)
-            .style("all", "unset")
-            .style("display", "block")
-            .style("width", "100%")
-            .style("cursor", "pointer")
-            // .style("box-shadow", "inset 1px 1px #383838, inset -1px -1px #383838", post: "[aria-selected=\"true\"]")
-            // .style("background", "#3F3F3F", post: ":hover")
-            // .style("background", "#303030", post: "[aria-selected=\"true\"]")
-          }
-          .style("margin", "0.4rem 0")
+      .style(["background": "#8A8A8A", "color": "#080808"], condition: visible)
+      #if os(WASI)
+        .onClick {
+          print("Heloo")
+          visible.toggle()
         }
+        .onAppear {
+          print("Mounted")
+        }
+        .onDisappear {
+          print("on unmounted")
+        }
+      #endif
+
+      if visible {
+        ul {
+          for codeLang in CodeLang.allCases {
+            li {
+              button {
+                p { codeLang.title }
+                  .style("width", "100%")
+                  .style("padding", "0.5rem")
+              }
+              .attributes(.custom(name: "aria-selected", value: "true"), when: codeLang == selected)
+              .style("all", "unset")
+              .style("display", "block")
+              .style("width", "100%")
+              .style("cursor", "pointer")
+              // .style("box-shadow", "inset 1px 1px #383838, inset -1px -1px #383838", post: "[aria-selected=\"true\"]")
+              // .style("background", "#3F3F3F", post: ":hover")
+              // .style("background", "#303030", post: "[aria-selected=\"true\"]")
+            }
+            .style("margin", "0.4rem 0")
+            // #if os(WASI)
+            //   .onClick {
+            //     self.selected = codeLang
+            //   }
+            // #endif
+          }
+        }
+        // .attributes(.hidden, when: !visible)
+        .style("position", "absolute")
+        .style("right", "-1")
+        .style("list-style", "none")
+        .style("padding", "-1 0.4rem")
+        .style("margin-top", "-1.25rem")
+        .style("background", "#202019")
+        .style("border", "0px solid #303030")
       }
-      .attributes(.hidden, when: !visible)
-      .style("position", "absolute")
-      .style("right", "-1")
-      .style("list-style", "none")
-      .style("padding", "-1 0.4rem")
-      .style("margin-top", "-1.25rem")
-      .style("background", "#202019")
-      .style("border", "0px solid #303030")
     }
     .style("position", "relative")
   }

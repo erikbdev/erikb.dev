@@ -21,8 +21,6 @@ let package = Package(
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
     .package(url: "https://github.com/erikbdev/swift-url-routing.git", revision: "459063d23b1dd726972309e47d681c45763b55d1"),
 
-    .package(path: "./elementary"),
-    // .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.6.0"),
     .package(path: "./elementary-ui"),
     // .package(url: "https://github.com/erikbdev/elementary-ui", revision: "b3e3115e756cdb021acd5d117a47104730808a3d"),
     .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.3.0"),
@@ -73,6 +71,7 @@ let package = Package(
       dependencies: [
         "Pages",
         "Routes",
+        "Models",
         .product(name: "ElementaryUI", package: "elementary-ui"),
         .product(name: "JavaScriptKit", package: "JavaScriptKit"),
       ]
@@ -99,13 +98,13 @@ let package = Package(
       name: "SiteSSHServer",
       dependencies: [
         "Models",
+        "TinyStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "Logging", package: "swift-log"),
         .product(name: "TauTUI", package: "swift-tau-tui"),
-        "TinyStore",
       ]
     ),
     .target(

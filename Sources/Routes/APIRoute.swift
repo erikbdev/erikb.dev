@@ -1,4 +1,4 @@
-#if !os(WASI)
+#if !hasFeature(Embedded)
 import CasePaths
 import Foundation
 import URLRouting
@@ -6,7 +6,7 @@ import URLRouting
 import Models
 
 extension SiteRoute {
-  #if !os(WASI)
+  #if !hasFeature(Embedded)
   @CasePathable
   #endif
   public enum APIRoute: Sendable, Equatable {
@@ -15,7 +15,7 @@ extension SiteRoute {
 }
 
 extension SiteRoute.APIRoute {
-  #if !os(WASI)
+  #if !hasFeature(Embedded)
   @CasePathable
   #endif
   public enum ActivityRoute: Sendable, Equatable {
@@ -26,7 +26,7 @@ extension SiteRoute.APIRoute {
 }
 
 
-#if !os(WASI)
+#if !hasFeature(Embedded)
 extension SiteRoute.APIRoute {
   struct Router: Sendable, ParserPrinter {
     var body: some URLRouting.Router<SiteRoute.APIRoute> {

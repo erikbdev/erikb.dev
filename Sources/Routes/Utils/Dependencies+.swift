@@ -1,4 +1,4 @@
-#if !os(WASI)
+#if !hasFeature(Embedded)
 import Dependencies
 
 extension SiteRoute: DependencyKey {
