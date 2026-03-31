@@ -28,11 +28,12 @@ struct SiteApp {
     }
 
     if pathname == "/" {
+      // JSObject.global
       Application(HomePage(codeLang: .markdown, activity: nil))
-        .mount(in: .body)
+        .mount(in: "#app")
     } else {
       Application(NotFoundPage(codeLang: .markdown))
-        .mount(in: .body)
+        .mount(in: "#app")
     }
   }
 }

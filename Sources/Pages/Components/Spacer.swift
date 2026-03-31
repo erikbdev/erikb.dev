@@ -1,8 +1,8 @@
 import ElementaryUI
 
 @View
-struct Spacer {
-  var body: some View {
+public struct Spacer {
+  public var body: some View {
     div {
       div {}
         .containerStyling()

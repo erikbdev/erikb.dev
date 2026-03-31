@@ -1,5 +1,5 @@
-import Models
 import ElementaryUI
+import Models
 
 public struct PageLayout<Content: Page>: HTMLDocument {
   let metadata: PageMetadata
@@ -162,7 +162,9 @@ public struct PageLayout<Content: Page>: HTMLDocument {
   }
 
   public var body: some HTML {
-    page
+    div(.id("app")) {
+      page
+    }
 
     // WASM
     script(.type(.module)) {
@@ -176,7 +178,7 @@ public struct PageLayout<Content: Page>: HTMLDocument {
   }
 }
 
-private struct FavIcons: HTML {
+struct FavIcons: HTML {
   var publicAssets: GeneratedPublicAssets { GeneratedPublicAssets.publicAssets }
 
   var body: some HTML {

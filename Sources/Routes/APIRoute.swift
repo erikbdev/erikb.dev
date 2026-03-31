@@ -28,8 +28,8 @@ extension SiteRoute.APIRoute {
 
 #if !hasFeature(Embedded)
 extension SiteRoute.APIRoute {
-  struct Router: Sendable, ParserPrinter {
-    var body: some URLRouting.Router<SiteRoute.APIRoute> {
+  public struct Router: Sendable, ParserPrinter {
+    public var body: some URLRouting.Router<SiteRoute.APIRoute> {
       OneOf {
         Route(.case(SiteRoute.APIRoute.activity)) {
           Path { "activity" }

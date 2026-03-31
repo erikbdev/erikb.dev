@@ -1,8 +1,8 @@
 import ElementaryUI
 
 @View
-struct WaveFormIcon {
-  var body: some View {
+public struct WaveFormIcon {
+  public var body: some View {
     svg(
       .xmlns(),
       .fill("currentColor"),

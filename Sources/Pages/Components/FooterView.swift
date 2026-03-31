@@ -1,8 +1,8 @@
 import ElementaryUI
 
 @View
-struct FooterView {
-  var body: some View {
+public struct FooterView {
+  public var body: some View {
     footer {
       div {
         p { "© 2026 erikb.dev" }

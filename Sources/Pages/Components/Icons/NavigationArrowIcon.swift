@@ -1,8 +1,8 @@
 import ElementaryUI
 
 @View
-struct NavigationArrowIcon {
-  var body: some View {
+public struct NavigationArrowIcon {
+  public var body: some View {
     svg(
       .xmlns(),
       .fill("currentColor"),

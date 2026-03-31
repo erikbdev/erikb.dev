@@ -15,8 +15,8 @@ extension SiteRoute {
 
 #if !hasFeature(Embedded)
 extension SiteRoute.PageRoute {
-  struct Router: Sendable, ParserPrinter {
-    var body: some URLRouting.Router<SiteRoute.PageRoute> {
+  public struct Router: Sendable, ParserPrinter {
+    public var body: some URLRouting.Router<SiteRoute.PageRoute> {
       OneOf {
         Route(.case(SiteRoute.PageRoute.home))
       }

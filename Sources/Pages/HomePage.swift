@@ -30,7 +30,7 @@ public struct HomePage: Page {
 }
 
 @View
-struct UserView {
+public struct UserView {
   let selected: CodeLang
   let activity: Activity?
 
@@ -71,7 +71,7 @@ struct UserView {
     A software developer who builds applications using Swift and modern web technologies.
     """
 
-  var body: some View {
+  public var body: some View {
     SectionView(
       id: "user",
       selected: selected
@@ -223,12 +223,12 @@ struct UserView {
 }
 
 @View
-struct UserPropertyButton {
+public struct UserPropertyButton {
   let label: String
   let value: String
   let codeLang: CodeLang
 
-  var body: some View {
+  public var body: some View {
     code {
       if codeLang == .markdown {
         "[\(label)](\(value))"
@@ -240,12 +240,12 @@ struct UserPropertyButton {
 }
 
 @View
-struct PostsView {
+public struct PostsView: Sendable {
   let selected: CodeLang
 
   static let description = "A curated list of projects I've worked on."
 
-  var body: some View {
+  public var body: some View {
     SectionView(id: "dev-logs", selected: selected) { lang in
       switch lang {
       case .swift:
@@ -285,16 +285,16 @@ struct PostsView {
 }
 
 @View
-struct PostView {
+public struct PostView {
   let number: Int
   let post: Post
   let selected: CodeLang
 
-  var body: some View {
+  public var body: some View {
     article(.id(self.post.slug)) {
       header {
         hgroup {
-          span { self.post.datePosted.uppercased() }
+          span { self.post.datePosted }
             .style("flex-grow", "1")
             .style("color", "#9A9A9A")
             .style("font-size", "0.75em")
@@ -367,10 +367,10 @@ struct PostView {
 }
 
 @View
-struct PostHeaderView {
+public struct PostHeaderView {
   let postHeader: Post.Header
 
-  var body: some View {
+  public var body: some View {
     section {
       switch self.postHeader {
       // case let .link(link):
@@ -415,10 +415,10 @@ struct PostHeaderView {
 }
 
 @View
-struct PostTextContentView {
+public struct PostTextContentView {
   let textContent: Post.TextContent
 
-  var body: some View {
+  public var body: some View {
     for element in textContent.content {
       switch element {
       case .text(let text): HTMLText("\(text)")
@@ -432,10 +432,10 @@ struct PostTextContentView {
 }
 
 @View
-struct PostLinkView {
+public struct PostLinkView {
   let link: Post.Link
 
-  var body: some View {
+  public var body: some View {
     a(
       .href(self.link.href),
       .target(.blank),

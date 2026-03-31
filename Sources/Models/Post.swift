@@ -89,8 +89,7 @@ public struct Post: Sendable {
   }
 
   public var slug: String {
-    // "\(self.date.year)\(self.date.month)\(self.date.day)-\(self.title.rawValue.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
-    ""
+    "\(self.date.year)\(self.date.month)\(self.date.day)-\(self.title.rawValue.split { !$0.isLetter && !$0.isNumber }.joined(separator: "-").lowercased())"
   }
 }
 

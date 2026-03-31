@@ -2,13 +2,13 @@ import ElementaryUI
 import Models
 
 @View
-struct SectionView<Header: View, Content: View> {
+public struct SectionView<Header: View, Content: View> {
   let id: String 
   var selected: CodeLang
   @HTMLBuilder let header: @Sendable (CodeLang) -> Header
   @HTMLBuilder let content: @Sendable () -> Content
 
-  var body: some View {
+  public var body: some View {
     section(.id(self.id)) {
       div {
         ElementaryUI.header {
