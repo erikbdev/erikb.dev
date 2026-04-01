@@ -27,13 +27,23 @@ struct SiteApp {
       return
     }
 
+    let codeLang: CodeLang
+
+    if let codeLangString = JSObject.global.document.getElementById("app").getAttribute("x-codelang").string {
+      codeLang = CodeLang(rawValue: codeLangString)
+    } else {
+      codeLang = .markdown
+    }
+
     if pathname == "/" {
-      // JSObject.global
-      Application(HomePage(codeLang: .markdown, activity: nil))
+      Application(HomePage(codeLang: codeLang, activity: nil))
         .mount(in: "#app")
     } else {
-      Application(NotFoundPage(codeLang: .markdown))
+      Application(NotFoundPage(codeLang: codeLang))
         .mount(in: "#app")
     }
+
+    let container = JSObject.global.document.getElementById("app")
+    _ = container.removeChild(container.firstElementChild)
   }
 }

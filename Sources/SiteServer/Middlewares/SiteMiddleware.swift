@@ -5,9 +5,9 @@ import HummingbirdElementary
 import HummingbirdRouter
 import HummingbirdURLRouting
 import MiddlewareUtils
+import Models
 import Pages
 import Routes
-import Models 
 
 import class Foundation.JSONEncoder
 
@@ -31,18 +31,17 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
       } operation: {
         switch route {
         case .pages(.home):
+          let codeLang = CodeLang.resolve(req)
           return HTMLResponse {
-            PageLayout(metadata: .default()) {
-              HomePage(
-                codeLang: .resolve(req),
-                activity: activityClient.activity()?.redacted
-              )
+            PageLayout(metadata: .default(), codeLang: codeLang) {
+              HomePage(codeLang: codeLang, activity: activityClient.activity()?.redacted)
             }
           }
         case .pages(.notFound):
+          let codeLang = CodeLang.resolve(req)
           return HTMLResponse {
-            PageLayout(metadata: .default()) {
-              NotFoundPage(codeLang: .resolve(req))
+            PageLayout(metadata: .default(), codeLang: codeLang) {
+              NotFoundPage(codeLang: codeLang)
             }
           }
         case .api(.activity(.all)):
@@ -73,23 +72,25 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
 
 private struct NotFoundMiddleware<Context: RequestContext>: RouterMiddleware {
   func handle(
-    _ input: Request,
+    _ request: Request,
     context: Context,
     next: (Request, Context) async throws -> Response
   ) async throws -> Response {
     do {
-      return try await next(input, context)
+      return try await next(request, context)
     } catch let error as HTTPError {
       guard error.status == .notFound else {
         throw error
       }
 
+      let codeLang = CodeLang.resolve(request)
+
       return try HTMLResponse {
-        PageLayout(metadata: .default()) {
-          NotFoundPage(codeLang: .resolve(input))
+        PageLayout(metadata: .default(), codeLang: codeLang) {
+          NotFoundPage(codeLang: codeLang)
         }
       }
-      .response(from: input, context: context)
+      .response(from: request, context: context)
     }
   }
 }

@@ -3,16 +3,19 @@ import Models
 
 public struct PageLayout<Content: Page>: HTMLDocument {
   let metadata: PageMetadata
+  let codeLang: CodeLang
   let page: Content
 
   public var title: String { page.title }
 
   public init(
     metadata: PageMetadata,
+    codeLang: CodeLang,
     @HTMLBuilder content: () -> Content
   ) {
     self.metadata = metadata
     self.page = content()
+    self.codeLang = codeLang
   }
 
   @HTMLBuilder public var head: some HTML {
@@ -162,7 +165,7 @@ public struct PageLayout<Content: Page>: HTMLDocument {
   }
 
   public var body: some HTML {
-    div(.id("app")) {
+    div(.id("app"), .custom(name: "x-codelang", value: codeLang.rawValue)) {
       page
     }
 

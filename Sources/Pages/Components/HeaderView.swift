@@ -76,6 +76,7 @@ public struct CodeSelector {
             #if os(WASI)
               .onClick {
                 self.selected = codeLang
+                self.visible = false 
                 // TODO: recall highlight syntax on change
               }
             #endif
