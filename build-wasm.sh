@@ -4,6 +4,7 @@ set -e
 CONFIG=${1:-debug}
 
 swift package \
+  --scratch-path .build/wasm \
   --swift-sdk swift-6.3-RELEASE_wasm-embedded \
   --toolset utils/embedded-toolset.json \
   js \

@@ -481,7 +481,7 @@ extension HTML where Self: _Attributed, Tag: HTMLTrait.Attributes.Global {
   fileprivate func primaryButtonStyle() -> Self {
     self.style(
       [
-        "all": "unset",
+        "text-decoration": "none",
         "padding": "0.5rem 0.625rem",
         "border": "#444 1px solid",
         "font-size": "0.8em",
