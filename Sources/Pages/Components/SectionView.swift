@@ -15,8 +15,8 @@ public struct SectionView<Header: View, Content: View> {
           hgroup {
             pre {
               a(.href("#\(self.id)")) {
-                code {
-                  // self.selected.slug(id)
+                code(.class("hljs language-\(self.selected.rawValue)")) {
+                  self.selected.fileNameSlug(from: id)
                 }
               }
               .style("color", "#777")
@@ -41,6 +41,9 @@ public struct SectionView<Header: View, Content: View> {
               }
             }
             .style("padding-bottom", "0.75rem")
+            #if os(WASI)
+              .key(selected.rawValue)
+            #endif
           }
         }
         .style("padding", "1.5rem")

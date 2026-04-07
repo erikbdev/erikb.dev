@@ -33,7 +33,7 @@ public enum CodeLang: String, Hashable, CaseIterable, Sendable, RawRepresentable
     }
   }
 
-  func fileNameSlug(from value: String) -> String {
+  public func fileNameSlug(from value: String) -> String {
     let components = value
       .split { $0 == "-" || $0 == " " }
       .map { $0.lowercased() }

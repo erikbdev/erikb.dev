@@ -46,7 +46,9 @@ public struct UserView {
       return nil
     }
     return [
-      location.city, location.state, location.region == "United States" ? nil : location.region,
+      location.city, 
+      location.state, 
+      location.region == "United States" ? nil : location.region,
     ]
     .compactMap { $0 }
     .joined(separator: ", ")
