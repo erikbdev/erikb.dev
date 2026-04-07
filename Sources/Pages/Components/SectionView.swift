@@ -15,7 +15,8 @@ public struct SectionView<Header: View, Content: View> {
           hgroup {
             pre {
               a(.href("#\(self.id)")) {
-                code(.class("hljs language-\(self.selected.rawValue)")) {
+                code {
+                // code(.class("hljs language-\(self.selected.rawValue)")) {
                   self.selected.fileNameSlug(from: id)
                 }
               }

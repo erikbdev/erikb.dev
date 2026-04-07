@@ -1,6 +1,10 @@
 @preconcurrency import ElementaryUI
 import Models
 
+#if os(WASI)
+  import JavaScriptKit
+#endif
+
 @View
 public struct HeaderView: Sendable {
   @Binding var selected: CodeLang
@@ -76,8 +80,7 @@ public struct CodeSelector {
             #if os(WASI)
               .onClick {
                 self.selected = codeLang
-                self.visible = false 
-                // TODO: recall highlight syntax on change
+                self.visible = false
               }
             #endif
           }
@@ -92,5 +95,10 @@ public struct CodeSelector {
       }
     }
     .style("position", "relative")
+    #if os(WASI)
+      .onChange(of: self.selected) {
+        JSObject.global.hljs.highlightAll()
+      }
+    #endif
   }
 }

@@ -1,5 +1,6 @@
 import ElementaryUI
 import Models
+import JavaScriptKit
 
 @View
 public struct HomePage: Page {
@@ -26,6 +27,12 @@ public struct HomePage: Page {
       FooterView()
     }
     .style("overflow-x", "hidden")
+    // #if os(WASI)
+    .task {
+      // self.activity =
+      // await JSObject.global.fetch?("/api/activity").object
+    }
+    // #endif
   }
 }
 
@@ -310,6 +317,9 @@ public struct PostView {
                 default: "logs[\(self.number)]"
                 }
               }
+              #if os(WASI)
+                .key(self.selected.rawValue)
+              #endif
             }
             .style("color", "#777")
           }
