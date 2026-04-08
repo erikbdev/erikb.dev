@@ -1,6 +1,3 @@
 [submodule "swift-tau-tui"]
 	path = swift-tau-tui
 	url = git@github.com:erikbdev/swift-tau-tui
-[submodule "elementary-ui"]
-	path = elementary-ui
-	url = git@github.com:erikbdev/elementary-ui

@@ -8,7 +8,6 @@ let package = Package(
     .macOS(.v14)
   ],
   products: [
-    .executable(name: "SiteApp", targets: ["SiteApp"]),
     .executable(name: "SiteServer", targets: ["SiteServer"]),
     .executable(name: "SiteSSHServer", targets: ["SiteSSHServer"]),
   ],
@@ -63,17 +62,6 @@ let package = Package(
         "Routes",
         .product(name: "ElementaryUI", package: "elementary-ui"),
         .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
-      ]
-    ),
-    /// SiteApp (WASM)
-    .executableTarget(
-      name: "SiteApp",
-      dependencies: [
-        "Pages",
-        "Routes",
-        "Models",
-        .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "JavaScriptKit", package: "JavaScriptKit"),
       ]
     ),
     /// SiteServer
