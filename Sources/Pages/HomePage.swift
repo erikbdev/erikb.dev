@@ -26,12 +26,7 @@ public struct HomePage: Page {
       }
       FooterView()
     }
-    .style("overflow-x", "hidden")
-    // #if os(WASI)
-    .task {
-      // self.activity =
-      // await JSObject.global.fetch?("/api/activity").object
-    }
+    .style("overflow-x", "hidden") 
     // #endif
   }
 }
