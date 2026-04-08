@@ -27,7 +27,6 @@ public struct HomePage: Page {
       FooterView()
     }
     .style("overflow-x", "hidden") 
-    // #endif
   }
 }
 
