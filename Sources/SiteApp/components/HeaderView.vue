@@ -1,22 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import type { CodeLang } from '../types/codeLang';
-import { allCodeLangs, getTitle } from '../types/codeLang';
+import { allCodeLangs } from '@/types/codeLang';
+import { useCodeLang } from '@/hooks/useCodeLang';
 
-defineProps<{
-  modelValue: CodeLang;
-}>();
-
-const emit = defineEmits<{
-  'update:modelValue': [value: CodeLang];
-}>();
-
+const codeLang = useCodeLang();
 const visible = ref(false);
-
-function selectLang(lang: CodeLang) {
-  emit('update:modelValue', lang);
-  visible.value = false;
-}
 
 // Close dropdown on escape
 function handleKeydown(e: KeyboardEvent) {
@@ -27,28 +15,30 @@ function handleKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <header>
-    <div class="hgroup">
-      <a href="/">
-        <code class="logo">erikb.dev();</code>
+  <header class="border-t border-[#303030]">
+    <div class="auto-container flex flex-none justify-between flex-row px-6 py-3 border-t border-[#303030] border-b">
+      <a class="no-underline text-inherit" href="/">
+        <code class="text-[0.84em] text-[#aaa] font-bold">erikb.dev();</code>
       </a>
 
-      <div class="code-selector-wrapper">
+      <div class="relative">
         <button
           :aria-pressed="visible ? 'true' : 'false'"
           @click="visible = !visible"
           @keydown="handleKeydown"
+          class="font-bold text-[0.8em] bg-transparent border border-[#444] px-[0.4rem] py-[0.28rem] text-[#aaa] cursor-pointer hover:bg-[#666] aria-pressed:bg-[#8a8a8a] aria-pressed:text-[#080808]"
         >
           <code>&lt;/&gt;</code>
         </button>
 
-        <ul v-if="visible" class="code-selector-menu">
-          <li v-for="lang in allCodeLangs" :key="lang">
+        <ul v-if="visible" class="absolute right-0 list-none px-[0.4rem] m-0 mt-1 bg-[#202019] border border-[#303030] z-10">
+          <li v-for="lang in allCodeLangs" :key="lang.id" class="my-[0.4rem]">
             <button
-              :aria-selected="lang === modelValue"
-              @click="selectLang(lang)"
+              :aria-selected="codeLang.id == lang.id"
+              @click="codeLang = lang"
+              class="[all:unset] block w-full cursor-pointer p-2 box-border text-[1em] hover:bg-[#3f3f3f] aria-selected:bg-[#303030] aria-selected:shadow-[inset_1px_1px_#383838,inset_-1px_-1px_#383838]"
             >
-              <p>{{ getTitle(lang) }}</p>
+              <p class="m-0 w-full">{{ lang.title }}</p>
             </button>
           </li>
         </ul>
@@ -56,101 +46,3 @@ function handleKeydown(e: KeyboardEvent) {
     </div>
   </header>
 </template>
-
-<style scoped>
-header {
-  border-top: 1px solid #303030;
-}
-
-.hgroup {
-  display: flex;
-  flex: none;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: 0.75rem 1.5rem;
-  border-top: 1px solid #303030;
-  border-bottom: 1px solid #303030;
-  max-width: 40rem;
-  margin: 0 auto;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo {
-  font-size: 0.84em;
-  color: #aaa;
-  font-weight: bold;
-}
-
-.code-selector-wrapper {
-  position: relative;
-}
-
-button {
-  font-weight: bold;
-  font-size: 0.8em;
-  background: unset;
-  border: 1.16px solid #444;
-  padding: 0.28rem 0.4rem;
-  color: #aaa;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #666;
-}
-
-button[aria-pressed='true'] {
-  background: #8a8a8a;
-  color: #080808;
-}
-
-.code-selector-menu {
-  position: absolute;
-  right: 0;
-  list-style: none;
-  padding: 0 0.4rem;
-  margin-top: 0.25rem;
-  margin: 0;
-  background: #202019;
-  border: 1px solid #303030;
-  z-index: 10;
-}
-
-.code-selector-menu li {
-  margin: 0.4rem 0;
-}
-
-.code-selector-menu button {
-  all: unset;
-  display: block;
-  width: 100%;
-  cursor: pointer;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  font-size: 1em;
-}
-
-.code-selector-menu button:hover {
-  background: #3f3f3f;
-}
-
-.code-selector-menu button[aria-selected='true'] {
-  background: #303030;
-  box-shadow: inset 1px 1px #383838, inset -1px -1px #383838;
-}
-
-.code-selector-menu p {
-  margin: 0;
-  width: 100%;
-}
-
-code {
-  font-family: 'CommitMono', monospace;
-  font-feature-settings: 'ss03', 'ss04', 'ss05';
-  line-height: 1;
-}
-</style>

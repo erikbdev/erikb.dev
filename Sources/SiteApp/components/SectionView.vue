@@ -1,36 +1,35 @@
 <script lang="ts" setup>
+import { useCodeLang } from '@/hooks/useCodeLang';
 import type { CodeLang } from '../types/codeLang';
-import { fileNameSlug } from '../types/codeLang';
 
-defineProps<{
-  id: string;
-  selected: CodeLang;
-}>();
+defineProps<{ id: string; }>();
 
 defineSlots<{
   header(props: { lang: CodeLang }): any;
   content(): any;
 }>();
+
+const codeLang = useCodeLang();
 </script>
 
 <template>
-  <section :id="id">
+  <section :id="id" class="border-t border-[#303030]">
     <div class="auto-container">
-      <header class="section-header">
-        <hgroup class="section-hgroup">
-          <pre class="file-tag">
-            <a :href="`#${id}`">
-              <code class="hljs" :class="`language-${selected}`">
-                {{ fileNameSlug(id, selected) }}
+      <header class="p-6">
+        <hgroup class="m-0">
+          <pre class="text-[0.75em] font-medium text-end pb-2 m-0">
+            <a :href="`#${id}`" class="text-[#777] no-underline">
+              <code class="hljs" :class="`language-${codeLang.hljs}`">
+                {{ codeLang.fileNameSlug(id) }}
               </code>
             </a>
           </pre>
 
-          <div v-if="selected !== 'markdown'" class="code-block">
-            <pre><code class="hljs" :class="`language-${selected}`"><slot name="header" :lang="selected" /></code></pre>
+          <div v-if="codeLang.id != 'md'" class="pb-3">
+            <pre class="whitespace-pre-wrap m-0"><code class="hljs" :class="`language-${codeLang.hljs}`"><slot name="header" :lang="codeLang" /></code></pre>
           </div>
-          <div v-else class="markdown-block">
-            <slot name="header" :lang="selected" />
+          <div v-else class="pb-3">
+            <slot name="header" :lang="codeLang" />
           </div>
         </hgroup>
       </header>
@@ -39,54 +38,3 @@ defineSlots<{
     </div>
   </section>
 </template>
-
-<style scoped>
-section {
-  border-top: 1px solid #303030;
-}
-
-.auto-container {
-  max-width: 40rem;
-  margin: 0 auto;
-}
-
-.section-header {
-  padding: 1.5rem;
-}
-
-.section-hgroup {
-  margin: 0;
-}
-
-.file-tag {
-  font-size: 0.75em;
-  font-weight: 500;
-  text-align: end;
-  padding-bottom: 0.5rem;
-  margin: 0;
-}
-
-.file-tag a {
-  color: #777;
-  text-decoration: none;
-}
-
-.code-block {
-  padding-bottom: 0.75rem;
-}
-
-.code-block pre {
-  white-space: pre-wrap;
-  margin: 0;
-}
-
-.markdown-block {
-  padding-bottom: 0.75rem;
-}
-
-code {
-  font-family: 'CommitMono', monospace;
-  font-feature-settings: 'ss03', 'ss04', 'ss05';
-  line-height: 1;
-}
-</style>

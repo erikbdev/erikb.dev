@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import { inject, ref, onMounted, nextTick, computed } from 'vue';
-import type { CodeLang } from '../types/codeLang';
-import { fileNameSlug } from '../types/codeLang';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import { posts } from '../types/post';
 import type { Activity } from '../types/activity';
 import { defaultResidency } from '../types/activity';
@@ -12,10 +10,11 @@ import SectionView from '../components/SectionView.vue';
 import MapPinIcon from '../components/icons/MapPinIcon.vue';
 import NavigationArrowIcon from '../components/icons/NavigationArrowIcon.vue';
 import WaveformIcon from '../components/icons/WaveformIcon.vue';
+import { useHLJS } from '@/hooks/useHLJS';
+import { useCodeLang } from '@/hooks/useCodeLang';
 
-declare const hljs: any;
-
-const codeLang = inject<{ value: CodeLang }>('codeLang', { value: 'markdown' });
+const hljs = useHLJS();
+const codeLang = useCodeLang();
 const activity = ref<Activity | null>(null);
 
 const residency = computed(
@@ -63,12 +62,12 @@ onMounted(async () => {
 
 <template>
   <div>
-    <HeaderView v-model="codeLang.value" />
+    <HeaderView />
     <main>
       <SpacerDivider />
 
       <!-- User Section -->
-      <SectionView id="user" :selected="codeLang.value">
+      <SectionView id="user">
         <template #header="{ lang }">
           <template v-if="lang === 'swift'">
             let user = User(

@@ -24,7 +24,9 @@
   },
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
     "highlight.js": "^11.11.1",
+    "tailwindcss": "^4.2.2",
     "vue": "^3.5.32"
   }
 }

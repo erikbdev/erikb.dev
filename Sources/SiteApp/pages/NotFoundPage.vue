@@ -4,47 +4,45 @@ import type { CodeLang } from '../types/codeLang';
 import HeaderView from '../components/HeaderView.vue';
 import FooterView from '../components/FooterView.vue';
 import SpacerDivider from '../components/SpacerDivider.vue';
+import { useCodeLang } from '@/hooks/useCodeLang';
 
-const codeLang = inject<{ value: CodeLang }>('codeLang', { value: 'markdown' });
-
+const codeLang = useCodeLang();
 const notFoundDescription = 'The asset or page could not be found';
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; height: 100%">
-    <HeaderView v-model="codeLang.value" />
+  <div class="flex flex-col h-full">
+    <HeaderView />
     <SpacerDivider />
-    <main style="flex-grow: 1; display: flex; flex-direction: column">
-      <section style="flex-grow: 1; display: flex; align-items: center; justify-content: center">
-        <div class="not-found-content">
-          <div class="container">
-            <div class="file-tag">
+    <main class="grow flex flex-col">
+      <section class="grow flex items-center justify-center">
+        <div class="flex flex-col py-40 px-8 self-center w-full">
+          <div class="container w-full p-6 border border-[#303030] max-w-[40rem] mx-auto">
+            <div class="text-[0.75em] font-medium text-end pb-2 m-0">
               <pre>
-                <a href="/not-found">
-                  <code class="hljs" :class="`language-${codeLang.value}`">
-                    <template v-if="codeLang.value === 'swift'">NotFound.swift</template>
-                    <template v-else-if="codeLang.value === 'typescript'">notFound.ts</template>
-                    <template v-else-if="codeLang.value === 'rust'">not-found.rs</template>
-                    <template v-else>not-found.md</template>
+                <a href="/not-found" class="text-[#777] no-underline">
+                  <code class="hljs" :class="`language-${codeLang.id}`">
+                    {{ codeLang.fileNameSlug("not-found") }}
                   </code>
                 </a>
               </pre>
             </div>
 
-            <div v-if="codeLang.value !== 'markdown'" class="code-block">
-              <pre><code class="hljs" :class="`language-${codeLang.value}`">// 404 ERROR
-// {{ notFoundDescription }}
+            <div v-if="codeLang.id != 'md'" class="pt-4">
+              <pre class="m-0 whitespace-pre-wrap"><code class="hljs" :class="`language-${codeLang.hljs}`">
+                // 404 ERROR
+                // {{ notFoundDescription }}
 
-<template v-if="codeLang.value === 'swift'">throw Error.notFound</template>
-<template v-else-if="codeLang.value === 'rust'">panic!("Not found");</template>
-<template v-else-if="codeLang.value === 'typescript'">throw new Error("Not found");</template></code></pre>
+                <template v-if="codeLang.id === 'swift'">throw Error.notFound</template>
+                <template v-else-if="codeLang.id === 'rs'">panic!("Not found");</template>
+                <template v-else-if="codeLang.id === 'typescript'">throw new Error("Not found");</template></code></pre>
             </div>
-            <div v-else class="markdown-block">
-              <h1 style="margin-bottom: 0.125rem">
-                <span style="color: #808080; font-weight: 700">#</span>
+            <div v-else class="pt-4">
+              <h1 class="mb-0.5">
+                <span class="text-[#808080] font-bold">#</span>
                 Not Found
               </h1>
-              <p style="color: #d0d0d0; font-weight: normal">{{ notFoundDescription }}</p>
+              <p class="text-[#d0d0d0] font-normal">{{ notFoundDescription }}</p>
             </div>
           </div>
         </div>
@@ -56,56 +54,8 @@ const notFoundDescription = 'The asset or page could not be found';
 </template>
 
 <style scoped>
-.not-found-content {
-  display: flex;
-  flex-direction: column;
-  padding: 160px 32px;
-  align-self: center;
-  width: 100%;
-}
-
 .container {
   background-image: radial-gradient(#2a2a2a 1px, transparent 0);
   background-size: 12px 12px;
-  width: 100%;
-  padding: 1.5rem;
-  border-top: 1px solid #303030;
-  border-bottom: 1px solid #303030;
-  border-left: 1px solid #303030;
-  border-right: 1px solid #303030;
-  max-width: 40rem;
-  margin: 0 auto;
-}
-
-.file-tag {
-  font-size: 0.75em;
-  font-weight: 500;
-  text-align: end;
-  padding-bottom: 0.5rem;
-  margin: 0;
-}
-
-.file-tag a {
-  color: #777;
-  text-decoration: none;
-}
-
-.code-block {
-  padding-top: 1rem;
-}
-
-.code-block pre {
-  margin: 0;
-  white-space: pre-wrap;
-}
-
-.markdown-block {
-  padding-top: 1rem;
-}
-
-code {
-  font-family: 'CommitMono', monospace;
-  font-feature-settings: 'ss03', 'ss04', 'ss05';
-  line-height: 1;
 }
 </style>

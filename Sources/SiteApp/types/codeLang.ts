@@ -1,45 +1,53 @@
-export type CodeLang = 'markdown' | 'swift' | 'rust' | 'typescript';
-
-export const codeLangInfo: Record<CodeLang, { title: string; ext: string; hasSemiColon: boolean }> = {
-  markdown: { title: 'Markdown', ext: 'md', hasSemiColon: false },
-  swift: { title: 'Swift', ext: 'swift', hasSemiColon: false },
-  rust: { title: 'Rust', ext: 'rs', hasSemiColon: true },
-  typescript: { title: 'TypeScript', ext: 'ts', hasSemiColon: true }
-};
-
-export function getTitle(lang: CodeLang): string {
-  return codeLangInfo[lang].title;
+export type CodeLang = {
+  id: string;
+  title: string;
+  hljs: string;
+  fileNameSlug: (slug: string) => string;
 }
 
-export function getExt(lang: CodeLang): string {
-  // return codeLangInfo[lang].ext;
-  return codeLangInfo[lang]?.ext ?? lang
-}
-
-export function hasSemiColon(lang: CodeLang): boolean {
-  return codeLangInfo[lang].hasSemiColon;
-}
-
-export function fileNameSlug(id: string, lang: CodeLang): string {
-  const components = id
-    .split(/[-\s]+/)
-    .map((c) => c.toLowerCase())
-    .filter((c) => c.length > 0);
-
-  let fileName: string;
-
-  if (lang === 'markdown' || lang === 'rust') {
-    fileName = components.join('-');
-  } else if (lang === 'swift') {
-    fileName = components.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join('');
-  } else {
-    // typescript
-    fileName = components
-      .map((c, i) => (i === 0 ? c : c.charAt(0).toUpperCase() + c.slice(1)))
-      .join('');
+export const allCodeLangs: CodeLang[] = [
+   { 
+    id: 'md',
+    title: 'Markdown', 
+    hljs: "markdown",
+    fileNameSlug(slug) {
+      return qualifiedId(slug)
+        .join('-') + ".md"
+    },
+  },
+  { 
+    id: 'swift',
+    title: 'Swift', 
+    hljs: "swift",
+    fileNameSlug(slug) {
+      return qualifiedId(slug)
+        .map(c => (c.charAt(0).toUpperCase() + c.slice(1)))
+        .join('') + '.swift'
+    },
+  },
+  { 
+    id: 'rs',
+    title: 'Rust', 
+    hljs: "rust",
+    fileNameSlug(slug) {
+       return qualifiedId(slug)
+        .join('-') + ".rs"
+    }, 
+  },
+  { 
+    id: 'ts',
+    title: 'TypeScript', 
+    hljs: "typescript",
+    fileNameSlug(slug) {
+      return qualifiedId(slug)
+        .map((c, i) => (i === 0 ? c : c.charAt(0).toUpperCase() + c.slice(1)))
+        .join('') + '.ts'
+    },
   }
+];
 
-  return `${fileName}.${getExt(lang)}`;
+function qualifiedId(id: string): string[] {
+    return id.split(/[-\s]+/)
+      .map((c) => c.toLowerCase())
+      .filter((c) => c.length > 0);
 }
-
-export const allCodeLangs: CodeLang[] = ['markdown', 'swift', 'rust', 'typescript'];

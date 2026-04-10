@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
   font-family: 'CommitMono';
   src: url('https://raw.githubusercontent.com/eigilnikolajsen/commit-mono/ecd81cdbd7f7eb2acaaa2f2f7e1a585676f9beff/src/fonts/fontlab/CommitMonoV143-VF.woff2');
@@ -17,37 +19,11 @@ body {
   height: 100%;
   font-optical-sizing: auto;
   font-size: 0.78em;
-  margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 pre a {
   text-decoration: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-figure,
-p,
-ol,
-ul,
-pre {
-  margin: 0;
-}
-
-ol[role='list'],
-ul[role='list'] {
-  list-style: none;
-  padding-inline: 0;
-}
-
-img,
-video {
-  display: block;
-  max-inline-size: 100%;
 }
 
 code {
@@ -72,23 +48,17 @@ a {
   }
 }
 
-/* auto-layout */
-@media (min-width: 712px) {
-  .auto-container {
-    max-width: 40rem;
-  }
-}
-
-@media (min-width: 640px) {
-  .auto-container {
+/* auto-layout utility */
+@utility auto-container {
+  margin-left: auto;
+  margin-right: auto;
+  @media (min-width: 640px) {
     border-left: 1px solid #303030;
     border-right: 1px solid #303030;
   }
-}
-
-.auto-container {
-  margin-right: auto;
-  margin-left: auto;
+  @media (min-width: 712px) {
+    max-width: 40rem;
+  }
 }
 
 /* Highlight.js Xcode theme */
