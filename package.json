@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
+    "dev": "vike dev",
     "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vp preview",
-    "build-only": "vp build",
+    "preview": "vike preview",
+    "build-only": "vike build",
     "type-check": "vue-tsc --build"
   },
   "devDependencies": {
@@ -27,6 +27,8 @@
     "@tailwindcss/vite": "^4.2.2",
     "highlight.js": "^11.11.1",
     "tailwindcss": "^4.2.2",
+    "vike": "^0.4.257",
+    "vike-vue": "^0.9.11",
     "vue": "^3.5.32"
   }
 }

@@ -1,0 +1,89 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "./codeStyling.css";
+
+@layer base {
+  @font-face {
+    font-family: "CommitMono";
+    src: url("https://raw.githubusercontent.com/eigilnikolajsen/commit-mono/ecd81cdbd7f7eb2acaaa2f2f7e1a585676f9beff/src/fonts/fontlab/CommitMonoV143-VF.woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  html {
+    height: 100%;
+    line-height: 1.5;
+  }
+
+  body {
+    height: 100%;
+    background-color: #1c1c1c;
+    color: #fafafa;
+    font-optical-sizing: auto;
+    font-size: 0.78em;
+  }
+
+  h1, h2, h3, h4, h5, figure, p, ol, ul, pre {
+    margin: 0;
+  }
+
+  ol[role="list"], ul[role="list"] {
+    list-style: none;
+    padding-inline: 0;
+  }
+
+  img, video {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  code {
+    font-family: "CommitMono", monospace;
+    font-feature-settings: "ss03", "ss04", "ss05";
+    line-height: 1;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  pre a {
+    text-decoration: none;
+  }
+
+  @media (min-width: 390px) {
+    body {
+      font-size: 0.86em;
+    }
+  }
+
+  @media (min-width: 480px) {
+    body {
+      font-size: 0.94em;
+    }
+  }
+}
+
+/* @layer components {
+  .auto-container {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  @media (min-width: 712px) {
+    .auto-container {
+      max-width: 40rem;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .auto-container {
+      border-left: 1px solid #303030;
+      border-right: 1px solid #303030;
+    }
+  }
+} */

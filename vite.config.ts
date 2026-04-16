@@ -1,27 +1,25 @@
 import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
-import tailwindcss from '@tailwindcss/vite';
-import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import vike from "vike/plugin";
 
 export default defineConfig({
   root: "./Sources/SiteApp",
-  plugins: [vue(), vueDevTools(), tailwindcss()],
+  plugins: [vue(), vike(), vueDevTools(), tailwindcss()],
   publicDir: "./../../public",
   build: {
     outDir: "./../../dist",
-    emptyOutDir: true
+    emptyOutDir: true,
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./Sources/SiteApp"),
-    }
+    tsconfigPaths: true,
   },
   fmt: {},
-  lint: { 
-    options: { 
-      typeAware: true, 
-      typeCheck: true 
-    } 
+  lint: {
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
   },
 });
