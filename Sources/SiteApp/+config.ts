@@ -4,7 +4,7 @@ import vikeVue from "vike-vue/config";
 export default {
   clientRouting: true,
   prerender: true,
-  ssr: false,
+  ssr: true,
   extends: [vikeVue],
   htmlAttributes: { 
     "data-theme": "dark"
