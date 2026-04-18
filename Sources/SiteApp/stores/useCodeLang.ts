@@ -19,28 +19,28 @@ const allCodeLangs: AllCodeLangs = {
     id: "md",
     label: "Markdown",
     fileCase(id) {
-      return "";
+      return `${id}.${this.id}`;
     },
   },
   swift: {
     id: "swift",
     label: "Swift",
     fileCase(id) {
-      return "";
+      return `${id}.${this.id}`;
     },
   },
   ts: {
     id: "ts",
     label: "TypeScript",
     fileCase(id) {
-      return "";
+      return `${id}.${this.id}`;
     },
   },
   rs: {
     id: "rs",
     label: "Rust",
     fileCase(id) {
-      return "";
+      return `${id}.${this.id}`;
     },
   },
 };

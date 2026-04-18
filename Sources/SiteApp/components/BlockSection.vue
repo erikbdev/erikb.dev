@@ -4,7 +4,7 @@ export default {
   props: {
     tag: {
       type: String,
-      default: "div",
+      default: "section",
     },
     fill: {
       type: [String, Boolean] as PropType<"inner" | boolean | "">,
@@ -18,7 +18,7 @@ export default {
     :is="$props.tag || 'div'"
     :class="[
       'relative border-[#303030]',
-      'after:absolute after:bottom-0 after:left-1/2 after:w-screen after:-translate-x-1/2 after:h-px after:bg-[#303030] ',
+      'after:absolute after:border-b after:w-screen after:left-1/2 after:bottom-0 after:-translate-x-1/2 after:border-[#303030]',
       $props.fill === true || $props.fill === ''
         ? ''
         : [
