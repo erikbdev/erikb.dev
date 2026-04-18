@@ -1,4 +1,4 @@
-import { readonly, ref } from "vue";
+import { ref } from "vue";
 
 export type CodeLangID = "md" | "swift" | "ts" | "rs";
 
@@ -48,5 +48,8 @@ const allCodeLangs: AllCodeLangs = {
 const codeLang = ref<CodeLang>(allCodeLangs.md);
 
 export default function useCodeLang() {
-  return codeLang
+  return {
+    codeLang,
+    allCodeLangs
+  }
 }

@@ -3,11 +3,6 @@ import BlockSection from "@/components/BlockSection.vue";
 </script>
 <template>
   <BlockSection>
-    <h1>Welcome</h1>
-    This page is:
-    <ul>
-      <li>Rendered to HTML.</li>
-      <li>Interactive.</li>
-    </ul>
+    <h1>Welcome, Showcases.</h1>
   </BlockSection>
 </template>
