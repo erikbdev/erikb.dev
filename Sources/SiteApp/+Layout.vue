@@ -15,12 +15,12 @@ const { codeLang, allCodeLangs } = useCodeLang()
         <code class="text-[0.84em] text-white font-bold">erikb.dev();</code>
       </a>
       <div class="relative">
-        <button class="font-bold text-xs border-[1.16px] border-solid border-[#303030] py-1 px-2 cursor-pointer" @click.stop="showCodeLangDialog = !showCodeLangDialog">
-          <code>{{ '</>' }}</code>
+        <button :class="`font-bold text-xs border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer ${showCodeLangDialog ? 'bg-neutral-400 text-neutral-900' : ''}`" @click.stop="showCodeLangDialog = !showCodeLangDialog">
+          <code>{{ '<lang/>' }}</code>
         </button> 
-        <ul v-if="showCodeLangDialog" class="p-2 absolute right-0 flex flex-col gap-1 mt-1 border border-[#303030] bg-[#1f1f1f]">
+        <ul v-if="showCodeLangDialog" class="p-2 absolute right-0 flex flex-col gap-1 mt-1 border border-neutral-700 bg-[#1f1f1f]">
           <li v-for="lang in allCodeLangs" class="w-full h-full">
-            <button :class="`w-full h-full p-2 cursor-pointer ${lang.id == codeLang.id ? 'bg-[#4c4c4c]' : ''}`" @click.stop="codeLang = lang; showCodeLangDialog = false">{{ lang.label }}</button>
+            <button :class="`w-full h-full p-2 cursor-pointer ${lang.id == codeLang.id ? 'bg-neutral-600 border border-neutral-700' : ''}`" @click.stop="codeLang = lang; showCodeLangDialog = false">{{ lang.label }}</button>
           </li>
         </ul>
       </div>

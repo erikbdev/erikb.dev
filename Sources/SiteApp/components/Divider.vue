@@ -2,8 +2,8 @@
 import BlockSection from './BlockSection.vue';
 </script>
 <template>
-  <BlockSection fill-inner>
-    <span class="h-3.5 block divider-background"></span>
+  <BlockSection fill="inner">
+    <span class="h-3 block divider-background"></span>
   </BlockSection>
 </template>
 <style lang="css">
