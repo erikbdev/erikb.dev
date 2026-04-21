@@ -1,9 +1,15 @@
-@layer theme, base, components, utilities;
+/* @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss/utilities.css" layer(utilities); */
+@import "tailwindcss";
 
 @import "./codeStyling.css";
+
+@theme {
+  --color-base: #1c1c1c
+  /* --border-base:  */
+}
 
 @layer base {
   @font-face {
@@ -67,23 +73,3 @@
     }
   }
 }
-
-/* @layer components {
-  .auto-container {
-    margin-right: auto;
-    margin-left: auto;
-  }
-
-  @media (min-width: 712px) {
-    .auto-container {
-      max-width: 40rem;
-    }
-  }
-
-  @media (min-width: 640px) {
-    .auto-container {
-      border-left: 1px solid #303030;
-      border-right: 1px solid #303030;
-    }
-  }
-} */

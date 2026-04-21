@@ -1,8 +1,9 @@
 <script lang="ts">
 import type { PropType } from "vue";
 export default {
+  inheritAttrs: true,
   props: {
-    tag: {
+    as: {
       type: String,
       default: "section",
     },
@@ -15,16 +16,16 @@ export default {
 </script>
 <template>
   <component
-    :is="$props.tag || 'div'"
+    :is="as"
     :class="[
-      'relative border-[#303030]',
+      'relative border-[#303030] w-full',
       'after:absolute after:border-b after:w-screen after:left-1/2 after:bottom-0 after:-translate-x-1/2 after:border-[#303030]',
-      $props.fill === true || $props.fill === ''
+      fill === true || fill === ''
         ? ''
         : [
             'md:border-x md:max-w-2xl mx-auto',
             {
-              'px-6 py-3': $props.fill !== 'inner',
+              'px-6 py-6': fill !== 'inner',
             },
           ],
     ]"
