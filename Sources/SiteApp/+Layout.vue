@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import BlockSection from './components/BlockSection.vue';
-import useCodeLang from './stores/useCodeLang.ts';
-import Divider from './components/Divider.vue';
-import HorizonWorld from './components/HorizonWorld.vue';
+import BlockSection from '@/components/BlockSection.vue';
+import useCodeLang from '@/stores/useCodeLang.ts';
+import Divider from '@/components/Divider.vue';
+import HorizonWorld from '@/components/HorizonWorld.vue';
 
 const showCodeLangDialog = ref(false);
 
@@ -12,7 +12,7 @@ const { codeLang, allCodeLangs } = useCodeLang()
 <template>
   <main class="relative">
     <!-- Navigation -->
-    <BlockSection as="nav" fill class="fixed! top-0 z-50 bg-base/90">
+    <BlockSection as="nav" fill class="top-0 z-50 bg-base/90" :divider="false">
       <div class="flex flex-none justify-between md:max-w-2xl mx-auto py-2 px-3">
         <a href="/">
           <code class="text-[0.84em] text-white font-bold">erikb.dev();</code>
@@ -29,12 +29,12 @@ const { codeLang, allCodeLangs } = useCodeLang()
         </div>
       </div>   
     </BlockSection>
-    <BlockSection fill class="w-screen h-screen">
+    
+    <!-- <BlockSection fill class="w-screen h-screen">
       <HorizonWorld />
-    </BlockSection>
-    <Divider />
+    </BlockSection>  -->
+   
     <slot></slot>
-    <Divider />
-    <BlockSection as="footer"></BlockSection>
+    <BlockSection as="footer" :divider="false"></BlockSection>
   </main>
 </template>
