@@ -22,8 +22,8 @@ export default {
   <component
     :is="as"
     :class="[
-      'relative border-[#303030] border-b w-full',
-      divider ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-screen after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-[#303030] divider-test' : '',
+      'relative border-[#303030] w-full',
+      divider ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-screen after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-[#303030] after:outline after:outline-[#303030] after:-outline-offset-1 divider-lines' : 'border-b ',
       fill === true || fill === ''
         ? ''
         : [
@@ -37,12 +37,10 @@ export default {
     <slot></slot>
   </component>
 </template>
-<style lang="css">
-.divider-test::after {
-  /* border-image: conic-gradient(rgba(255, 192, 203, 0.335) 0 0) fill 3/0/0 100vw; */
-  /* box-shadow: 1px 0px 0px 0px #00ff00 inset; */
+<style>
+.divider-lines::after {
   border-image: linear-gradient(to right, #303030, #303030) 1 / 1px / 0 100vw;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 8L8 0M-2 2L2-2M6 10L10 6' stroke='%23333' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E");
-  background-size: 5px 5px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 8L8 0M-2 2L2-2M6 10L10 6' stroke='%23333' stroke-width='2' stroke-linecap='square'/%3E%3C/svg%3E");
+  background-size: 6px 4px;
 }
 </style>
