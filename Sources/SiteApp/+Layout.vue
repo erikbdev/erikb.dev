@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BlockSection from '@/components/BlockSection.vue';
-import useCodeLang from '@/stores/useCodeLang.ts';
 import HorizonWorld from '@/components/HorizonWorld.vue';
 
 const showMenuDialog = ref(false);
