@@ -1,37 +1,47 @@
-/* @layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities); */
 @import "tailwindcss";
-
 @import "./codeStyling.css";
 
 @theme {
-  --color-base: #1c1c1c
-  /* --border-base:  */
+  --color-base: #1c1c1c;
+  --color-border: #303030;
+  --text-xs: 0.75em;
+  --text-sm: 0.86em;
+  --text-base: 0.94em;
+  --text-lg: 1em;
+  --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
   @font-face {
     font-family: "CommitMono";
-    src: url("https://raw.githubusercontent.com/eigilnikolajsen/commit-mono/ecd81cdbd7f7eb2acaaa2f2f7e1a585676f9beff/src/fonts/fontlab/CommitMonoV143-VF.woff2");
     font-style: normal;
-    font-weight: 400;
+    font-weight: 400 600;
     font-display: swap;
-  }
-
-  html {
-    height: 100%;
-    line-height: 1.5;
+    font-feature-settings: "ss03", "ss04", "ss05" "cv01", "cv02", "cv06", "cv07";
+    line-height: 1;
+    size-adjust: 90%;
+    src: url("/fonts/CommitMono.woff2") format("woff2");
   }
 
   body {
     height: 100%;
-    background-color: #1c1c1c;
+    background-color: var(--color-base);
     color: #fafafa;
     font-optical-sizing: auto;
-    font-size: 0.78em;
+    font-size: var(--text-xs);
   }
+ 
+  @media (min-width: 390px) {
+    body {
+      font-size: var(--text-sm);
+    }
+  }
+
+  @media (min-width: 480px) {
+    body {
+      font-size: var(--text-base);
+    }
+  }  
 
   h1, h2, h3, h4, h5, figure, p, ol, ul, pre {
     margin: 0;
@@ -48,9 +58,9 @@
   }
 
   code {
-    font-family: "CommitMono", monospace;
-    font-feature-settings: "ss03", "ss04", "ss05";
+    font-family: var(--font-mono);
     line-height: 1;
+    /* font-size: inherit !important; */
   }
 
   a {
@@ -59,17 +69,5 @@
 
   pre a {
     text-decoration: none;
-  }
-
-  @media (min-width: 390px) {
-    body {
-      font-size: 0.86em;
-    }
-  }
-
-  @media (min-width: 480px) {
-    body {
-      font-size: 0.94em;
-    }
   }
 }

@@ -5,8 +5,8 @@ import useCodeLang from "@/stores/useCodeLang";
 const { codeLang } = useCodeLang()
 </script>
 <template>
-  <BlockSection class="flex flex-col">
-    <div class="w-full text-end text-xs text-neutral-500">
+  <BlockSection>
+    <div class="w-full text-sm text-end text-neutral-500">
       <pre>
         <code>{{ codeLang.fileCase('user') }}</code>
       </pre>      

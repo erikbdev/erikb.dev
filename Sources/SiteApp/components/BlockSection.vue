@@ -22,16 +22,16 @@ export default {
   <component
     :is="as"
     :class="[
-      'relative border-[#303030] w-full',
-      divider ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-screen after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-[#303030] after:outline after:outline-[#303030] after:-outline-offset-1 divider-lines' : 'border-b ',
+      'relative border-border w-full',
       fill === true || fill === ''
         ? ''
         : [
             'md:border-x md:max-w-2xl mx-auto',
             {
-              'px-6 py-6': fill !== 'inner',
+              'px-4 py-4': fill !== 'inner',
             },
           ],
+      divider ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-screen after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-border after:outline after:outline-border after:-outline-offset-1 divider-lines' : 'border-b ',
     ]"
   >
     <slot></slot>
