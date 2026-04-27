@@ -13,7 +13,11 @@ export default defineConfig({
       ...templateCompilerOptions, 
       include: [/\.vue$/, /\.md$/]
     }), 
-    markdown({}),
+    markdown({
+      markdownOptions: {
+        breaks: true
+      }
+    }),
     vike(), 
     vueDevTools(), 
     tailwindcss()

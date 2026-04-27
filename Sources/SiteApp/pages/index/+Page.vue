@@ -2,7 +2,7 @@
 import BlockSection from "@/components/BlockSection.vue";
 import useCodeLang from "@/stores/useCodeLang";
 import { PhMapPin, PhNavigationArrow, PhWaveform } from "@phosphor-icons/vue";
-import { onMounted } from "vue";
+import { onMounted, type Component } from "vue";
 
 type PostHeader = {
   type: "code";
@@ -27,26 +27,21 @@ type PostLink = {
   role: "primary" | "secondary"
 }
 
-type Post = {
+type ImportPost = {
   title: string;
-  date: Date;
+  date: string;
   kind: string;
   header?: PostHeader;
   links: PostLink[];
-  default: string;
+  default: Component;
 }
 
 const { codeLang, allCodeLangs } = useCodeLang();
 
-const posts = (Object.values(import.meta.glob('../../posts/*.md', { eager: true })) as Post[])
-  .map(p => {
-    if (typeof p.date == "string") {
-      return { ...p, date: new Date(p.date) }
-    } else {
-      return p;
-    }
-  })
-  .sort((p1, p2) => p2.date.getTime() - p1.date.getTime())
+const posts = (Object.values(import.meta.glob('../../posts/*.md', { eager: true })) as ImportPost[])
+  .map(p => ({ ...p, date: new Date(p.date)}))
+  .sort((p1, p2) => p1.date.getTime() - p2.date.getTime())
+  .map((p, i) => ({ ...p, id: `logs-${i}`, index: i }));
 
 const postDateFormatter = new Intl.DateTimeFormat('en-US', {
   month: "short",
@@ -66,7 +61,7 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
       <h1 class="text-3xl font-bold mb-1.5">
         <span class="text-neutral-500">#</span> Erik Bautista Santibanez
       </h1>
-      <p class="text-neutral-300">Mobile & Web Developer</p>
+      <p class="mb-1">Mobile & Web Developer</p>
       <p class="text-neutral-300">
         <PhMapPin weight="fill" class="text-white inline-block mr-1 size-[1em] mb-1" />
         <span>Irvine, CA</span>
@@ -81,7 +76,7 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
         <span>Listening to </span>
         <span class="font-bold italic text-white">TODO CAMBIÓ — DannyLux</span>
       </p>
-      <p class="text-neutral-300 pt-4 pb-5">
+      <p class="pt-3 pb-5">
         I'm a passionate software developer who builds applications using Swift and modern web
         technologies.
       </p>
@@ -103,8 +98,8 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
   </BlockSection>
 
   <!-- Dev Logs -->
-  <BlockSection id="dev-logs">
-    <header class="pb-8">
+  <BlockSection id="dev-logs" class="p-0!">
+    <header class="p-6">
       <div class="w-full text-sm text-end text-neutral-500 mb-2">
         <a href="#dev-logs">
           <code>{{ codeLang.fileCase('dev-logs') }}</code>
@@ -113,22 +108,34 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
       <h1 class="text-3xl font-bold mb-1.5">
         <span class="text-neutral-500">#</span> Dev Logs
       </h1>
-      <p class="text-neutral-300">A curated list of projects I've worked on.</p>
+      <p>A curated list of projects I've worked on.</p>
     </header>
-    <article v-for="post, index in posts" class="py-6 border-t border-border border-dashed">
-      <header class="w-full text-xs text-neutral-500 mb-4">
-        <hgroup class="flex flex-row justify-between items-center">
+    <article v-for="post in posts.reverse()" class="p-6 border-t border-border border-dashed" :key="post.id" :id="post.id">
+      <header class="w-full">
+        <hgroup class="mb-6 text-xs text-neutral-500 flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
-          <a :href="`#log-${posts.length - index - 1}`">
-            <code>{{ `log-${posts.length - index - 1}.md` }}</code>
+          <a :href="`#${post.id}`">
+            <code>{{ `log-${post.index}.md` }}</code>
           </a>
         </hgroup>
+        <section v-if="post.header?.type == 'code'" class="mb-6 text-sm p-2 bg-neutral-800 border border-[#3A3A3A]">
+          <pre><code>{{ post.header.value }}</code></pre>
+        </section>
+        <section v-else-if="post.header?.type == 'video'" class="mb-6 bg-neutral-800 border border-[#3A3A3A]">
+          <video autoplay playsinline muted controls loop :src="post.header.src"></video>
+        </section>
+        <section v-else-if="post.header?.type == 'link'" class="mb-6">
+          <!-- TODO: generate open-graph  -->
+        </section>
+        <section v-else-if="post.header?.type == 'image'" class="mb-6 bg-neutral-800 border border-[#3A3A3A]">
+           <img :src="post.header.src" :alt="post.header.label">
+        </section>
       </header>
-      <h3 class="text-xl font-bold mb-2">{{ post.title }}</h3>
-      <component :is="post.default"></component>
-      <footer v-if="!!post.links" class="flex flex-row flex-wrap gap-2 text-sm text-white mt-4">
-        <button v-for="link in post.links || []" class="border border-border px-3 py-2 font-semibold">
-           {{ link.label }}
+      <h3 class="text-xl font-bold"><span class="text-neutral-500">#</span> {{ post.title }}</h3>
+      <component class="mt-3" :is="post.default"></component>
+      <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
+        <button v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']">
+          {{ link.label }}
         </button>
       </footer>
     </article>
