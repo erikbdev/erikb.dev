@@ -118,6 +118,7 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
             <code>{{ `log-${post.index}.md` }}</code>
           </a>
         </hgroup>
+        <!-- 
         <section v-if="post.header?.type == 'code'" class="mb-6 text-sm p-2 bg-neutral-800 border border-[#3A3A3A]">
           <pre><code>{{ post.header.value }}</code></pre>
         </section>
@@ -125,14 +126,16 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
           <video autoplay playsinline muted controls loop :src="post.header.src"></video>
         </section>
         <section v-else-if="post.header?.type == 'link'" class="mb-6">
-          <!-- TODO: generate open-graph  -->
         </section>
         <section v-else-if="post.header?.type == 'image'" class="mb-6 bg-neutral-800 border border-[#3A3A3A]">
            <img :src="post.header.src" :alt="post.header.label">
-        </section>
+        </section> 
+        -->
       </header>
-      <h3 class="text-xl font-bold"><span class="text-neutral-500">#</span> {{ post.title }}</h3>
-      <component class="mt-3" :is="post.default"></component>
+      <!-- <h3 class="text-xl font-bold"><span class="text-neutral-500">#</span> {{ post.title }}</h3> -->
+      <section class="prose prose-invert mt-3">
+        <component :is="post.default"></component>
+      </section>
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
         <button v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']">
           {{ link.label }}

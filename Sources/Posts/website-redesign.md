@@ -19,6 +19,15 @@ links:
     href: "https://github.com/erikbdev/swift-web"
     role: secondary
 ---
+```swift
+struct Portfolio: HTML {
+  var body: some HTML {
+    HomePage()
+  }
+}
+```
+
+## Website Redesign
 
 I redesigned my website, but instead of using traditional web frameworks, I used Swift! I've also built a library called [swift-web](https://github.com/erikbdev/swift-web) which contains tools used to build this website.
 

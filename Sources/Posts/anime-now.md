@@ -8,3 +8,6 @@ header:
   label: "Anime Now! discover image"
 links: []
 ---
+![Anime Now App](/posts/anime-now-released/an-discover.webp)
+
+## Anime Now! — An iOS and macOS App

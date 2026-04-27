@@ -16,7 +16,8 @@ export default defineConfig({
     markdown({
       markdownOptions: {
         breaks: true
-      }
+      },
+      wrapperDiv: false
     }),
     vike(), 
     vueDevTools(), 

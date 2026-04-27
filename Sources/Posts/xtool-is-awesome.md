@@ -8,6 +8,8 @@ links:
     role: primary
 ---
 
+## xtool is Awesome!
+
 [xtool](https://github.com/xtool-org/xtool) is a tool that attempts to replace Xcode by using Swift Package Manager to build and deploy iOS apps on macOS, Linux, and Windows! I have been working closely with the developer to support for App Extensions and also resolve additional issues.
 
 I hope to also replace "AppleProductTypes", a library used to build iOS and macOS apps using Swift Playgrounds, in favor of "XToolProductTypes."
