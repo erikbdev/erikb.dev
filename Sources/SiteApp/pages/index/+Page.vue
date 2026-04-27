@@ -104,7 +104,7 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
 
   <!-- Dev Logs -->
   <BlockSection id="dev-logs">
-    <header>
+    <header class="pb-8">
       <div class="w-full text-sm text-end text-neutral-500 mb-2">
         <a href="#dev-logs">
           <code>{{ codeLang.fileCase('dev-logs') }}</code>
@@ -115,8 +115,8 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
       </h1>
       <p class="text-neutral-300">A curated list of projects I've worked on.</p>
     </header>
-    <article v-for="post, index in posts" class="py-4">
-      <header class="w-full text-sm text-neutral-500 mb-2">
+    <article v-for="post, index in posts" class="py-6 border-t border-border border-dashed">
+      <header class="w-full text-xs text-neutral-500 mb-4">
         <hgroup class="flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
           <a :href="`#log-${posts.length - index - 1}`">
