@@ -43,14 +43,18 @@
     }
   }  
 
+  /* 
   h1, h2, h3, h4, h5, figure, p, ol, ul, pre {
     margin: 0;
-  }
+  } 
+  */
 
+  /*
   ol[role="list"], ul[role="list"] {
     list-style: none;
     padding-inline: 0;
-  }
+  } 
+  */
 
   img, video {
     display: block;
@@ -60,14 +64,5 @@
   code {
     font-family: var(--font-mono);
     line-height: 1;
-    /* font-size: inherit !important; */
-  }
-
-  a {
-    color: inherit;
-  }
-
-  pre a {
-    text-decoration: none;
   }
 }

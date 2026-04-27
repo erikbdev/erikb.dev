@@ -2,12 +2,22 @@ import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
 import tailwindcss from "@tailwindcss/vite";
-import vike from "vike/plugin";
+import vike from 'vike/plugin';
+import markdown from 'unplugin-vue-markdown/vite'
 import { templateCompilerOptions } from '@tresjs/core'
 
 export default defineConfig({
   root: "./Sources/SiteApp",
-  plugins: [vue({ ...templateCompilerOptions }), vike(), vueDevTools(), tailwindcss()],
+  plugins: [
+    vue({ 
+      ...templateCompilerOptions, 
+      include: [/\.vue$/, /\.md$/]
+    }), 
+    markdown({}),
+    vike(), 
+    vueDevTools(), 
+    tailwindcss()
+  ],
   publicDir: "./../../public",
   build: {
     outDir: "./../../dist",

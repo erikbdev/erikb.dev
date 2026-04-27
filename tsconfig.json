@@ -11,7 +11,8 @@
       "@/*": ["./Sources/SiteApp/*"],
       "@stores/*": ["./Sources/SiteApp/stores/*"],
       "@components/*": ["./Sources/SiteApp/components/*"],
-      "@assets/*": ["./Sources/SiteApp/assets/*"]
+      "@assets/*": ["./Sources/SiteApp/assets/*"],
+      "@posts/*": ["./Sources/SiteApp/posts/*"]
     },
 
     // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.

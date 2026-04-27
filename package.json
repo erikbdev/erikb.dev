@@ -25,11 +25,13 @@
   },
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
+    "@phosphor-icons/vue": "^2.2.1",
     "@tailwindcss/vite": "^4.2.2",
     "@tresjs/core": "^5.8.0",
     "highlight.js": "^11.11.1",
     "tailwindcss": "^4.2.2",
     "three": "^0.184.0",
+    "unplugin-vue-markdown": "^30.0.0",
     "vike": "^0.4.257",
     "vike-vue": "^0.9.11",
     "vue": "^3.5.32"

@@ -28,7 +28,7 @@ export default {
         : [
             'md:border-x md:max-w-2xl mx-auto',
             {
-              'px-4 py-4': fill !== 'inner',
+              'px-6 py-6': fill !== 'inner',
             },
           ],
       divider ? 
