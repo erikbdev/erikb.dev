@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { onMounted, type Component } from "vue";
 import BlockSection from "@/components/BlockSection.vue";
 import useCodeLang from "@/stores/useCodeLang";
-import { PhMapPin, PhNavigationArrow, PhWaveform } from "@phosphor-icons/vue";
-import { onMounted, type Component } from "vue";
+import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
 
 type PostHeader = {
   type: "code";
@@ -118,27 +118,13 @@ const postDateFormatter = new Intl.DateTimeFormat('en-US', {
             <code>{{ `log-${post.index}.md` }}</code>
           </a>
         </hgroup>
-        <!-- 
-        <section v-if="post.header?.type == 'code'" class="mb-6 text-sm p-2 bg-neutral-800 border border-[#3A3A3A]">
-          <pre><code>{{ post.header.value }}</code></pre>
-        </section>
-        <section v-else-if="post.header?.type == 'video'" class="mb-6 bg-neutral-800 border border-[#3A3A3A]">
-          <video autoplay playsinline muted controls loop :src="post.header.src"></video>
-        </section>
-        <section v-else-if="post.header?.type == 'link'" class="mb-6">
-        </section>
-        <section v-else-if="post.header?.type == 'image'" class="mb-6 bg-neutral-800 border border-[#3A3A3A]">
-           <img :src="post.header.src" :alt="post.header.label">
-        </section> 
-        -->
       </header>
-      <!-- <h3 class="text-xl font-bold"><span class="text-neutral-500">#</span> {{ post.title }}</h3> -->
-      <section class="prose prose-invert mt-3">
+      <section class="w-full max-w-none prose text-lg prose-headings:text-xl! prose-p:text-white prose-invert mt-3">
         <component :is="post.default"></component>
       </section>
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
         <button v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']">
-          {{ link.label }}
+          <span>{{ link.label }}</span> <PhArrowSquareOut weight="bold" class="inline-block mr-1 size-[1em] mb-0.5" />
         </button>
       </footer>
     </article>

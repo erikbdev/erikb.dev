@@ -11,7 +11,7 @@ const showMenuDialog = ref(false);
         <a href="/" class="text-sm self-center">
           <code class="text-white font-bold">erikb.dev()</code>
         </a>
-        <button class="font-bold  text-sm border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
+        <button class="font-bold text-sm border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
           <code>{{ '<menu>' }}</code>
         </button> 
       </nav>
