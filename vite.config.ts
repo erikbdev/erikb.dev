@@ -1,4 +1,4 @@
-import { defineConfig } from "vite-plus";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
 import tailwindcss from "@tailwindcss/vite";
@@ -21,7 +21,7 @@ export default defineConfig({
     }),
     vike(), 
     vueDevTools(), 
-    tailwindcss()
+    tailwindcss(),
   ],
   publicDir: "./../../public",
   build: {
@@ -30,12 +30,5 @@ export default defineConfig({
   },
   resolve: {
     tsconfigPaths: true,
-  },
-  fmt: {},
-  lint: {
-    options: {
-      typeAware: true,
-      typeCheck: true,
-    },
   },
 });
