@@ -1,26 +1,26 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
 import tailwindcss from "@tailwindcss/vite";
-import vike from 'vike/plugin';
-import markdown from 'unplugin-vue-markdown/vite'
-import { templateCompilerOptions } from '@tresjs/core'
+import vike from "vike/plugin";
+import markdown from "unplugin-vue-markdown/vite";
+import { templateCompilerOptions } from "@tresjs/core";
 
 export default defineConfig({
   root: "./Sources/SiteApp",
   plugins: [
-    vue({ 
-      ...templateCompilerOptions, 
-      include: [/\.vue$/, /\.md$/]
-    }), 
+    vue({
+      ...templateCompilerOptions,
+      include: [/\.vue$/, /\.md$/],
+    }),
     markdown({
       markdownOptions: {
-        breaks: true
+        breaks: true,
       },
-      wrapperDiv: false
+      wrapperDiv: false,
     }),
-    vike(), 
-    vueDevTools(), 
+    vike(),
+    vueDevTools(),
     tailwindcss(),
   ],
   publicDir: "./../../public",
@@ -30,5 +30,10 @@ export default defineConfig({
   },
   resolve: {
     tsconfigPaths: true,
+  },
+  fmt: {},
+  lint: {
+    typeAware: true,
+    typeCheck: true,
   },
 });

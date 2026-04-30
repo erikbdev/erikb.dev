@@ -1,7 +1,7 @@
 import Dependencies
 
 extension SiteRoute: DependencyKey {
-  public static let liveValue = SiteRoute.pages(.home)
+  public static let liveValue: SiteRoute? = nil
 }
 
 extension SiteRoute.Router: DependencyKey {
@@ -14,7 +14,7 @@ extension DependencyValues {
     set { self[SiteRoute.Router.self] = newValue }
   }
 
-  public var currentRoute: SiteRoute {
+  public var currentRoute: SiteRoute? {
     get { self[SiteRoute.self] }
     set { self[SiteRoute.self] = newValue }
   }

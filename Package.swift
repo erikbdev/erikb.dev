@@ -25,6 +25,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
 
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
+    .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
 
     // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")

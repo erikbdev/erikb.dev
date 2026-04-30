@@ -1,5 +1,5 @@
 {
-  "originHash" : "e484579ccbfe0dbc45dc791adf95d7035e5dac4c7c9c118728fd447015977c7b",
+  "originHash" : "14719281324f2ca868fc8f33ba6610318fea7ae9f38a4fcd423db17eef535a7d",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -20,39 +20,12 @@
       }
     },
     {
-      "identity" : "elementary",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/elementary-swift/elementary",
-      "state" : {
-        "revision" : "37b26923e73156f524b52e649855277bc7ead2c2",
-        "version" : "0.7.1"
-      }
-    },
-    {
       "identity" : "hummingbird",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hummingbird-project/hummingbird.git",
       "state" : {
         "revision" : "70b0714b4c4a192a51a9ddcc691fcf2ab3bc9141",
         "version" : "2.5.0"
-      }
-    },
-    {
-      "identity" : "hummingbird-elementary",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/hummingbird-community/hummingbird-elementary.git",
-      "state" : {
-        "revision" : "131b42ae0a7839217c06291ef193d67fe348d7be",
-        "version" : "0.4.2"
-      }
-    },
-    {
-      "identity" : "javascriptkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftwasm/JavaScriptKit",
-      "state" : {
-        "revision" : "c36a7422659cfcf017d6f673b03cf70e134c9d59",
-        "version" : "0.48.0"
       }
     },
     {
