@@ -152,7 +152,8 @@ onMounted(() => {
         <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
           <a :href="`#${post.id}`">
-            <code>{{ `log-${post.index}.md` }}</code>
+            <code v-if="codeLang.id == 'md'">{{ codeLang.fileCase(`logs-${post.index}`) }}</code>
+            <code v-else>{{ `logs[${post.index}]` }}</code>
           </a>
         </hgroup>
       </header>

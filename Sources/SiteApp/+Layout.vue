@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import BlockSection from '@/components/BlockSection.vue';
 import HorizonWorld from '@/components/HorizonWorld.vue';
 
+import { PhCopyright } from '@phosphor-icons/vue';
+
 const showMenuDialog = ref(false);
 </script>
 <template>
@@ -22,5 +24,7 @@ const showMenuDialog = ref(false);
       </BlockSection> 
       <slot></slot>
     </main>
-    <BlockSection as="footer" :divider="false"></BlockSection>
+    <BlockSection as="footer" :divider="false">
+      <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+    </BlockSection>
 </template>
