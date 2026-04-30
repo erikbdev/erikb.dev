@@ -1,23 +1,17 @@
-#if !hasFeature(Embedded)
 import CasePaths
 import Foundation
 import URLRouting
-#endif
 import Models
 
 extension SiteRoute {
-  #if !hasFeature(Embedded)
   @CasePathable
-  #endif
   public enum APIRoute: Sendable, Equatable {
     case activity(ActivityRoute)
   }
 }
 
 extension SiteRoute.APIRoute {
-  #if !hasFeature(Embedded)
   @CasePathable
-  #endif
   public enum ActivityRoute: Sendable, Equatable {
     case all
     case location(Activity.Location?)
@@ -25,8 +19,6 @@ extension SiteRoute.APIRoute {
   }
 }
 
-
-#if !hasFeature(Embedded)
 extension SiteRoute.APIRoute {
   public struct Router: Sendable, ParserPrinter {
     public var body: some URLRouting.Router<SiteRoute.APIRoute> {
@@ -58,4 +50,3 @@ extension SiteRoute.APIRoute {
     }
   }
 }
-#endif

@@ -47,7 +47,7 @@ const allCodeLangs: AllCodeLangs = {
 
 const codeLang = ref<CodeLang>(allCodeLangs.md);
 
-export default function useCodeLang() {
+export function useCodeLang() {
   return {
     codeLang,
     allCodeLangs

@@ -1,4 +1,3 @@
-#if !hasFeature(Embedded)
 import Dependencies
 
 extension SiteRoute: DependencyKey {
@@ -20,4 +19,3 @@ extension DependencyValues {
     set { self[SiteRoute.self] = newValue }
   }
 }
-#endif

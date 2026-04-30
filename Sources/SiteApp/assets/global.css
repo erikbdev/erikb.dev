@@ -13,6 +13,10 @@
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
+@utility prose {
+  --tw-prose-pre-bg: #282828;
+}
+
 @layer base {
   @font-face {
     font-family: "CommitMono";

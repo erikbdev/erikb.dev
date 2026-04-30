@@ -30,20 +30,20 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
         $0.currentRoute = route
       } operation: {
         switch route {
-        case .pages(.home):
-          let codeLang = CodeLang.resolve(req)
-          return HTMLResponse {
-            PageLayout(metadata: .default(), codeLang: codeLang) {
-              HomePage(codeLang: codeLang, activity: activityClient.activity()?.redacted)
-            }
-          }
-        case .pages(.notFound):
-          let codeLang = CodeLang.resolve(req)
-          return HTMLResponse {
-            PageLayout(metadata: .default(), codeLang: codeLang) {
-              NotFoundPage(codeLang: codeLang)
-            }
-          }
+        // case .pages(.home):
+        //   let codeLang = CodeLang.resolve(req)
+        //   return HTMLResponse {
+        //     PageLayout(metadata: .default(), codeLang: codeLang) {
+        //       HomePage(codeLang: codeLang, activity: activityClient.activity()?.redacted)
+        //     }
+        //   }
+        // case .pages(.notFound):
+        //   let codeLang = CodeLang.resolve(req)
+        //   return HTMLResponse {
+        //     PageLayout(metadata: .default(), codeLang: codeLang) {
+        //       NotFoundPage(codeLang: codeLang)
+        //     }
+        //   }
         case .api(.activity(.all)):
           do {
             return try Activity.encoder.encode(self.activityClient.activity()?.redacted, from: req, context: ctx)

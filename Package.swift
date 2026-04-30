@@ -20,18 +20,11 @@ let package = Package(
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
     .package(url: "https://github.com/erikbdev/swift-url-routing.git", revision: "459063d23b1dd726972309e47d681c45763b55d1"),
 
-    .package(path: "./elementary-ui"),
-    // .package(url: "https://github.com/erikbdev/elementary-ui", revision: "b3e3115e756cdb021acd5d117a47104730808a3d"),
-    .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.3.0"),
-
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
 
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
-    .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
-
-    .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.40.0"),
 
     // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
@@ -55,27 +48,16 @@ let package = Package(
         .product(name: "CasePaths", package: "swift-case-paths", condition: .when(platforms: [.linux, .macOS])),
       ]
     ),
-    .target(
-      name: "Pages",
-      dependencies: [
-        "Models",
-        "Routes",
-        .product(name: "ElementaryUI", package: "elementary-ui"),
-        .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
-      ]
-    ),
     /// SiteServer
     .executableTarget(
       name: "SiteServer",
       dependencies: [
         "Models",
         "Routes",
-        "Pages",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
-        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "HummingbirdURLRouting", package: "swift-web"),
         .product(name: "MiddlewareUtils", package: "swift-web"),
