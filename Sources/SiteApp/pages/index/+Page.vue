@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, type Component } from "vue";
 import BlockSection from "@/components/BlockSection.vue";
-import { useCodeLang } from "@/stores/use-codelang";
 import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
+import { useCodeLang } from "@/stores/use-codelang";
 import { useActivity } from "@/stores/use-activity";
 import { useHighlight } from "@/stores/use-highlight";
 
@@ -149,7 +149,7 @@ onMounted(() => {
       :id="post.id"
     >
       <header class="w-full">
-        <hgroup class="mb-6 text-xs text-neutral-500 flex flex-row justify-between items-center">
+        <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
           <a :href="`#${post.id}`">
             <code>{{ `log-${post.index}.md` }}</code>
