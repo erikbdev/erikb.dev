@@ -36,8 +36,6 @@ let package = Package(
     .executableTarget(
       name: "SiteServer",
       dependencies: [
-        "Models",
-        "Routes",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Dependencies", package: "swift-dependencies"),
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
@@ -54,7 +52,6 @@ let package = Package(
     .executableTarget(
       name: "SiteSSHServer",
       dependencies: [
-        "Models",
         "TinyStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "NIO", package: "swift-nio"),

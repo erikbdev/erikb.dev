@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import vike from "vike/plugin";
 import markdown from "unplugin-vue-markdown/vite";
 import { templateCompilerOptions } from "@tresjs/core";
-import path from "path";
+import path from "node:path";
 
 export default defineConfig({
   root: "./web",
@@ -39,8 +39,14 @@ export default defineConfig({
       "@posts": path.resolve(__dirname, "./web/posts"),
     },
   },
+  server: {
+    proxy: {
+      "/api": "http://localhost:8080",
+    },
+  },
   fmt: {
     bracketSameLine: true,
+    sortImports: true,
   },
   lint: {
     options: {

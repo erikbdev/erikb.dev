@@ -3,8 +3,6 @@ import Hummingbird
 import HummingbirdRouter
 import HummingbirdURLRouting
 import MiddlewareUtils
-import Models
-import Routes
 
 import class Foundation.JSONEncoder
 

@@ -1,6 +1,5 @@
 import Dependencies
 import DependenciesMacros
-import Models
 
 @DependencyClient
 public struct ActivityClient: Sendable {
@@ -13,7 +12,7 @@ extension ActivityClient {
   static var live: Self {
     let storage = LockIsolated(Activity())
     return Self(
-      activity: { storage.value }, 
+      activity: { storage.value },
       updateLocation: { newValue in storage.withValue { $0.location = newValue } },
       updateNowPlaying: { newValue in storage.withValue { $0.nowPlaying = newValue } }
     )
