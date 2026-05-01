@@ -13,8 +13,8 @@ export default {
     },
     divider: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
 };
 </script>
@@ -31,9 +31,9 @@ export default {
               'px-6 py-6': fill !== 'inner',
             },
           ],
-      divider ? 
-        'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-border after:outline after:outline-border after:-outline-offset-1 big-divider' : 
-        'mb-0 after:absolute after:h-0 after:bottom-0 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border compact-divider',
+      divider
+        ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-border after:outline after:outline-border after:-outline-offset-1 big-divider'
+        : 'mb-0 after:absolute after:h-0 after:bottom-0 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border compact-divider',
     ]"
   >
     <slot></slot>

@@ -12,29 +12,30 @@
   },
   "dependencies": {
     "@phosphor-icons/vue": "^2.2.1",
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/vite": "^4.2.4",
     "@tresjs/core": "^5.8.0",
     "highlight.js": "^11.11.1",
-    "tailwindcss": "^4.2.2",
+    "tailwindcss": "^4.2.4",
     "three": "^0.184.0",
     "unplugin-vue-markdown": "^30.0.0",
-    "vike": "^0.4.257",
+    "vike": "^0.4.258",
     "vike-vue": "^0.9.11",
-    "vue": "^3.5.32"
+    "vue": "^3.5.33"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@tsconfig/node24": "^24.0.4",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.6.0",
     "@types/three": "^0.184.0",
-    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",
     "npm-run-all2": "^8.0.4",
-    "typescript": "~6.0.2",
-    "vite": "catalog:",
+    "oxlint-tsgolint": "^0.22.1",
+    "typescript": "~6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vite-plus": "catalog:",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.2.7"
   },
   "packageManager": "pnpm@10.33.2"
 }

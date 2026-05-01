@@ -6,7 +6,7 @@ export default {
   prerender: true,
   ssr: true,
   extends: [vikeVue],
-  htmlAttributes: { 
-    "data-theme": "dark"
-   }
+  htmlAttributes: {
+    "data-theme": "dark",
+  },
 } satisfies Config;

@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import vike from "vike/plugin";
 import markdown from "unplugin-vue-markdown/vite";
 import { templateCompilerOptions } from "@tresjs/core";
+import path from "path";
 
 export default defineConfig({
   root: "./Sources/SiteApp",
@@ -30,10 +31,21 @@ export default defineConfig({
   },
   resolve: {
     tsconfigPaths: true,
+    alias: {
+      "@": path.resolve(__dirname, "./Sources/SiteApp"),
+      "@components": path.resolve(__dirname, "./Sources/SiteApp/components"),
+      "@stores": path.resolve(__dirname, "./Sources/SiteApp/stores"),
+      "@assets": path.resolve(__dirname, "./Sources/SiteApp/assets"),
+      "@posts": path.resolve(__dirname, "./Sources/SiteApp/posts"),
+    },
   },
-  fmt: {},
+  fmt: {
+    bracketSameLine: true,
+  },
   lint: {
-    typeAware: true,
-    typeCheck: true,
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
   },
 });

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, type Component } from "vue";
-import BlockSection from "@/components/BlockSection.vue";
+import BlockSection from "@components/BlockSection.vue";
 import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
-import { useCodeLang } from "@/stores/use-codelang";
-import { useActivity } from "@/stores/use-activity";
-import { useHighlight } from "@/stores/use-highlight";
+import { useCodeLang } from "@stores/use-codelang";
+import { useActivity } from "@stores/use-activity";
+import { useHighlight } from "@stores/use-highlight";
 
 type PostHeader =
   | {
@@ -46,11 +46,12 @@ const { activity, fetchActivity } = useActivity();
 const { codeLang, allCodeLangs } = useCodeLang();
 const { highlightAll } = useHighlight();
 
-const posts = Object.freeze((Object.values(import.meta.glob("../../posts/*.md", { eager: true })) as ImportPost[])
-  .map((p) => ({ ...p, date: new Date(p.date) }))
-  .sort((p1, p2) => p1.date.getTime() - p2.date.getTime())
-  .map((p, i) => ({ ...p, id: `logs-${i}`, index: i }))
-  .reverse()
+const posts = Object.freeze(
+  (Object.values(import.meta.glob("../../posts/*.md", { eager: true })) as ImportPost[])
+    .map((p) => ({ ...p, date: new Date(p.date) }))
+    .sort((p1, p2) => p1.date.getTime() - p2.date.getTime())
+    .map((p, i) => ({ ...p, id: `logs-${i}`, index: i }))
+    .reverse(),
 );
 
 const postDateFormatter = new Intl.DateTimeFormat("en-US", {

@@ -1,11 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import BlockSection from '@/components/BlockSection.vue';
 import HorizonWorld from '@/components/HorizonWorld.vue';
 
 import { PhCopyright } from '@phosphor-icons/vue';
+import { usePageContext } from 'vike-vue/usePageContext';
 
 const showMenuDialog = ref(false);
+
+const menuItems = [
+  {
+    name: 'Home',
+    href: '/'
+  },
+  {
+    name: 'Showcase',
+    href: '/showcase'
+  }
+];
+
+watch(() => showMenuDialog.value, (newValue) => {
+  if (newValue) {
+    document.body.classList.add('overflow-y-hidden')
+  } else {
+    document.body.classList.remove('overflow-y-hidden')
+  }
+})
 </script>
 <template>
     <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 bg-base/80 backdrop-blur-sm">
@@ -26,5 +46,18 @@ const showMenuDialog = ref(false);
     </main>
     <BlockSection as="footer" :divider="false">
       <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
-    </BlockSection>
+    </BlockSection> 
+   
+
+    <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
+      <BlockSection :divider="false" class="w-full h-full flex flex-col">
+        <ul class="grow">
+          <li v-for="item in menuItems">
+            <p class="text-3xl font-semibold mb-2">{{ item.name }}</p>
+          </li>
+        </ul>
+
+        <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+      </BlockSection>
+    </div>
 </template>
