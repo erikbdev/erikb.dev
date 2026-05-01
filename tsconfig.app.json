@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["Sources/SiteApp/env.d.ts", "Sources/SiteApp/**/*", "Sources/SiteApp/**/*.vue"],
+  "include": ["web/env.d.ts", "web/**/*", "web/**/*.vue"],
   "compilerOptions": {
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
@@ -8,11 +8,11 @@
 
     // Path mapping for cleaner imports.
     "paths": {
-      "@/*": ["./Sources/SiteApp/*"],
-      "@stores/*": ["./Sources/SiteApp/stores/*"],
-      "@components/*": ["./Sources/SiteApp/components/*"],
-      "@assets/*": ["./Sources/SiteApp/assets/*"],
-      "@posts/*": ["./Sources/SiteApp/posts/*"]
+      "@/*": ["./web/*"],
+      "@stores/*": ["./web/stores/*"],
+      "@components/*": ["./web/components/*"],
+      "@assets/*": ["./web/assets/*"],
+      "@posts/*": ["./web/posts/*"]
     },
 
     // `vue-tsc --build` produces a .tsbuildinfo file for incremental type-checking.

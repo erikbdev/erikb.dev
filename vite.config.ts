@@ -8,7 +8,7 @@ import { templateCompilerOptions } from "@tresjs/core";
 import path from "path";
 
 export default defineConfig({
-  root: "./Sources/SiteApp",
+  root: "./web",
   plugins: [
     vue({
       ...templateCompilerOptions,
@@ -24,19 +24,19 @@ export default defineConfig({
     vueDevTools(),
     tailwindcss(),
   ],
-  publicDir: "./../../public",
+  publicDir: "./../public",
   build: {
-    outDir: "./../../dist",
+    outDir: "./../dist",
     emptyOutDir: true,
   },
   resolve: {
     tsconfigPaths: true,
     alias: {
-      "@": path.resolve(__dirname, "./Sources/SiteApp"),
-      "@components": path.resolve(__dirname, "./Sources/SiteApp/components"),
-      "@stores": path.resolve(__dirname, "./Sources/SiteApp/stores"),
-      "@assets": path.resolve(__dirname, "./Sources/SiteApp/assets"),
-      "@posts": path.resolve(__dirname, "./Sources/SiteApp/posts"),
+      "@": path.resolve(__dirname, "./web"),
+      "@components": path.resolve(__dirname, "./web/components"),
+      "@stores": path.resolve(__dirname, "./web/stores"),
+      "@assets": path.resolve(__dirname, "./web/assets"),
+      "@posts": path.resolve(__dirname, "./web/posts"),
     },
   },
   fmt: {

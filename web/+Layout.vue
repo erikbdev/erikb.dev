@@ -47,7 +47,6 @@ watch(() => showMenuDialog.value, (newValue) => {
     <BlockSection as="footer" :divider="false">
       <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
     </BlockSection> 
-   
 
     <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
       <BlockSection :divider="false" class="w-full h-full flex flex-col">

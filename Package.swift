@@ -29,26 +29,9 @@ let package = Package(
 
     // TODO: use git version
     // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
-    .package(path: "./swift-tau-tui"),
+    .package(path: "./dependencies/swift-tau-tui"),
   ],
   targets: [
-    .target(
-      name: "Models",
-      dependencies: [
-        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
-      ]
-    ),
-    .target(
-      name: "Routes",
-      dependencies: [
-        "Models",
-        .product(name: "Dependencies", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "DependenciesMacros", package: "swift-dependencies", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "URLRouting", package: "swift-url-routing", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "CasePaths", package: "swift-case-paths", condition: .when(platforms: [.linux, .macOS])),
-      ]
-    ),
     /// SiteServer
     .executableTarget(
       name: "SiteServer",
@@ -62,7 +45,10 @@ let package = Package(
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "HummingbirdURLRouting", package: "swift-web"),
         .product(name: "MiddlewareUtils", package: "swift-web"),
-      ]
+        .product(name: "URLRouting", package: "swift-url-routing", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "CasePaths", package: "swift-case-paths", condition: .when(platforms: [.linux, .macOS])),
+      ],
+      path: "server"
     ),
     // SSH Server
     .executableTarget(
@@ -76,7 +62,8 @@ let package = Package(
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "Logging", package: "swift-log"),
         .product(name: "TauTUI", package: "swift-tau-tui"),
-      ]
+      ],
+      path: "ssh-server"
     ),
     .target(
       name: "TinyStore",
@@ -87,7 +74,8 @@ let package = Package(
         .product(name: "Perception", package: "swift-perception"),
         .product(name: "Logging", package: "swift-log"),
         .product(name: "SwiftNavigation", package: "swift-navigation"),
-      ]
+      ],
+      path: "dependencies/tiny-store"
     ),
   ],
   swiftLanguageModes: [.v6]
