@@ -22,7 +22,7 @@ export default {
   <component
     :is="as"
     :class="[
-      'relative border-border w-full',
+      'relative bg-base border-border w-full',
       fill === true || fill === ''
         ? ''
         : [
@@ -32,8 +32,9 @@ export default {
             },
           ],
       divider
-        ? 'mb-4 after:absolute after:h-4 after:-bottom-4 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-border after:outline after:outline-border after:-outline-offset-1 big-divider'
-        : 'mb-0 after:absolute after:h-0 after:bottom-0 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border compact-divider',
+        ? 'mb-4 after:bg-base after:absolute after:h-4 after:-bottom-4 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border after:border-border after:outline after:outline-border after:-outline-offset-1 big-divider'
+        : 'mb-0 after:bg-base after:absolute after:h-0 after:bottom-0 after:w-full after:md:w-2xl after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border compact-divider',
+      // 'mt-0 before:bg-base before:absolute before:h-0 before:top-0 before:w-full  before:left-1/2 before:-translate-x-1/2 before:border-t before:border-border compact-divider',
     ]"
   >
     <slot></slot>

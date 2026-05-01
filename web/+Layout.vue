@@ -38,8 +38,8 @@ watch(() => showMenuDialog.value, (newValue) => {
         </button> 
       </nav>
     </BlockSection>
-    <main>
-      <BlockSection fill class="h-screen">
+    <main class="relative pt-[100vh]">
+      <BlockSection fill class="h-screen mt-[-100vh] fixed! -z-10" :divider="false">
         <HorizonWorld />
       </BlockSection> 
       <slot></slot>
@@ -55,7 +55,6 @@ watch(() => showMenuDialog.value, (newValue) => {
             <p class="text-3xl font-semibold mb-2">{{ item.name }}</p>
           </li>
         </ul>
-
         <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
       </BlockSection>
     </div>
