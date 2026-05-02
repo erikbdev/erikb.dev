@@ -50,6 +50,6 @@ const codeLang = ref<CodeLang>(allCodeLangs.md);
 export function useCodeLang() {
   return {
     codeLang,
-    allCodeLangs
-  }
+    allCodeLangs,
+  };
 }

@@ -10,9 +10,7 @@
   --text-base: 0.94em;
   --text-lg: 1em;
   --text-xl: 1.125em;
-  --font-mono:
-    "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @utility prose {

@@ -9,13 +9,13 @@ export type Location = {
   city?: string;
   state?: string;
   region?: string;
-  residency?: Residency
+  residency?: Residency;
 };
 
 export type Residency = {
   city: string;
   state: string;
-}
+};
 
 export type NowPlaying = {
   title: string;
@@ -36,9 +36,9 @@ export function useActivity() {
   return {
     activity: readonly(activity),
     async fetchActivity() {
-      const response = await fetch('/api/activity')
-      const a = response.json() as Activity
+      const response = await fetch("/api/activity");
+      const a = response.json() as Activity;
       activity.value = a;
-    }
-  }
+    },
+  };
 }

@@ -1,13 +1,21 @@
-import { defineConfig } from "vite-plus";
-import vue from "@vitejs/plugin-vue";
-import vueDevTools from "vite-plugin-vue-devtools";
+import path, { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import tailwindcss from "@tailwindcss/vite";
-import vike from "vike/plugin";
-import markdown from "unplugin-vue-markdown/vite";
 import { templateCompilerOptions } from "@tresjs/core";
-import path from "node:path";
+import vue from "@vitejs/plugin-vue";
+import markdown from "unplugin-vue-markdown/vite";
+import vike from "vike/plugin";
+import vueDevTools from "vite-plugin-vue-devtools";
+import { defineConfig } from "vite-plus";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default defineConfig({
+  staged: {
+    "*": "vp check --fix",
+  },
   root: "./web",
   plugins: [
     vue({
@@ -47,6 +55,8 @@ export default defineConfig({
   fmt: {
     bracketSameLine: true,
     sortImports: true,
+    printWidth: 320,
+    singleAttributePerLine: false,
   },
   lint: {
     options: {

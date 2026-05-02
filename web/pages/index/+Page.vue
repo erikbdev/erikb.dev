@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, type Component } from "vue";
 import BlockSection from "@components/BlockSection.vue";
 import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
-import { useCodeLang } from "@stores/use-codelang";
 import { useActivity } from "@stores/use-activity";
+import { useCodeLang } from "@stores/use-codelang";
 import { useHighlight } from "@stores/use-highlight";
+import { onMounted, type Component } from "vue";
 
 type PostHeader =
   | {
@@ -74,60 +74,36 @@ onMounted(() => {
           <code>{{ codeLang.fileCase("user") }}</code>
         </a>
       </div>
-      <h1 class="text-3xl font-bold mb-1.5">
-        <span class="text-neutral-500">#</span> Erik Bautista Santibanez
-      </h1>
+      <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Erik Bautista Santibanez</h1>
       <p class="mb-1">Mobile & Web Developer</p>
       <p class="text-neutral-300">
         <PhMapPin weight="fill" class="text-white inline-block mr-1 size-[1em] mb-1" />
         <span>Irvine, CA</span>
       </p>
-      <p
-        v-if="
-          !!activity?.location?.city || !!activity?.location?.state || !!activity?.location?.region
-        "
-        class="text-neutral-300"
-      >
-        <PhNavigationArrow
-          weight="fill"
-          mirrored
-          class="text-white inline-block mr-1 size-[1em] mb-1"
-        />
+      <p v-if="!!activity?.location?.city || !!activity?.location?.state || !!activity?.location?.region" class="text-neutral-300">
+        <PhNavigationArrow weight="fill" mirrored class="text-white inline-block mr-1 size-[1em] mb-1" />
         <span>Currently in </span>
-        <span class="font-bold italic text-white">{{
-          [
-            activity.location.city || "",
-            activity.location.state || "",
-            activity.location.region || "",
-          ]
-            .filter((s) => !!s)
-            .join(", ")
-        }}</span>
+        <span class="font-bold italic text-white">{{ [activity.location.city || "", activity.location.state || "", activity.location.region || ""].filter((s) => !!s).join(", ") }}</span>
       </p>
       <p v-if="activity?.nowPlaying" class="text-neutral-300">
         <PhWaveform mirrored class="text-white inline-block mr-1 size-[1em] mb-1" />
         <span>Listening to </span>
-        <span class="font-bold italic text-white">{{
-          [activity.nowPlaying.title, activity.nowPlaying.artist || ""].join(" — ")
-        }}</span>
+        <span class="font-bold italic text-white">{{ [activity.nowPlaying.title, activity.nowPlaying.artist || ""].join(" — ") }}</span>
       </p>
-      <p class="pt-3 pb-5" :class="codeLang.id !== 'md' ? 'text-neutral-300' : ''">
-        {{ codeLang.id !== "md" ? "// " : "" }}I'm a passionate software developer who builds
-        applications using Swift and modern web technologies.
-      </p>
+      <p class="pt-3 pb-5" :class="codeLang.id !== 'md' ? 'text-neutral-300' : ''">{{ codeLang.id !== "md" ? "// " : "" }}I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
       <div class="flex flex-row flex-wrap gap-2 text-sm text-white">
-        <button class="border border-border px-3 py-2">
+        <a href="mailto:me@erikb.dev" class="border border-border px-3 py-2">
           <code v-if="codeLang.id == 'md'">[email](me@erikb.dev)</code>
           <code v-else>user.email() <span class="text-neutral-500">// me@erikb.dev</span></code>
-        </button>
-        <button class="border border-border px-3 py-2 bg-white text-black">
+        </a>
+        <a href="https://github.com/erikbdev" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[github](/erikbdev)</code>
           <code v-else>user.github() <span class="text-neutral-700">// erikbdev</span></code>
-        </button>
-        <button class="border border-border px-3 py-2 bg-white text-black">
+        </a>
+        <a href="https://linkedin.com/erik-bautista" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[linkedin](/erikbautista)</code>
           <code v-else>user.linkedin() <span class="text-neutral-700">// erikbautista</span></code>
-        </button>
+        </a>
       </div>
     </header>
   </BlockSection>
@@ -143,12 +119,7 @@ onMounted(() => {
       <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Dev Logs</h1>
       <p>A curated list of projects I've worked on.</p>
     </header>
-    <article
-      v-for="post in posts"
-      class="p-6 border-t border-border border-dashed"
-      :key="post.id"
-      :id="post.id"
-    >
+    <article v-for="post in posts" class="p-6 border-t border-border border-dashed" :key="post.id" :id="post.id">
       <header class="w-full">
         <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
@@ -158,25 +129,11 @@ onMounted(() => {
           </a>
         </hgroup>
       </header>
-      <section
-        class="w-full max-w-none prose text-lg prose-headings:text-xl! prose-p:text-white prose-invert mt-3"
-      >
+      <section class="w-full max-w-none prose text-lg prose-headings:text-xl! prose-p:text-white prose-invert mt-3">
         <component :is="post.default"></component>
       </section>
-      <footer
-        v-if="!!post.links?.length"
-        class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white"
-      >
-        <a
-          v-for="link in post.links || []"
-          :class="[
-            'border border-border px-3 py-2',
-            link.role == 'secondary' ? 'bg-white text-black' : '',
-          ]"
-          :href="link.href"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+      <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
+        <a v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :href="link.href" target="_blank" rel="noopener noreferrer">
           <span>{{ link.label }}</span>
           <PhArrowSquareOut weight="bold" class="inline-block ml-1 size-[1em] mb-0.5" />
         </a>

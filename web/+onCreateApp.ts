@@ -1,4 +1,5 @@
 import type { PageContext } from "vike/types";
+
 import "@/assets/global.css";
 import { useHighlight } from "./stores/use-highlight";
 
