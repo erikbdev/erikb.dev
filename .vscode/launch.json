@@ -1,0 +1,62 @@
+{
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Debug Web Dev",
+      "request": "launch",
+      "command": "vp run dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "name": "Launch Brave",
+        "action": "startDebugging",
+        "pattern": "Local:    http://localhost:([0-9]+)",
+        "killOnServerStop": true
+      }
+    },
+    {
+      "name": "Launch Brave",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/web",
+      "runtimeArgs": ["--incognito", "http://localhost:3000"],
+      "runtimeExecutable": "/usr/bin/brave-browser"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:website}",
+      "name": "Debug SiteServer",
+      "target": "SiteServer",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug SiteServer"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:website}",
+      "name": "Debug SiteServer (and Web Dev)",
+      "target": "SiteServer",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug SiteServer",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "name": "Debug Web Dev",
+        "killOnServerStop": true,
+        "pattern": "Server started and listening on 127.0.0.1:([0-9]+)"
+      }
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:website}",
+      "name": "Debug SiteSSHServer",
+      "target": "SiteSSHServer",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug SiteSSHServer"
+    }
+  ]
+}

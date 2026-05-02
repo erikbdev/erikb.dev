@@ -3,8 +3,6 @@ import Dependencies
 import Hummingbird
 import HummingbirdRouter
 import Logging
-// import Pages
-import Routes
 
 private let logger = Logger(label: "portfolio-server")
 

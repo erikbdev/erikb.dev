@@ -1,26 +1,27 @@
 {
   "name": "website",
-  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vike dev",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vike preview",
-    "build-only": "vike build",
-    "type-check": "vue-tsc --build"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/content": "3.13.0",
     "@phosphor-icons/vue": "^2.2.1",
     "@tailwindcss/vite": "^4.2.4",
     "@tresjs/core": "^5.8.0",
+    "@tresjs/nuxt": "5.6.0",
     "highlight.js": "^11.11.1",
+    "nuxt": "^4.4.4",
     "tailwindcss": "^4.2.4",
     "three": "^0.184.0",
     "unplugin-vue-markdown": "^30.0.0",
-    "vike": "^0.4.258",
-    "vike-vue": "^0.9.11",
-    "vue": "^3.5.33"
+    "vue": "^3.5.33",
+    "vue-router": "^5.0.6"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -29,13 +30,22 @@
     "@types/three": "^0.184.0",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",
-    "npm-run-all2": "^8.0.4",
     "oxlint-tsgolint": "^0.22.1",
     "typescript": "~6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vite-plus": "catalog:",
-    "vue-tsc": "^3.2.7"
+    "vue-tsc": "^3.2.7",
+    "zod": "^4.4.2"
   },
-  "packageManager": "pnpm@10.33.2"
+  "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "better-sqlite3",
+      "esbuild",
+      "sqlite3",
+      "vue-demi"
+    ]
+  }
 }

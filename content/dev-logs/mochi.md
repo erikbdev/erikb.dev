@@ -8,4 +8,4 @@ links:
     role: primary
 ---
 
-## Mochi — Content Viewer for iOS and macOS
+# Mochi — Content Viewer for iOS and macOS

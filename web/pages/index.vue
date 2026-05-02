@@ -1,58 +1,25 @@
-<script lang="ts" setup>
-import BlockSection from "@components/BlockSection.vue";
+<script setup lang="ts">
 import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
-import { useActivity } from "@stores/use-activity";
-import { useCodeLang } from "@stores/use-codelang";
-import { useHighlight } from "@stores/use-highlight";
 import { onMounted, type Component } from "vue";
 
-type PostHeader =
-  | {
-      type: "code";
-      lang: string;
-      value: string;
-    }
-  | {
-      type: "video";
-      src: string;
-      label: string;
-    }
-  | {
-      type: "link";
-      href: string;
-    }
-  | {
-      type: "image";
-      src: string;
-      label: string;
-    };
-
-type PostLink = {
-  label: string;
-  href: string;
-  role: "primary" | "secondary";
-};
-
-type ImportPost = {
-  title: string;
-  date: string;
-  kind: string;
-  header?: PostHeader;
-  links: PostLink[];
-  default: Component;
-};
+import BlockSection from "@/components/BlockSection.vue";
+import { useActivity } from "@/composables/use-activity";
+import { useCodeLang } from "@/composables/use-codelang";
+import { useHighlight } from "@/composables/use-highlight";
 
 const { activity, fetchActivity } = useActivity();
 const { codeLang, allCodeLangs } = useCodeLang();
 const { highlightAll } = useHighlight();
 
-const posts = Object.freeze(
-  (Object.values(import.meta.glob("../../posts/*.md", { eager: true })) as ImportPost[])
-    .map((p) => ({ ...p, date: new Date(p.date) }))
-    .sort((p1, p2) => p1.date.getTime() - p2.date.getTime())
-    .map((p, i) => ({ ...p, id: `logs-${i}`, index: i }))
-    .reverse(),
-);
+// const posts = Object.freeze(
+//   (Object.values(import.meta.glob("../../posts/*.md", { eager: true })) as ImportPost[])
+//     .map((p) => ({ ...p, date: new Date(p.date) }))
+//     .sort((p1, p2) => p1.date.getTime() - p2.date.getTime())
+//     .map((p, i) => ({ ...p, id: `logs-${i}`, index: i }))
+//     .reverse(),
+// );
+
+const posts = await useAsyncData("dev-logs", () => queryCollection("devLogs").all()).then((p) => p.data);
 
 const postDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -119,19 +86,17 @@ onMounted(() => {
       <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Dev Logs</h1>
       <p>A curated list of projects I've worked on.</p>
     </header>
-    <article v-for="post in posts" class="p-6 border-t border-border border-dashed" :key="post.id" :id="post.id">
+    <article v-for="(post, index) in posts" class="p-6 border-t border-border border-dashed" :key="post.id" :id="post.id">
       <header class="w-full">
         <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
-          <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
+          <span class="font-semibold">{{ postDateFormatter.format(new Date(post.date)) }}</span>
           <a :href="`#${post.id}`">
-            <code v-if="codeLang.id == 'md'">{{ codeLang.fileCase(`logs-${post.index}`) }}</code>
-            <code v-else>{{ `logs[${post.index}]` }}</code>
+            <code v-if="codeLang.id == 'md'">{{ codeLang.fileCase(`logs-${index}`) }}</code>
+            <code v-else>{{ `logs[${index}]` }}</code>
           </a>
         </hgroup>
       </header>
-      <section class="w-full max-w-none prose text-lg prose-headings:text-xl! prose-p:text-white prose-invert mt-3">
-        <component :is="post.default"></component>
-      </section>
+      <ContentRenderer tag="section" :value="post" class="w-full max-w-none prose text-lg prose-headings:text-2xl! prose-p:text-white prose-invert mt-3" />
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
         <a v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :href="link.href" target="_blank" rel="noopener noreferrer">
           <span>{{ link.label }}</span>

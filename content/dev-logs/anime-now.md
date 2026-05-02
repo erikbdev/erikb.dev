@@ -11,4 +11,4 @@ links: []
 
 ![Anime Now App](/posts/anime-now-released/an-discover.webp)
 
-## Anime Now! — An iOS and macOS App
+# Anime Now! — An iOS and macOS App

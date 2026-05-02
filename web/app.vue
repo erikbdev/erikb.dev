@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { PhCopyright } from "@phosphor-icons/vue";
-import { usePageContext } from "vike-vue/usePageContext";
 import { ref, watch } from "vue";
 
 import BlockSection from "@/components/BlockSection.vue";
 import HorizonWorld from "@/components/HorizonWorld.vue";
 
 const showMenuDialog = ref(false);
-const pageContext = usePageContext();
+const route = useRoute();
 
 const menuItems = [
   {
@@ -24,16 +23,18 @@ const menuItems = [
   },
 ];
 
-watch(
-  () => showMenuDialog.value,
-  (newValue) => {
-    if (newValue) {
-      document.body.classList.add("overflow-y-hidden");
-    } else {
-      document.body.classList.remove("overflow-y-hidden");
-    }
+useHead({
+  meta: [
+    { name: "charset", content: "utf-8" },
+    { name: "viewport", content: "width=device-width, initial-scale=1.0, viewport-fit=cover" },
+  ],
+  htmlAttrs: {
+    "data-theme": "dark",
   },
-);
+  bodyAttrs: {
+    class: ["overflow-x-hidden", showMenuDialog.value ? "overflow-y-hidden" : ""],
+  },
+});
 </script>
 <template>
   <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 border-t-0 bg-base/80! backdrop-blur-sm!">
@@ -51,7 +52,7 @@ watch(
     <BlockSection fill class="h-screen mt-[-100vh] fixed! border-0 -z-10" :divider="false">
       <HorizonWorld />
     </BlockSection>
-    <slot></slot>
+    <NuxtPage />
   </main>
   <BlockSection as="footer" :divider="false" class="border-b-0">
     <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
@@ -60,7 +61,7 @@ watch(
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
     <BlockSection :divider="false" class="w-full h-full flex flex-col">
       <ul class="grow">
-        <li v-for="item in menuItems" class="text-5xl font-bold mb-2.5" :class="{ 'text-primary': pageContext.urlPathname === item.path }">
+        <li v-for="item in menuItems" class="text-5xl font-bold mb-2.5" :class="{ 'text-primary': route.path === item.path }">
           <a :href="item.path">{{ item.name }}</a>
         </li>
       </ul>
