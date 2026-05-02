@@ -39,7 +39,7 @@ watch(() => showMenuDialog.value, (newValue) => {
       </nav>
     </BlockSection>
     <main class="relative pt-[100vh]">
-      <BlockSection fill class="h-screen mt-[-100vh] fixed! -z-10" :divider="false">
+      <BlockSection fill class="h-screen mt-[-100vh] fixed! border-0 -z-10" :divider="false">
         <HorizonWorld />
       </BlockSection> 
       <slot></slot>
