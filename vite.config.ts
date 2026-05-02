@@ -13,10 +13,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  root: "./web",
   staged: {
     "*": "vp check --fix",
   },
-  root: "./web",
   plugins: [
     vue({
       ...templateCompilerOptions,

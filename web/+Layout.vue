@@ -7,15 +7,20 @@ import BlockSection from "@/components/BlockSection.vue";
 import HorizonWorld from "@/components/HorizonWorld.vue";
 
 const showMenuDialog = ref(false);
+const pageContext = usePageContext();
 
 const menuItems = [
   {
     name: "Home",
-    href: "/",
+    path: "/",
+  },
+  {
+    name: "DevLogs",
+    path: "/dev-logs",
   },
   {
     name: "Showcase",
-    href: "/showcase",
+    path: "/showcase",
   },
 ];
 
@@ -37,7 +42,8 @@ watch(
         <code class="text-white font-bold">erikb.dev()</code>
       </a>
       <button class="font-bold text-sm border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
-        <code>{{ "\<menu\>" }}</code>
+        <code v-if="!showMenuDialog">{{ "\<menu\>" }}</code>
+        <code v-else>{{ "close x" }}</code>
       </button>
     </nav>
   </BlockSection>
@@ -55,7 +61,9 @@ watch(
     <BlockSection :divider="false" class="w-full h-full flex flex-col">
       <ul class="grow">
         <li v-for="item in menuItems">
-          <p class="text-3xl font-semibold mb-2">{{ item.name }}</p>
+          <a class="text-5xl font-bold mb-4" :class="{ 'text-primary': pageContext.urlPathname === item.path }" :href="item.path">
+            {{ item.name }}
+          </a>
         </li>
       </ul>
       <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
