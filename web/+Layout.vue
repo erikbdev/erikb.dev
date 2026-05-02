@@ -28,7 +28,7 @@ watch(() => showMenuDialog.value, (newValue) => {
 })
 </script>
 <template>
-    <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 bg-base/80 backdrop-blur-sm">
+    <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 border-t-0 bg-base/80! backdrop-blur-sm!">
       <nav class="flex flex-none justify-between py-3 px-6 md:max-w-2xl mx-auto md:border-border md:border-x">
         <a href="/" class="text-sm self-center">
           <code class="text-white font-bold">erikb.dev()</code>
@@ -44,7 +44,7 @@ watch(() => showMenuDialog.value, (newValue) => {
       </BlockSection> 
       <slot></slot>
     </main>
-    <BlockSection as="footer" :divider="false">
+    <BlockSection as="footer" :divider="false" class="border-b-0">
       <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
     </BlockSection> 
 

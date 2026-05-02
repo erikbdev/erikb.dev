@@ -9,4 +9,7 @@ export default {
   htmlAttributes: {
     "data-theme": "dark",
   },
+  bodyAttributes: {
+    class: "overflow-x-hidden",
+  },
 } satisfies Config;
