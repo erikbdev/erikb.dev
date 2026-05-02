@@ -15,7 +15,7 @@ const menuItems = [
     path: "/",
   },
   {
-    name: "DevLogs",
+    name: "Dev Logs",
     path: "/dev-logs",
   },
   {
@@ -60,10 +60,8 @@ watch(
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
     <BlockSection :divider="false" class="w-full h-full flex flex-col">
       <ul class="grow">
-        <li v-for="item in menuItems">
-          <a class="text-5xl font-bold mb-4" :class="{ 'text-primary': pageContext.urlPathname === item.path }" :href="item.path">
-            {{ item.name }}
-          </a>
+        <li v-for="item in menuItems" class="text-5xl font-bold mb-2.5" :class="{ 'text-primary': pageContext.urlPathname === item.path }">
+          <a :href="item.path">{{ item.name }}</a>
         </li>
       </ul>
       <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
