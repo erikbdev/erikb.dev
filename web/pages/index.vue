@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PhMapPin, PhNavigationArrow, PhWaveform, PhArrowSquareOut } from "@phosphor-icons/vue";
-import { onMounted, type Component } from "vue";
+import { onMounted } from "vue";
 
 import BlockSection from "@/components/BlockSection.vue";
 import { useActivity } from "@/composables/use-activity";

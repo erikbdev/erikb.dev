@@ -21,20 +21,11 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@tsconfig/node24": "^24.0.4",
-    "@types/three": "^0.184.0",
+    "@types/three": "^-1.184.0",
     "oxlint-tsgolint": "^0.22.1",
-    "rolldown": "1.0.0-rc.18",
     "typescript": "~6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
-    "vite-plus": "catalog:",
-    "zod": "^4.4.2"
+    "vite-plus": "catalog:"
   },
-  "packageManager": "pnpm@10.33.2",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild",
-      "vue-demi"
-    ]
-  }
+  "packageManager": "pnpm@10.33.2"
 }

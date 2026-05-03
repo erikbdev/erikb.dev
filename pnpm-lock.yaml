@@ -52,9 +52,6 @@ importers:
       oxlint-tsgolint:
         specifier: ^0.22.1
         version: 0.22.1
-      rolldown:
-        specifier: 1.0.0-rc.18
-        version: 1.0.0-rc.18
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -64,9 +61,6 @@ importers:
       vite-plus:
         specifier: 'catalog:'
         version: 0.1.20(@types/node@25.6.0)(@voidzero-dev/vite-plus-core@0.1.20(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.6.1)(terser@5.46.2)(typescript@6.0.3)(yaml@2.8.3))(esbuild@0.28.0)(jiti@2.6.1)(terser@5.46.2)(typescript@6.0.3)(yaml@2.8.3)
-      zod:
-        specifier: ^4.4.2
-        version: 4.4.2
 
 packages:
 
@@ -7589,7 +7583,8 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.13': {}
 
-  '@rolldown/pluginutils@1.0.0-rc.18': {}
+  '@rolldown/pluginutils@1.0.0-rc.18':
+    optional: true
 
   '@rollup/plugin-alias@6.0.0(rollup@4.60.2)':
     optionalDependencies:
@@ -11624,6 +11619,7 @@ snapshots:
       '@rolldown/binding-wasm32-wasi': 1.0.0-rc.18
       '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.18
       '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.18
+    optional: true
 
   rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.18)(rollup@4.60.2):
     dependencies:
@@ -12626,6 +12622,7 @@ snapshots:
   zod@3.25.76:
     optional: true
 
-  zod@4.4.2: {}
+  zod@4.4.2:
+    optional: true
 
   zwitch@2.0.4: {}

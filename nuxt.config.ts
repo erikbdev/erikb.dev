@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   nitro: {
     static: true,
     prerender: {
-      failOnError: false,
+      crawlLinks: true,
     },
   },
   vite: {

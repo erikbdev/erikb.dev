@@ -35,14 +35,18 @@ useHead({
     class: ["overflow-x-hidden", showMenuDialog.value ? "overflow-y-hidden" : ""],
   },
 });
+
+function closeMenu() {
+  showMenuDialog.value = false;
+}
 </script>
 <template>
   <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 border-t-0 bg-base/80! backdrop-blur-sm!">
-    <nav class="flex flex-none justify-between py-3 px-6 md:max-w-2xl mx-auto md:border-border md:border-x">
-      <a href="/" class="text-sm self-center">
+    <nav class="flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
+      <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
-      </a>
-      <button class="font-bold text-sm border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
+      </NuxtLink>
+      <button class="font-bold border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
         <code v-if="!showMenuDialog">{{ "\<menu\>" }}</code>
         <code v-else>{{ "close x" }}</code>
       </button>
@@ -57,17 +61,19 @@ useHead({
     <NuxtPage />
   </main>
   <BlockSection as="footer" :divider="false" class="border-b-0">
-    <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+    <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
   </BlockSection>
 
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
     <BlockSection :divider="false" class="w-full h-full flex flex-col">
       <ul class="grow">
         <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5" :class="{ 'text-primary': route.path === item.path }">
-          <a :href="item.path">{{ item.name }}</a>
+          <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
         </li>
       </ul>
-      <code class="text-sm"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+      <footer>
+        <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+      </footer>
     </BlockSection>
   </div>
 </template>
