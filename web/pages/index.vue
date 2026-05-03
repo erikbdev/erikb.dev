@@ -19,7 +19,7 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 onMounted(() => {
-  fetchActivity();
+  // fetchActivity();
 });
 </script>
 <template>

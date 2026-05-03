@@ -50,7 +50,9 @@ useHead({
   </BlockSection>
   <main class="relative pt-[100vh]">
     <BlockSection fill class="h-screen mt-[-100vh] fixed! border-0 -z-10" :divider="false">
-      <HorizonWorld />
+      <TresCanvas class="bg-base">
+        <HorizonWorld />
+      </TresCanvas>
     </BlockSection>
     <NuxtPage />
   </main>
