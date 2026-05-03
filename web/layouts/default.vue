@@ -1,29 +1,16 @@
 <script setup lang="ts">
-import { PhCopyright } from "@phosphor-icons/vue";
-import { ref, watch } from "vue";
-
 import BlockSection from "@/components/BlockSection.vue";
 import HorizonWorld from "@/components/HorizonWorld.vue";
 
 const showMenuDialog = ref(false);
 const router = useRouter();
 const route = useRoute();
-
-const menuItems = router.getRoutes().sort((r1, r2) => {
-  const idx1 = "index" in r1.meta ? (r1.meta.index as number | undefined) : undefined;
-  const idx2 = "index" in r2.meta ? (r2.meta.index as number | undefined) : undefined;
-  if (idx1 !== undefined && idx2 !== undefined) {
-    return idx1 - idx2;
-  } else if (idx1 !== undefined) {
-    return -1;
-  } else if (idx2 !== undefined) {
-    return 1;
-  } else {
-    return 0;
-  }
-});
+const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev, All rights reserved.`;
 
 useHead({
+  titleTemplate(title) {
+    return title ? `${title} | erikb.dev` : "erikb.dev";
+  },
   meta: [
     { name: "charset", content: "utf-8" },
     { name: "viewport", content: "width=device-width, initial-scale=1.0, viewport-fit=cover" },
@@ -39,19 +26,23 @@ useHead({
   },
 });
 
+const menuItems = router.getRoutes().sort((r1, r2) => {
+  const idx1 = "index" in r1.meta ? (r1.meta.index as number | undefined) : undefined;
+  const idx2 = "index" in r2.meta ? (r2.meta.index as number | undefined) : undefined;
+  if (idx1 !== undefined && idx2 !== undefined) {
+    return idx1 - idx2;
+  } else if (idx1 !== undefined) {
+    return -1;
+  } else if (idx2 !== undefined) {
+    return 1;
+  } else {
+    return 0;
+  }
+});
+
 function closeMenu() {
   showMenuDialog.value = false;
 }
-
-onMounted(() => {
-  console.log("all routes", router.getRoutes());
-});
-
-useHead({
-  titleTemplate(title) {
-    return title ? `${title} | erikb.dev` : "erikb.dev";
-  },
-});
 </script>
 <template>
   <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 border-t-0 bg-base/80! backdrop-blur-sm!">
@@ -74,7 +65,7 @@ useHead({
     <slot />
   </main>
   <BlockSection as="footer" :divider="false" class="border-b-0">
-    <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+    <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ copyrightFooter }}</code>
   </BlockSection>
 
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
@@ -85,7 +76,7 @@ useHead({
         </li>
       </ul>
       <footer>
-        <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ new Date().getFullYear() }} erikb.dev, All Rights Reserved.</code>
+        <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ copyrightFooter }}</code>
       </footer>
     </BlockSection>
   </div>

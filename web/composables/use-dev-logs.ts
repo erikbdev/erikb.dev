@@ -21,8 +21,8 @@ export type Post = Omit<PostMetadata, "date"> & {
   body: MDCRoot;
 };
 
-export async function useDevLogs() {
-  return await useAsyncData("dev-logs", async () => {
+export function useDevLogs() {
+  return useAsyncData("dev-logs", async () => {
     const rawPosts = import.meta.glob("../../posts/*.md", {
       eager: true,
       query: "?raw",
