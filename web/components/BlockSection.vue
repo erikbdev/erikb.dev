@@ -41,7 +41,7 @@ export default {
 
       // bottom divider
       divider
-        ? 'mb-4 after:absolute after:h-4 after:w-screen after:max-w-2xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-border big-divider-bottom'
+        ? 'mb-4 after:absolute after:h-4 after:w-screen after:md:max-w-2xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-border big-divider-bottom'
         : 'mb-0 after:absolute after:h-0 after:w-screen after:-bottom-px after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border',
     ]">
     <slot></slot>

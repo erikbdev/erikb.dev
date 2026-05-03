@@ -10,6 +10,10 @@
   --text-base: 0.94em;
   --text-lg: 1em;
   --text-xl: 1.125em;
+  --text-2xl: 1.25em;
+  --text-3xl: 1.375em;
+  --text-4xl: 1.5em;
+  --text-5xl: 1.625em;
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --color-primary: #004dff;
 }

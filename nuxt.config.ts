@@ -4,27 +4,23 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@tresjs/nuxt", "@nuxt/content"],
+  modules: ["@tresjs/nuxt", "@nuxtjs/mdc"],
   srcDir: "web",
   css: ["~/assets/css/main.css"],
-  content: {
-    build: {
-      markdown: {
-        highlight: {
-          theme: "github-dark",
-          langs: ["swift", "rust", "typescript", "markdown"],
-        },
-      },
+  mdc: {
+    highlight: {
+      theme: "github-dark",
+      langs: ["swift", "ruby", "typescript", "markdown"],
+    },
+  },
+  nitro: {
+    static: true,
+    prerender: {
+      failOnError: false,
     },
   },
   vite: {
-    // root: "./web",
     plugins: [tailwindcss()],
-    // publicDir: "./../public",
-    build: {
-      // outDir: "./../dist",
-      emptyOutDir: true,
-    },
     server: {
       proxy: {
         "/api": "http://localhost:8080",
