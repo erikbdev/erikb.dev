@@ -26,5 +26,8 @@ export default defineNuxtConfig({
         "/api": "http://localhost:8080",
       },
     },
+    optimizeDeps: {
+      include: ["three", "@phosphor-icons/vue"],
+    },
   },
 });

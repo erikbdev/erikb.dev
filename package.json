@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build --prerender",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -14,6 +14,7 @@
     "@phosphor-icons/vue": "^2.2.1",
     "@tailwindcss/vite": "^4.2.4",
     "@tresjs/nuxt": "5.6.0",
+    "@types/three": "^0.184.0",
     "nuxt": "^4.4.4",
     "tailwindcss": "^4.2.4",
     "three": "^0.184.0"
@@ -21,11 +22,21 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@tsconfig/node24": "^24.0.4",
-    "@types/three": "^-1.184.0",
     "oxlint-tsgolint": "^0.22.1",
+    "rolldown": "1.0.0-rc.18",
     "typescript": "~6.0.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
-    "vite-plus": "catalog:"
+    "vite-plus": "^0.1.20"
   },
-  "packageManager": "pnpm@10.33.2"
+  "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild",
+      "vue-demi"
+    ]
+  }
 }

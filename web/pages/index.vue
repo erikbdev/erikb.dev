@@ -19,7 +19,14 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 onMounted(() => {
-  // fetchActivity();
+  if (import.meta.browser) {
+    fetchActivity();
+  }
+});
+
+definePageMeta({
+  name: "Home",
+  index: 0,
 });
 </script>
 <template>
@@ -27,9 +34,9 @@ onMounted(() => {
   <BlockSection id="user">
     <header>
       <div class="w-full text-sm text-end text-neutral-500 mb-2">
-        <a href="#user">
+        <NuxtLink to="#user">
           <code>{{ codeLang.fileCase("user") }}</code>
-        </a>
+        </NuxtLink>
       </div>
       <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Erik Bautista Santibanez</h1>
       <p class="mb-1">Mobile & Web Developer</p>
@@ -49,29 +56,30 @@ onMounted(() => {
       </p>
       <p class="pt-3 pb-5" :class="codeLang.id !== 'md' ? 'text-neutral-300' : ''">{{ codeLang.id !== "md" ? "// " : "" }}I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
       <div class="flex flex-row flex-wrap gap-2 text-sm text-white">
-        <a href="mailto:me@erikb.dev" class="border border-border px-3 py-2">
+        <NuxtLink to="mailto:me@erikb.dev" class="border border-border px-3 py-2">
           <code v-if="codeLang.id == 'md'">[email](me@erikb.dev)</code>
           <code v-else>user.email() <span class="text-neutral-500">// me@erikb.dev</span></code>
-        </a>
-        <a href="https://github.com/erikbdev" class="border border-border px-3 py-2 bg-white text-black">
+        </NuxtLink>
+        <NuxtLink to="https://github.com/erikbdev" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[github](/erikbdev)</code>
           <code v-else>user.github() <span class="text-neutral-700">// erikbdev</span></code>
-        </a>
-        <a href="https://linkedin.com/erik-bautista" class="border border-border px-3 py-2 bg-white text-black">
+        </NuxtLink>
+        <NuxtLink to="https://linkedin.com/erik-bautista" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[linkedin](/erikbautista)</code>
           <code v-else>user.linkedin() <span class="text-neutral-700">// erikbautista</span></code>
-        </a>
+        </NuxtLink>
       </div>
     </header>
   </BlockSection>
 
   <!-- Dev Logs -->
+  <!-- TODO: move to /dev-logs -->
   <BlockSection id="dev-logs" class="p-0!">
     <header class="p-6">
       <div class="w-full text-sm text-end text-neutral-500 mb-2">
-        <a href="#dev-logs">
+        <NuxtLink to="#dev-logs">
           <code>{{ codeLang.fileCase("dev-logs") }}</code>
-        </a>
+        </NuxtLink>
       </div>
       <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Dev Logs</h1>
       <p>A curated list of projects I've worked on.</p>
@@ -80,19 +88,19 @@ onMounted(() => {
       <header class="w-full">
         <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
           <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
-          <a :href="`#${post.id}`">
+          <NuxtLink :to="`#${post.id}`">
             <code v-if="codeLang.id == 'md'">{{ codeLang.fileCase(`log-${post.index}`) }}</code>
             <code v-else>{{ `logs[${post.index}]` }}</code>
-          </a>
+          </NuxtLink>
         </hgroup>
       </header>
 
       <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose text-lg prose-headings:text-2xl! prose-p:text-white prose-invert mt-3" />
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
-        <a v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :href="link.href" target="_blank" rel="noopener noreferrer">
+        <NuxtLink v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :to="link.href" target="_blank" rel="noopener noreferrer">
           <span>{{ link.label }}</span>
           <PhArrowSquareOut weight="bold" class="inline-block ml-1 size-[1em] mb-0.5" />
-        </a>
+        </NuxtLink>
       </footer>
     </article>
   </BlockSection>

@@ -36,9 +36,8 @@ export function useActivity() {
   return {
     activity: readonly(activity),
     async fetchActivity() {
-      const response = await fetch("/api/activity");
-      const a = response.json() as Activity;
-      activity.value = a;
+      const response = await $fetch<Activity>("/api/activity");
+      activity.value = response;
     },
   };
 }
