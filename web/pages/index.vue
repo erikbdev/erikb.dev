@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import PhArrowSquareOutSVG from "@phosphor-icons/core/bold/arrow-square-out-bold.svg?raw";
+import PhMapPinSVG from "@phosphor-icons/core/fill/map-pin-fill.svg?raw";
+import PhNavigationArrowSVG from "@phosphor-icons/core/fill/navigation-arrow-fill.svg?raw";
+import PhWaveFormSVG from "@phosphor-icons/core/regular/waveform.svg?raw";
+
 definePageMeta({
   name: "Home",
   index: 0,
@@ -33,16 +38,16 @@ onMounted(() => {
       <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Erik Bautista Santibanez</h1>
       <p class="mb-1">Mobile & Web Developer</p>
       <p class="text-neutral-300">
-        <PhMapPin weight="fill" class="text-white inline-block mr-1 size-[1em] mb-1" />
+        <span class="text-white inline-block mr-1 size-[1em]" v-html="PhMapPinSVG"></span>
         <span>Irvine, CA</span>
       </p>
       <p v-if="!!activity?.location?.city || !!activity?.location?.state || !!activity?.location?.region" class="text-neutral-300">
-        <PhNavigationArrow weight="fill" mirrored class="text-white inline-block mr-1 size-[1em] mb-1" />
+        <span mirrored class="text-white inline-block mr-1 size-[1em]" v-html="PhNavigationArrowSVG"></span>
         <span>Currently in </span>
         <span class="font-bold italic text-white">{{ [activity.location.city || "", activity.location.state || "", activity.location.region || ""].filter((s) => !!s).join(", ") }}</span>
       </p>
       <p v-if="activity?.nowPlaying" class="text-neutral-300">
-        <PhWaveform mirrored class="text-white inline-block mr-1 size-[1em] mb-1" />
+        <span class="text-white inline-block mr-1 size-[1em]" v-html="PhWaveFormSVG"></span>
         <span>Listening to </span>
         <span class="font-bold italic text-white">{{ [activity.nowPlaying.title, activity.nowPlaying.artist || ""].join(" — ") }}</span>
       </p>
@@ -91,7 +96,7 @@ onMounted(() => {
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
         <NuxtLink v-for="link in post.links || []" :class="['border border-border px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :to="link.href" target="_blank" rel="noopener noreferrer">
           <span>{{ link.label }}</span>
-          <PhArrowSquareOut weight="bold" class="inline-block ml-1 size-[1em] mb-0.5" />
+          <span class="inline-block ml-1 size-[1em]" v-html="PhArrowSquareOutSVG"></span>
         </NuxtLink>
       </footer>
     </article>

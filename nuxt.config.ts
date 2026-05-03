@@ -7,6 +7,10 @@ export default defineNuxtConfig({
   modules: ["@tresjs/nuxt", "@nuxtjs/mdc"],
   srcDir: "web",
   css: ["~/assets/css/main.css"],
+  // typescript: {
+  //   strict: true,
+  //   typeCheck: true,
+  // },
   mdc: {
     highlight: {
       theme: "github-dark",

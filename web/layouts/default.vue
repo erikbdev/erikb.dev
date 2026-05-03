@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import PhCopyrightSVG from "@phosphor-icons/core/regular/copyright.svg?raw";
+
 import BlockSection from "@/components/BlockSection.vue";
 import HorizonWorld from "@/components/HorizonWorld.vue";
 
@@ -65,7 +67,7 @@ function closeMenu() {
     <slot />
   </main>
   <BlockSection as="footer" :divider="false" class="border-b-0">
-    <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ copyrightFooter }}</code>
+    <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
@@ -76,7 +78,7 @@ function closeMenu() {
         </li>
       </ul>
       <footer>
-        <code class="text-sm text-neutral-300"><PhCopyright size="1em" class="inline-block mb-0.5 mr-0.5" />{{ copyrightFooter }}</code>
+        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
       </footer>
     </BlockSection>
   </div>
