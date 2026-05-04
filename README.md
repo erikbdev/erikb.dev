@@ -1,75 +1,18 @@
-# Nuxt Minimal Starter
+# erikb.dev
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+> Porfolio using Swift + Hummingbird + Nuxt
 
-## Setup
+### Todo
 
-Make sure to install dependencies:
+- [ ] add resume
+- [ ] ssh-server as a portfolio entrypoint
+- [ ] add showcases (projects)
+- [ ] add dev logs
+- [ ] addinteractive desk-like 3d model
 
-```bash
-# npm
-npm install
+### Resources
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- [Swift](https://swift.org)
+- [Hummingbird](https://hummingbird.codes)
+- [Nuxt](https://nuxt.com)
+- [Phosphor Icons](https://phosphoricons.com/)
