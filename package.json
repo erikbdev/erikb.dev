@@ -28,6 +28,9 @@
     "vite-plus": "^0.1.20",
     "vue-tsc": "^3.2.7"
   },
+  "engines": {
+    "node": "^24.15.0"
+  },
   "packageManager": "pnpm@10.33.2",
   "pnpm": {
     "overrides": {

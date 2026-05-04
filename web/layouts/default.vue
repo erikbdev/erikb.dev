@@ -76,7 +76,7 @@ function closeMenu() {
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
     <BlockSection :divider="false" class="w-full h-full flex flex-col">
       <ul class="grow">
-        <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5" :class="{ 'text-primary': route.path === item.path }">
+        <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5 hover:underline hover:decoration-2 hover:underline-offset-3" :class="{ 'text-primary': route.path === item.path }">
           <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
         </li>
       </ul>

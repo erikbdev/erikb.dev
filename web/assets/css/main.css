@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@import "./codeStyling.css";
 
 @theme {
   --color-base: #1c1c1c;
@@ -15,7 +14,7 @@
   --text-4xl: 1.5em;
   --text-5xl: 1.625em;
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --color-primary: #004dff;
+  --color-primary: #ffc900;
 }
 
 @utility prose {
@@ -23,6 +22,11 @@
 }
 
 @layer base {
+  ::selection {
+    color: var(--color-base);
+    background-color: var(--color-primary);
+  }
+
   @font-face {
     font-family: "CommitMono";
     font-style: normal;
@@ -65,5 +69,3 @@
     line-height: 1;
   }
 }
-
-/* @utility  */

@@ -59,11 +59,11 @@ onMounted(() => {
         </NuxtLink>
         <NuxtLink to="https://github.com/erikbdev" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[github](/erikbdev)</code>
-          <code v-else>user.github() <span class="text-neutral-700">// erikbdev</span></code>
+          <code v-else>user.github() <span class="text-neutral-700">// @erikbdev</span></code>
         </NuxtLink>
-        <NuxtLink to="https://linkedin.com/erik-bautista" class="border border-border px-3 py-2 bg-white text-black">
+        <NuxtLink to="https://linkedin.com/erikbautista" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[linkedin](/erikbautista)</code>
-          <code v-else>user.linkedin() <span class="text-neutral-700">// erikbautista</span></code>
+          <code v-else>user.linkedin() <span class="text-neutral-700">// @erikbautista</span></code>
         </NuxtLink>
       </div>
     </header>
