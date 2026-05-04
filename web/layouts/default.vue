@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import PhCopyrightSVG from "@phosphor-icons/core/regular/copyright.svg?raw";
 
-import BlockSection from "@/components/BlockSection.vue";
-import HorizonWorld from "@/components/HorizonWorld.vue";
-
 const showMenuDialog = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -26,6 +23,12 @@ useHead({
       "overflow-y-hidden": showMenuDialog,
     },
   },
+  link: [
+    { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+    { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+    { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96x96.png" },
+    { rel: "icon", type: "image/png", sizes: "128x128", href: "/favicon-128x128.png" },
+  ],
 });
 
 const menuItems = router.getRoutes().sort((r1, r2) => {

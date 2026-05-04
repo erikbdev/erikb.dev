@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import BlockSection from "@/components/BlockSection.vue";
-
 definePageMeta({
   name: "Showcase",
 });
@@ -10,6 +8,6 @@ useHead({
 </script>
 <template>
   <BlockSection>
-    <h1>Welcome, Showcases.</h1>
+    <p>Coming Soon</p>
   </BlockSection>
 </template>

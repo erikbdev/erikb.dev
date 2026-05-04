@@ -6,4 +6,8 @@ useHead({
   title: "Dev Logs",
 });
 </script>
-<template></template>
+<template>
+  <BlockSection>
+    <p>Coming Soon</p>
+  </BlockSection>
+</template>
