@@ -10,13 +10,20 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
   @Dependency(\.siteRouter) private var siteRouter
   @Dependency(\.activity) private var activityClient
 
+  var isDebug: Bool {
+    #if DEBUG
+      true
+    #else
+      false
+    #endif
+  }
+
   var body: some RouterMiddleware<Context> {
     #if DEBUG
-      LiveReloadMiddleware()
       CORSMiddleware(allowOrigin: .all)
     #endif
 
-    FileMiddleware(searchForIndexHtml: false)
+    FileMiddleware(self.isDebug ? ".output/public" : "public", searchForIndexHtml: true)
 
     URLRoutingMiddleware(self.siteRouter) { req, ctx, route in
       try withDependencies {
