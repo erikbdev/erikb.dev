@@ -53,14 +53,3 @@ struct Server: AsyncParsableCommand {
     )
   }
 }
-
-extension Logger.Level: @retroactive CustomStringConvertible {
-  public var description: String {
-    self.rawValue
-  }
-}
-extension Logger.Level: @retroactive LosslessStringConvertible {
-  public init?(_ description: String) {
-    self.init(rawValue: description)
-  }
-}

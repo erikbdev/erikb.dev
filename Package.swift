@@ -28,8 +28,8 @@ let package = Package(
     .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
 
     // TODO: use git version
-    // .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
-    .package(path: "./dependencies/swift-tau-tui"),
+    .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
+    // .package(path: "./dependencies/swift-tau-tui"),
   ],
   targets: [
     /// SiteServer
