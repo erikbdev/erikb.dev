@@ -4,8 +4,6 @@ import Hummingbird
 import HummingbirdRouter
 import Logging
 
-private let logger = Logger(label: "portfolio-server")
-
 @main
 struct Server: AsyncParsableCommand {
   @Option(name: .shortAndLong)
@@ -26,13 +24,21 @@ struct Server: AsyncParsableCommand {
       #else
         let buildMode = "release"
       #endif
-      logger.info("Running server in '\(buildMode)' mode")
+      app.logger.info("Running server in '\(buildMode)' mode")
       try await app.runService()
     }
   }
 
   func buildApp() -> some ApplicationProtocol {
+    @Dependency(\.envVars) var envVars
+
     let router = Router()
+    var logger = Logger(label: "portfolio-server")
+
+    if let logLevel = envVars.get("LOG_LEVEL", as: Logger.Level.self) {
+      logger.logLevel = logLevel
+    }
+
     router.addMiddleware {
       SiteMiddleware()
     }
@@ -45,5 +51,16 @@ struct Server: AsyncParsableCommand {
       ),
       logger: logger
     )
+  }
+}
+
+extension Logger.Level: @retroactive CustomStringConvertible {
+  public var description: String {
+    self.rawValue
+  }
+}
+extension Logger.Level: @retroactive LosslessStringConvertible {
+  public init?(_ description: String) {
+    self.init(rawValue: description)
   }
 }
