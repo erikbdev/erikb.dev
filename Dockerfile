@@ -47,7 +47,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Copy resume output to public folder
-COPY --from=cv-builder /build/output ./public
+COPY --from=cv-builder /build/.output ./public
 
 RUN pnpm generate:web
 
