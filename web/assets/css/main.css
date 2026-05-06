@@ -25,6 +25,7 @@
   ::selection {
     color: var(--color-base);
     background-color: var(--color-primary);
+    text-decoration-color: var(--color-primary);
   }
 
   @font-face {
@@ -50,6 +51,7 @@
     color: #fafafa;
     font-optical-sizing: auto;
     font-size: var(--text-xs);
+    overscroll-behavior: none;
   }
 
   @media (min-width: 390px) {

@@ -1,4 +1,37 @@
 # ================================
+# Build CV
+# ================================
+FROM debian:bookworm-slim as cv-builder
+
+RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+  && apt-get -q update \
+  && apt-get -q install -y --no-install-recommends \
+    latexmk \
+    lmodern \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-plain-generic \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+COPY resume/cv.tex resume/styling.sty ./
+
+RUN  mkdir -p .output \ 
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-mobile-resume \
+       -pdflatex='pdflatex %O "\def\showmobile{}\input{%S}"' cv.tex \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-web-resume \
+       -pdflatex='pdflatex %O "\def\showweb{}\input{%S}"' cv.tex \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-swift-resume \
+       -pdflatex='pdflatex %O "\def\showswift{}\input{%S}"' cv.tex \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-resume \
+       -pdflatex='pdflatex %O "\def\showmobile{}\def\showweb{}\input{%S}"' cv.tex \
+  && rm -f .output/*.aux .output/*.log .output/*.out .output/*.fdb_latexmk .output/*.fls
+
+# ================================
 # Build Web
 # ================================
 FROM node:24-bookworm-slim AS web-builder
@@ -8,10 +41,15 @@ RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 WORKDIR /build
 
 COPY package.json pnpm-lock.yaml ./
+
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-RUN pnpm generate
+
+# Copy resume output to public folder
+COPY --from=cv-builder /build/output ./public
+
+RUN pnpm generate:web
 
 # ================================
 # Build Site Server

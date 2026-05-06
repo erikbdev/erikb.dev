@@ -18,7 +18,7 @@ public struct Activity: Sendable, Equatable {
         state: $0.state,
         region: $0.region,
         // timestamp: $0.timestamp,
-        residency: nil
+        residency: $0.residency
       )
     }
     return Activity(

@@ -1,0 +1,222 @@
+\documentclass[letterpaper,11pt]{article}
+
+\input{styling.sty}
+
+\newif\ifwebdev
+\newif\ifmobile
+\newif\ifswift
+
+\ifdefined\showmobile
+  \mobiletrue
+\fi
+
+\ifdefined\showweb
+  \webdevtrue
+\fi
+
+\ifdefined\showswift
+  \swifttrue
+  \mobiletrue
+\fi
+
+%-------------------------------------------
+%%%%%% RESUME %%%%%%
+
+\begin{document}
+
+%------------HEADING------------
+
+\begin{center}
+    \textbf{\Huge \scshape Erik Gustavo Bautista Santibañez}\\
+    \vspace{1px}
+    Irvine, CA $|$ 
+    \href{mailto:contact@erikb.dev}{\underline{contact@erikb.dev}} $|$ 
+    \href{https://erikb.dev}{\underline{Website}} $|$
+    \href{https://linkedin.com/in/erikbautista}{\underline{LinkedIn}} $|$
+    \href{https://github.com/erikbdev}{\underline{GitHub}}
+\end{center}
+
+%--------SUMMARY--------%
+% \ifsummary
+%   \section{Summary}
+%   \begin{itemize}[leftmargin=0.15in, label={}]
+%     \item{Creative iOS Developer with four years of experience in Swift and SwiftUI.}
+%   \end{itemize}
+% \fi
+
+%--------TECHNICAL SKILLS--------
+\section{Technical Skills}
+  \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+      \textbf{Languages}{: Swift, TypeScript, JavaScript, HTML, Rust, Python} \\
+      \textbf{Frameworks}{:
+        \ifmobile{SwiftUI, UIKit, AppKit, Concurrency, Core Data, Observation, AVKit, Vapor, Hummingbird}\fi
+        \ifwebdev{\ifmobile{, }\fi Node.js, Vue.js, Vite, Next.js, Express, React, MariaDB}\fi
+      } \\
+      \textbf{Tools}{: VSCode, \ifmobile{Xcode, }\fi Git, GitHub Actions (CI/CD), YouTrack, AWS (EC2), Hetzner (Cloud), Cloudflare, Docker} \\
+    }}
+  \end{itemize}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Product Manager}{Feb. 2024 - Dec. 2024}
+      {Irvinesoft Inc}{Irvine, California}
+      \resumeItemListStart
+        \resumeItem{Collaborated with cross-functional teams to ensure seamless integration of features while also maintaining stability across releases.}
+        \ifmobile
+          \resumeItem{Optimized application rendering, resulting in 50\% performance improvement across \ifmobile{iOS and macOS }\fi platforms.}
+          \resumeItem{Redesigned key components and maintained \href{https://apps.apple.com/us/app/bookpod-audiobooks-podcasts/id6473756889}{\underline{BookPod}}, improving user experience and following best practices from Apple's Human Interface Guidelines.}
+          \resumeItem{Designed and implemented \href{https://apps.apple.com/us/app/ai-voice-studio/id6484401690}{\underline{AI Voice Studio}} using SwiftUI, enabling rapid prototyping and deployments.}
+        \fi
+        \ifwebdev
+          \resumeItem{Designed and developed \href{https://apps.shopify.com/image-cropper-and-uploader}{\underline{Croppy}}, a Shopify Theme App Extension built using Vue.js, Vite, and Express.}
+            \resumeItemListStart
+              \resumeItem{Provides tools for customers to crop and upload images to orders, enhancing Shopify theme functionality.}
+              \resumeItem{Designed a scalable backend with Express.js to handle image uploads, storage, and retrieval, using a cloud database for persistent storage.}
+              \resumeItem{Implemented subscription model based on the number of images uploaded by customers, utilizing Shopify’s subscription API to manage billing and pricing tiers.}
+            \resumeItemListEnd
+        \fi
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Test Automation Internship}{Jun. 2020 - Aug. 2020}
+      {Accenture}{Austin, Texas}
+      \resumeItemListStart
+        \resumeItem{Developed unit tests for various scenarios, increasing the quality assurance for the product.}
+        \resumeItem{Collaborated with cross-functional teams to report issues found white testing.}
+      \resumeItemListEnd
+
+    % \resumeSubheading
+    %   {Technical Support Specialist}{Mar. 2020 - Jun. 2020}
+    %   {OneSupport}{Austin, Texas}
+    %   \resumeItemListStart
+    %     \resumeItem{}
+    %   \resumeItemListEnd
+
+    \resumeSubheading
+      {Information Technology Internship}{Jun. 2019 - Aug. 2019}
+      {KIPP Texas Public Schools}{Austin, Texas}
+      \resumeItemListStart
+        \resumeItem{Serviced over 100+ laptops within the first week of employment.}
+        \resumeItem{Performed diagnostics, repairs, and utilized problem-solving skills to identify and resolve technical issues.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%------------PROJECTS------------
+\section{Projects}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+        {\href{https://erikb.dev/showcase/mochi}{\underline{\textbf{Mochi}}} $|$ \emph{Content Viewer for Apple Devices}}{Aug. 2023 -- Feb. 2024}
+        \resumeItemListStart
+          \ifmobile
+            \resumeItem{Designed and developed iOS and macOS application using Swift 5.9, SwiftUI, and The Composable Architecture.}
+            \resumeItem{Implemented modular-based source system, allowing users to extend the functionality of the application.}
+            \resumeItem{Facilitated releases on TestFlight and utilized GitHub for issues reporting.}
+          \else
+            \ifwebdev
+            \else
+              % Add a stub to not cause issues
+              \item {}
+            \fi
+          \fi
+          \ifwebdev
+            \resumeItem{Developed using Next.js, MDX, TypeScript, and Tailwind CSS.}
+            \resumeItem{Built a custom documentation page to help users easily navigate and understand how to use the app.}
+            \resumeItem{Focused on creating an intuitive user interface while ensuring a seamless browsing experience.}
+          \else
+            \ifmobile
+            \else
+              % Add a stub to not cause issues
+              \item {}
+            \fi
+          \fi
+        \resumeItemListEnd
+
+      \ifmobile
+        \resumeProjectHeading
+          {\textbf{Anime Now!} $|$ \emph{SwiftUI, Swift}}{Sep. 2022 -- Mar. 2023}
+          \resumeItemListStart
+            \resumeItem{Designed and developed using SwiftUI and The Composable Architecture, reaching over 500 stars on GitHub.}
+            \resumeItem{Added the ability to track progress and create watchlists via Core Data.}
+            \resumeItem{Delivered new features based on community feedback.}
+            \resumeItem{Utilized GitHub Actions to provide continuous integration and deployment.}
+          \resumeItemListEnd
+
+        \resumeProjectHeading
+          {\href{https://github.com/safer-together-project/app}{\underline{\textbf{Safer Together}}} $|$ \emph{UIKit, Core Data, Python}}{Sep. 2021 -- Mar. 2022}
+          \resumeItemListStart
+            \resumeItem{Developed an iOS application using UIKit, and FastAPI serving as the web server.}
+            \resumeItem{Implemented a report system for notifying any potential exposures, communicating between the server and client.}
+            \resumeItem{Manage server and local database synchronization for a more consistent data flow.}
+          \resumeItemListEnd
+      \fi
+
+      \ifwebdev
+        \resumeProjectHeading
+          {\href{https://erikb.dev/showcase/jmephotovideo}{\underline{\textbf{Juan Escobedo Photography}}} $|$ \emph{Photo and Video Portfolio}}{Aug. 2021 -- Oct. 2021}
+          \resumeItemListStart
+            \resumeItem{Developed using Next.js, Bootstrap, and TypeScript to enhance performance and maintainability.}
+            \resumeItem{Integrated event galleries from SmugMug API to enable clients to view their content, increasing user interaction.}
+            \resumeItem{Gained hands-on experience with modern frontend development practices and API integration.}
+        \resumeItemListEnd
+
+        \resumeProjectHeading
+          {\href{https://erikb.dev/showcase/wego}{\underline{\textbf{We-Go}}} $|$ \emph{Autonomous Vehicle Scheduling Platform}}{Jan. 2021 -- Apr. 2021}
+          \resumeItemListStart
+            \resumeItem{Collaborated in a cross-functional team, serving as Scrum Master, DevOps Engineer, and Full-Stack Developer.}
+            \resumeItem{Applied Agile methodologies to ensure iterative development and continuous improvement.}
+            \resumeItem{Developed using HTML, Bootstrap, and jQuery for a responsive user interface.}
+            \resumeItem{Implemented a robust backend using Python, FastAPI, and MongoDB to support real-time scheduling and data management.}
+          \resumeItemListEnd
+
+        \resumeProjectHeading
+          {\href{https://erikb.dev/showcase/grimewear}{\underline{\textbf{Grimewear}}} $|$ \emph{Ecommerce Website}}{Aug. 2020 -- Nov. 2020}
+          \resumeItemListStart
+            \resumeItem{Developed a retro Windows 95-inspired e-commerce site using JavaScript, HTML, CSS, JavaScript, and jQuery.}
+            \resumeItem{Integrated Shopify API to enable seamless online shopping experience.}
+          \resumeItemListEnd
+
+        \resumeProjectHeading
+          {\href{https://erikb.dev/showcase/outsidelookingin}{\underline{\textbf{OUTSIDELOOKINGIN}}} $|$ \emph{Lifestyle Website}}{Apr. 2020 -- Jul. 2020}
+          \resumeItemListStart
+            \resumeItem{Built a retro-themed website using HTML, CSS, JavaScript, and jQuery.}
+            \resumeItem{Gained hands-on experience with DOM manipulation, allowing interactive and dynamic updates.}
+          \resumeItemListEnd
+      \fi
+
+      \ifmobile
+        \resumeProjectHeading
+          {\href{https://github.com/erikbdev/PrismUI}{\underline{\textbf{PrismUI}}} $|$ \emph{AppKit, SwiftUI, Objective-C, C++}}{Sep. 2019 -- Jun. 2022}
+          \resumeItemListStart
+            \resumeItem{Designed and developed macOS application that interacts with HID USB to modify keyboard lighting.}
+            \resumeItem{Utilized Apple's native libraries to establish intercommunication between hardware and software.}
+            \resumeItem{Transitioned from Objective-C to Swift and SwiftUI, reducing error-prone code and increase maintainability.} 
+          \resumeItemListEnd
+
+        % \resumeProjectHeading
+        %   {\textbf{ESPLightController} $|$ \emph{Andriod, Java, Jetpack}}{Mar. 2019 -- Sep. 2019}
+        %   \resumeItemListStart
+        %     \resumeItem{Communicates with embedded controllers via local Wi-Fi network}
+        %     \resumeItem{Structured codebase following MVVM architecture for clean codebase}
+        %     \resumeItem{Utilized RxJava for asynchronous data retrieval to increase smooth user experience}
+        %   \resumeItemListEnd
+      \fi
+
+    \resumeSubHeadingListEnd
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {St. Edward's University}{Austin, Texas}
+      {Bachelor of Science in Computer Science}{Aug. 2018 - Jun. 2023}
+        \resumeItemListStart
+          \resumeItem{Relevant Courseworks: Software Engineering, Mobile Programming, User Interface \& User Experience, Programming Languages, Web Programming}  
+         \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-------------------------------------------
+\end{document}

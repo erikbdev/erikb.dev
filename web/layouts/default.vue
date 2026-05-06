@@ -61,8 +61,8 @@ function closeMenu() {
       </button>
     </nav>
   </BlockSection>
-  <main class="relative pt-[100vh]">
-    <BlockSection fill class="h-screen mt-[-100vh] fixed! border-0 -z-10" :divider="false">
+  <main class="relative pt-[100lvh]">
+    <BlockSection fill class="h-screen mt-[-100lvh] fixed! border-0 -z-10" :divider="false">
       <TresCanvas class="bg-base">
         <HorizonWorld />
       </TresCanvas>
@@ -70,7 +70,7 @@ function closeMenu() {
     <slot />
   </main>
   <BlockSection as="footer" :divider="false" class="border-b-0">
-    <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
+    <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 
   <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
@@ -81,7 +81,7 @@ function closeMenu() {
         </li>
       </ul>
       <footer>
-        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
+        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
       </footer>
     </BlockSection>
   </div>
