@@ -8,7 +8,7 @@ const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev, All rights re
 
 useHead({
   titleTemplate(title) {
-    return title ? `${title} | ` : "" + "erikb.dev";
+    return (title ? `${title} | ` : "") + "erikb.dev";
   },
   meta: [
     { name: "charset", content: "utf-8" },
@@ -50,8 +50,8 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 bg-base/80! backdrop-blur-sm! h-(--header-height)">
-    <nav class="flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
+  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
+    <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
@@ -60,10 +60,23 @@ function closeMenu() {
         <code v-else>{{ "close x" }}</code>
       </button>
     </nav>
+
+    <template v-if="showMenuDialog">
+      <BlockSection :divider="false" class="w-full flex-1 flex flex-col">
+        <ul class="grow">
+          <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5 *:hover:underline *:hover:decoration-2 *:hover:underline-offset-3" :class="{ 'text-primary': route.path === item.path }">
+            <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
+          </li>
+        </ul>
+      </BlockSection>
+      <BlockSection as="footer" :divider="false" class="border-b-0">
+        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
+      </BlockSection>
+    </template>
   </BlockSection>
   <main class="relative pt-[100lvh]">
-    <BlockSection fill class="h-screen mt-[-100lvh] fixed! border-0 -z-10" :divider="false">
-      <TresCanvas class="bg-base">
+    <BlockSection fill class="fixed! h-screen mt-[-100lvh] border-0 -z-10" :divider="false">
+      <TresCanvas class="bg-base" shadows>
         <HorizonWorld />
       </TresCanvas>
     </BlockSection>
@@ -72,17 +85,4 @@ function closeMenu() {
   <BlockSection as="footer" :divider="false" class="border-b-0">
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
-
-  <div v-if="showMenuDialog" class="fixed top-0 left-0 pt-13 bg-base w-full h-screen overscroll-y-auto">
-    <BlockSection :divider="false" class="w-full h-full flex flex-col">
-      <ul class="grow">
-        <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5 hover:underline hover:decoration-2 hover:underline-offset-3" :class="{ 'text-primary': route.path === item.path }">
-          <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
-        </li>
-      </ul>
-      <footer>
-        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
-      </footer>
-    </BlockSection>
-  </div>
 </template>
