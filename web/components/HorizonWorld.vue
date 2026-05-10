@@ -5,7 +5,7 @@ const { state: model } = useLoader(GLTFLoader, "/models/erik-b-logo-3d-model.glt
 const scene = computed(() => model.value?.scene);
 const graph = useGraph(scene);
 
-const nodex = computed(() => graph.value?.nodes);
+const nodes = computed(() => graph.value?.nodes);
 const logoRef = ref();
 const { onBeforeRender } = useLoop();
 
@@ -75,8 +75,9 @@ onBeforeRender(({ elapsed }) => {
   </TresMesh>
   <!-- Monitor screen (emissive) -->
   <TresMesh :position="[0.2, 2.16, -0.615]">
+    <TresMesh ref="logoRef" v-if="nodes?.ErikB" :geometry="nodes.ErikB.geometry" />
     <TresBoxGeometry :args="[1.53, 0.86, 0.001]" />
-    <TresMeshStandardMaterial color="#0e2e5a" :emissive="'#061424'" :emissive-intensity="2.5" />
+    <TresMeshStandardMaterial color="#1c1c1c" :emissive="'#1c1c1c'" :emissive-intensity="2.5" />
   </TresMesh>
   <!-- Monitor neck -->
   <TresMesh :position="[0.2, 1.66, -0.66]" cast-shadow>
