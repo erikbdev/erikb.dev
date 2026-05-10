@@ -9,10 +9,11 @@ definePageMeta({
   index: 0,
 });
 
-const { activity, fetchActivity } = useActivity();
+const { location, residency, nowPlaying, fetchActivity } = useActivity();
 const { codeLang, allCodeLangs } = useCodeLang();
 
 const { data: posts } = await useDevLogs();
+const showEmail = ref(false);
 
 const postDateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -22,6 +23,8 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 
 onMounted(() => {
   if (import.meta.browser) {
+    // only show on mounted.
+    showEmail.value = true;
     fetchActivity();
   }
 });
@@ -39,17 +42,17 @@ onMounted(() => {
       <p class="mb-1">Mobile & Web Developer</p>
       <p class="text-neutral-300">
         <span class="text-white inline-block mr-1 size-[1em]" v-html="PhMapPinSVG"></span>
-        <span>Irvine, CA</span>
+        <span>{{ [residency.city, residency.state].join(", ") }}</span>
       </p>
-      <p v-if="!!activity?.location?.city || !!activity?.location?.state || (!!activity?.location?.region && activity.location.residency?.city !== activity.location.city && activity.location.residency?.state != activity.location.state)" class="text-neutral-300">
+      <p v-if="location" class="text-neutral-300">
         <span class="text-white inline-block mr-1 size-[1em] -scale-x-100 animate-pulse" v-html="PhNavigationArrowSVG"></span>
         <span>Currently in </span>
-        <span class="font-bold italic text-white">{{ [activity.location.city || "", activity.location.state || "", activity.location.region || ""].filter((s) => !!s).join(", ") }}</span>
+        <span class="font-bold italic text-white">{{ [location.city || "", location.state || "", location.region || ""].filter((s) => !!s).join(", ") }}</span>
       </p>
-      <p v-if="activity?.nowPlaying" class="text-neutral-300">
+      <p v-if="nowPlaying" class="text-neutral-300">
         <span class="text-white inline-block mr-1 size-[1em] animate-pulse" v-html="PhWaveFormSVG"></span>
         <span>Listening to </span>
-        <span class="font-bold italic text-white">{{ [activity.nowPlaying.title, activity.nowPlaying.artist || ""].join(" — ") }}</span>
+        <span class="font-bold italic text-white">{{ [nowPlaying.title, nowPlaying.artist || ""].join(" — ") }}</span>
       </p>
       <p class="pt-3 pb-5" :class="codeLang.id !== 'md' ? 'text-neutral-300' : ''">{{ codeLang.id !== "md" ? "// " : "" }}I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
       <div class="flex flex-row flex-wrap gap-2 text-sm text-white">
@@ -57,9 +60,11 @@ onMounted(() => {
           <code v-if="codeLang.id == 'md'">[resume](ebs-resume.pdf)</code>
           <code v-else>user.resume() <span class="text-neutral-500">// ebs-resume.pdf</span></code>
         </NuxtLink>
-        <NuxtLink to="mailto:me@erikb.dev" class="border border-border px-3 py-2 bg-white text-black">
-          <code v-if="codeLang.id == 'md'">[email](me@erikb.dev)</code>
-          <code v-else>user.email() <span class="text-neutral-700">// me@erikb.dev</span></code>
+        <NuxtLink :to="`mailto:${showEmail ? 'me@erikb.dev' : ''}`" class="border border-border px-3 py-2 bg-white text-black">
+          <code v-if="codeLang.id == 'md'">[email]{{ showEmail ? "(me@erikb.dev)" : "" }}</code>
+          <code v-else
+            >user.email() <span class="text-neutral-700">{{ showEmail ? "// me@erikb.dev" : "" }}</span></code
+          >
         </NuxtLink>
         <NuxtLink to="https://github.com/erikbdev" class="border border-border px-3 py-2 bg-white text-black">
           <code v-if="codeLang.id == 'md'">[github](/erikbdev)</code>

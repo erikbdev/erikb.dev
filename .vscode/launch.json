@@ -4,12 +4,12 @@
       "type": "node-terminal",
       "name": "Debug Web Dev",
       "request": "launch",
-      "command": "vp run dev",
+      "command": "vp run dev:web",
       "cwd": "${workspaceFolder}",
       "serverReadyAction": {
         "name": "Launch Brave",
         "action": "startDebugging",
-        "pattern": "Local:    http://localhost:([0-9]+)",
+        "pattern": "Local:    http://.*:([0-9]+)",
         "killOnServerStop": true
       }
     },
@@ -25,7 +25,7 @@
     {
       "type": "swift",
       "request": "launch",
-      "args": [],
+      "args": ["-h", "0.0.0.0"],
       "cwd": "${workspaceFolder:website}",
       "name": "Debug SiteServer",
       "target": "SiteServer",
@@ -35,7 +35,7 @@
     {
       "type": "swift",
       "request": "launch",
-      "args": [],
+      "args": ["-h", "0.0.0.0"],
       "cwd": "${workspaceFolder:website}",
       "name": "Debug SiteServer (and Web Dev)",
       "target": "SiteServer",
@@ -45,7 +45,7 @@
         "action": "startDebugging",
         "name": "Debug Web Dev",
         "killOnServerStop": true,
-        "pattern": "Server started and listening on 127.0.0.1:([0-9]+)"
+        "pattern": "Server started and listening on .*:([0-9]+)"
       }
     },
     {

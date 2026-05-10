@@ -37,6 +37,10 @@ struct Server: AsyncParsableCommand {
 
     if let logLevel = envVars.get("LOG_LEVEL", as: Logger.Level.self) {
       logger.logLevel = logLevel
+    } else {
+      #if DEBUG
+        logger.logLevel = .debug
+      #endif
     }
 
     router.addMiddleware {

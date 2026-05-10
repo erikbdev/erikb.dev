@@ -15,6 +15,7 @@
   --text-5xl: 1.625em;
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --color-primary: #ffc900;
+  --header-height: 52px;
 }
 
 @utility prose {

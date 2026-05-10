@@ -13,6 +13,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterController {
   var body: some RouterMiddleware<Context> {
     #if DEBUG
       CORSMiddleware(allowOrigin: .all)
+      TracingMiddleware()
     #endif
 
     PublicFilesMiddleware()

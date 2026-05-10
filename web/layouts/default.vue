@@ -8,7 +8,7 @@ const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev, All rights re
 
 useHead({
   titleTemplate(title) {
-    return title ? `${title} | erikb.dev` : "erikb.dev";
+    return title ? `${title} | ` : "" + "erikb.dev";
   },
   meta: [
     { name: "charset", content: "utf-8" },
@@ -50,7 +50,7 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 border-t-0 bg-base/80! backdrop-blur-sm!">
+  <BlockSection as="header" fill :divider="false" class="fixed! top-0 z-50 bg-base/80! backdrop-blur-sm! h-(--header-height)">
     <nav class="flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>

@@ -64,7 +64,7 @@ extension Activity {
     public let duration: Double
 
     /// timestamp of the request sent
-    // public let timestamp: Date
+    public let timestamp: Date
 
     /// service used
     public let service: Service
@@ -75,22 +75,20 @@ extension Activity {
   }
 }
 
-#if canImport(Foundation)
-  extension Activity.Location: Codable {}
-  extension Activity.Location.Residency: Codable {}
-  extension Activity.NowPlaying.Service: Codable {}
-  extension Activity.NowPlaying: Codable {}
-  extension Activity: Codable {
-    public static let encoder = {
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      return encoder
-    }()
+extension Activity.Location: Codable {}
+extension Activity.Location.Residency: Codable {}
+extension Activity.NowPlaying.Service: Codable {}
+extension Activity.NowPlaying: Codable {}
+extension Activity: Codable {
+  public static let encoder = {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    return encoder
+  }()
 
-    public static let decoder = {
-      let decoder = JSONDecoder()
-      decoder.dateDecodingStrategy = .iso8601
-      return decoder
-    }()
-  }
-#endif
+  public static let decoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    return decoder
+  }()
+}
