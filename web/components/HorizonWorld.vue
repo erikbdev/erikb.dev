@@ -11,7 +11,7 @@ const { onBeforeRender } = useLoop();
 
 onBeforeRender(({ elapsed }) => {
   if (logoRef.value) {
-    logoRef.value.rotation.r = elapsed * 0.5;
+    logoRef.value.rotation.z = elapsed * -0.5;
   }
 });
 </script>
@@ -75,7 +75,7 @@ onBeforeRender(({ elapsed }) => {
   </TresMesh>
   <!-- Monitor screen (emissive) -->
   <TresMesh :position="[0.2, 2.16, -0.615]">
-    <TresMesh ref="logoRef" v-if="nodes?.ErikB" :geometry="nodes.ErikB.geometry" />
+    <TresMesh ref="logoRef" v-if="nodes?.ErikB" :scale="[6, 6, 6]" :rotation="[8, 0, 0]" :position="[0, -0.04, 0]" :geometry="nodes.ErikB.geometry" />
     <TresBoxGeometry :args="[1.53, 0.86, 0.001]" />
     <TresMeshStandardMaterial color="#1c1c1c" :emissive="'#1c1c1c'" :emissive-intensity="2.5" />
   </TresMesh>
