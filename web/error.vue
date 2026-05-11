@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BlockSection from "@/components/BlockSection.vue";
+import BlockSection from "~/components/block-section.vue";
 import { useCodeLang } from "~/composables/use-codelang";
 
 const { codeLang } = useCodeLang();

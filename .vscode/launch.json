@@ -19,7 +19,6 @@
       "request": "launch",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}/web",
-      "runtimeArgs": ["--incognito", "http://localhost:3000"],
       "runtimeExecutable": "/usr/bin/brave-browser"
     },
     {

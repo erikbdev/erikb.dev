@@ -1,14 +1,11 @@
 {
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "npm.scriptRunner": "vp",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "oxc.fmt.configPath": "./vite.config.ts",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
-  },
-  // Increase the maximum number of files the language service will analyze
-  "js/ts.tsserver.maxMemory": 8192,
-  "js/ts.tsserver.web.typeAcquisition.enabled": false
+  }
 }
