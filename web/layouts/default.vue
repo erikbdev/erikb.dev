@@ -76,7 +76,7 @@ function closeMenu() {
   </BlockSection>
   <main class="relative pt-[100lvh]">
     <BlockSection fill class="fixed! h-screen mt-[-100lvh] border-0 -z-10" :divider="false">
-      <TresCanvas class="bg-base" shadows>
+      <TresCanvas class="bg-base" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
         <InteractiveRoom />
       </TresCanvas>
     </BlockSection>
