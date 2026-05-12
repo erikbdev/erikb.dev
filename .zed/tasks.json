@@ -1,0 +1,7 @@
+[
+  {
+    "label": "Dev Web",
+    "command": "vp run dev:web",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  }
+]

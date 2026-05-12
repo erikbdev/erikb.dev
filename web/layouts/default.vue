@@ -77,7 +77,7 @@ function closeMenu() {
   <main class="relative pt-[100lvh]">
     <BlockSection fill class="fixed! h-screen mt-[-100lvh] border-0 -z-10" :divider="false">
       <TresCanvas class="bg-base" shadows>
-        <HorizonWorld />
+        <InteractiveRoom />
       </TresCanvas>
     </BlockSection>
     <slot />
