@@ -23,13 +23,13 @@ export default {
     :is="as"
     :class="[
       // general
-      'relative bg-base border-border border-t w-full',
+      'relative bg-base border-border border-t w-full z-0',
 
       // Top divider
       'before:-z-10 before:bg-inherit before:absolute before:w-screen before:-top-px before:left-1/2 before:-translate-x-1/2 before:border-border before:border-t',
       divider ? 'before:-bottom-4' : 'before:bottom-0',
 
-      // container
+      // // container
       fill === true || fill === ''
         ? ''
         : [

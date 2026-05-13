@@ -50,7 +50,7 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
+  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50 border-t-0!" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
     <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
@@ -74,9 +74,9 @@ function closeMenu() {
       </BlockSection>
     </template>
   </BlockSection>
-  <main class="relative pt-[100lvh]">
-    <BlockSection fill class="fixed! h-screen mt-[-100lvh] border-0 -z-10" :divider="false">
-      <TresCanvas class="bg-base" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
+  <main class="relative">
+    <BlockSection fill class="h-screen border-0" :divider="false">
+      <TresCanvas class="bg-inherit" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
         <InteractiveRoom />
       </TresCanvas>
     </BlockSection>
