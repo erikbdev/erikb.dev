@@ -7,6 +7,12 @@ export default defineNuxtConfig({
   modules: ["@tresjs/nuxt", "@nuxtjs/mdc"],
   srcDir: "web",
   css: ["~/assets/css/main.css"],
+  app: {
+    rootAttrs: {
+      class: "relative",
+    },
+    rootTag: "main",
+  },
   // typescript: {
   //   strict: true,
   //   typeCheck: true,

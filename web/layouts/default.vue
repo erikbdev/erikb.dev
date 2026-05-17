@@ -60,7 +60,6 @@ function closeMenu() {
         <code v-else>{{ "close x" }}</code>
       </button>
     </nav>
-
     <template v-if="showMenuDialog">
       <BlockSection :divider="false" class="w-full flex-1 flex flex-col">
         <ul class="grow">
@@ -74,14 +73,12 @@ function closeMenu() {
       </BlockSection>
     </template>
   </BlockSection>
-  <main class="relative">
-    <BlockSection fill class="h-screen border-0" :divider="false">
-      <TresCanvas class="bg-inherit" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
-        <InteractiveRoom />
-      </TresCanvas>
-    </BlockSection>
-    <slot />
-  </main>
+  <BlockSection fill class="h-screen border-0" :divider="false">
+    <TresCanvas class="bg-inherit" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
+      <InteractiveRoom />
+    </TresCanvas>
+  </BlockSection>
+  <slot />
   <BlockSection as="footer" :divider="false" class="border-b-0">
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>

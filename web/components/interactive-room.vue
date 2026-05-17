@@ -20,7 +20,7 @@ onBeforeRender(({ elapsed }) => {
 
 <template>
   <TresPerspectiveCamera :position="[-8, 2, 0]" :look-at="[0, 1, 0]" :fov="95" />
-  <OrbitControls />
+  <!-- <OrbitControls /> -->
 
   <TresAmbientLight :intensity="1" />
   <!-- <TresDirectionalLight :position="[0, 0, 0]" :intensity="2" /> -->
