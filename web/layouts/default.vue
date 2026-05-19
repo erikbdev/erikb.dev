@@ -50,36 +50,36 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50 border-t-0!" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
+  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
     <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
       <button class="font-bold border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
         <code v-if="!showMenuDialog">{{ "\<menu\>" }}</code>
-        <code v-else>{{ "close x" }}</code>
+        <code v-else>{{ "\<close\>" }}</code>
       </button>
     </nav>
     <template v-if="showMenuDialog">
-      <BlockSection :divider="false" class="w-full flex-1 flex flex-col">
+      <BlockSection class="w-full flex-1 flex flex-col">
         <ul class="grow">
           <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5 *:hover:underline *:hover:decoration-2 *:hover:underline-offset-3" :class="{ 'text-primary': route.path === item.path }">
             <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
           </li>
         </ul>
       </BlockSection>
-      <BlockSection as="footer" :divider="false" class="border-b-0">
+      <BlockSection as="footer" :divider="false">
         <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
       </BlockSection>
     </template>
   </BlockSection>
-  <BlockSection fill class="h-screen border-0" :divider="false">
-    <TresCanvas class="bg-inherit" shadows window-size :tone-mapping="0" :tone-mapping-exposure="0.0005">
+  <BlockSection fill class="h-screen border-0" :divider="true">
+    <TresCanvas class="bg-inherit" shadows :tone-mapping="0" :tone-mapping-exposure="0.0005">
       <InteractiveRoom />
     </TresCanvas>
   </BlockSection>
   <slot />
-  <BlockSection as="footer" :divider="false" class="border-b-0">
+  <BlockSection as="footer" :divider="false">
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 </template>

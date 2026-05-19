@@ -23,28 +23,24 @@ export default {
     :is="as"
     :class="[
       // general
-      'relative bg-base border-border border-t outline outline-border w-full z-0',
-
+      'relative bg-base w-full',
       // Top divider
-      'before:-z-1 before:bg-inherit before:absolute before:w-screen before:-top-px before:left-1/2 before:-translate-x-1/2 before:border-border before:border-t',
-      divider ? 'before:-bottom-4' : 'before:bottom-0',
-
-      // // container
+      'before:bg-inherit before:absolute before:w-screen before:top-0 before:left-1/2 before:-translate-x-1/2 before:border-border before:border-t',
+      // container
       fill === true || fill === ''
         ? ''
         : [
-            'md:border-x md:max-w-2xl mx-auto',
+            'md:border-border md:border-x md:max-w-2xl mx-auto',
             {
               'px-6 py-6': fill !== 'inner',
             },
           ],
-
       // bottom divider
       divider
         ? 'mb-4 after:absolute after:h-4 after:w-screen after:md:max-w-2xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-border big-divider-bottom'
         : 'mb-0 after:absolute after:h-0 after:w-screen after:-bottom-px after:left-1/2 after:-translate-x-1/2 after:border-b after:border-border',
     ]">
-    <slot></slot>
+    <slot />
   </component>
 </template>
 <style>
