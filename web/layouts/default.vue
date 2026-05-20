@@ -51,8 +51,8 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm! border-b': !showMenuDialog, 'h-full': showMenuDialog }">
-    <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-gridline md:border-x">
+  <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/50 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
+    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between py-3! px-6! text-sm">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
@@ -60,7 +60,7 @@ function closeMenu() {
         <code v-if="!showMenuDialog">{{ "\<menu\>" }}</code>
         <code v-else>{{ "\<close\>" }}</code>
       </button>
-    </nav>
+    </BlockSection>
     <template v-if="showMenuDialog">
       <BlockSection class="w-full flex-1 flex flex-col">
         <ul class="grow">
@@ -73,7 +73,7 @@ function closeMenu() {
         <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
       </BlockSection>
     </template>
-  </BlockSection>
+  </header>
   <BlockSection fill class="h-screen border-0 md:fixed! top-0! -z-1" :divider="true">
     <TresCanvas class="bg-inherit" shadows :tone-mapping="0" :tone-mapping-exposure="0.0005">
       <InteractiveRoom />
@@ -84,3 +84,4 @@ function closeMenu() {
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 </template>
+<style></style>
