@@ -51,8 +51,8 @@ function closeMenu() {
 }
 </script>
 <template>
-  <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/50 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
-    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between py-3! px-6! text-sm">
+  <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/80 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
+    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between py-3! px-6! text-sm" :class="{ 'nav-ascii': !showMenuDialog }">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
@@ -84,4 +84,10 @@ function closeMenu() {
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 </template>
-<style></style>
+<style>
+.nav-ascii {
+  /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='26'%3E%3Ctext x='2' y='12' font-family='monospace' font-size='10' fill='black'%3E%26lt;*%26amp;/{%26gt;%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 8px 8px;*/
+}
+</style>
