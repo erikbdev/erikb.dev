@@ -3,7 +3,8 @@
 
 @theme {
   --color-base: #1c1c1c;
-  --color-border: #303030;
+  --color-gridline: #303030;
+  --size-gridline: 0.8px;
   --text-xs: 0.75em;
   --text-sm: 0.86em;
   --text-base: 0.94em;
@@ -16,6 +17,7 @@
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --color-primary: #ffc900;
   --header-height: 52px;
+  --default-border-width: var(--size-gridline);
 }
 
 @utility prose {

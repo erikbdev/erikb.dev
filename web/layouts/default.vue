@@ -21,6 +21,7 @@ useHead({
     class: {
       "overflow-x-hidden": true,
       "overflow-y-hidden": showMenuDialog,
+      "md:mt-[100vh]": true,
     },
   },
   link: [
@@ -50,8 +51,8 @@ function closeMenu() {
 }
 </script>
 <template>
-  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm!': !showMenuDialog, 'h-full': showMenuDialog }">
-    <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-border md:border-x">
+  <BlockSection as="header" fill :divider="false" class="fixed! flex flex-col top-0 z-50" :class="{ 'bg-base/80! backdrop-blur-sm! border-b': !showMenuDialog, 'h-full': showMenuDialog }">
+    <nav class="w-full h-(--header-height) flex flex-none justify-between py-3 px-6 text-sm md:max-w-2xl mx-auto md:border-gridline md:border-x">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
@@ -73,7 +74,7 @@ function closeMenu() {
       </BlockSection>
     </template>
   </BlockSection>
-  <BlockSection fill class="h-screen border-0" :divider="true">
+  <BlockSection fill class="h-screen border-0 md:fixed! top-0! -z-1" :divider="true">
     <TresCanvas class="bg-inherit" shadows :tone-mapping="0" :tone-mapping-exposure="0.0005">
       <InteractiveRoom />
     </TresCanvas>
