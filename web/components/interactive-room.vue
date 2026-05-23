@@ -3,7 +3,7 @@ import { OrbitControls } from "@tresjs/cientos";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 const { state: nameModel } = useLoader(GLTFLoader, "/models/erik-b-logo-3d-model.gltf");
-const { state: roomModel } = useLoader(GLTFLoader, "/models/interactive-room.glb");
+const { state: roomModel } = useLoader(GLTFLoader, "/models/wip_model.glb");
 
 const roomScene = computed(() => roomModel.value?.scene);
 const nameScene = computed(() => nameModel.value?.scene);
@@ -23,7 +23,7 @@ onBeforeRender(({ elapsed }) => {
   <OrbitControls />
 
   <TresAmbientLight :intensity="1" />
-  <!-- <TresDirectionalLight :position="[0, 0, 0]" :intensity="2" /> -->
+  <TresDirectionalLight :position="[0, 0, 0]" :intensity="2" />
 
   <primitive v-if="roomScene" :object="roomScene" />
 </template>

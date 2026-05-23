@@ -21,7 +21,7 @@ useHead({
     class: {
       "overflow-x-hidden": true,
       "overflow-y-hidden": showMenuDialog,
-      "md:mt-[100vh]": true,
+      "mt-(--header-height)": true,
     },
   },
   link: [
@@ -74,20 +74,9 @@ function closeMenu() {
       </BlockSection>
     </template>
   </header>
-  <BlockSection fill class="h-screen border-0 md:fixed! top-0! -z-1" :divider="true">
-    <TresCanvas class="bg-inherit" shadows :tone-mapping="0" :tone-mapping-exposure="0.0005">
-      <InteractiveRoom />
-    </TresCanvas>
-  </BlockSection>
   <slot />
   <BlockSection as="footer" :divider="false">
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 </template>
-<style>
-.nav-ascii {
-  /*background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='26'%3E%3Ctext x='2' y='12' font-family='monospace' font-size='10' fill='black'%3E%26lt;*%26amp;/{%26gt;%3C/text%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 8px 8px;*/
-}
-</style>
+<style></style>
