@@ -16,6 +16,9 @@ export default {
       default: true,
     },
   },
+  slots: {
+    header: [],
+  },
 };
 </script>
 <template>
@@ -40,6 +43,8 @@ export default {
       // bottom divider
       divider ? 'mb-4 after:absolute after:h-4 after:w-screen after:md:max-w-2xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-inherit big-divider-bottom' : '',
     ]">
+    <!-- <p><span class="text-yellow-500">$</span> <slot name="header" /></p> -->
+    <!-- <slot name="header" /> -->
     <slot />
   </component>
 </template>

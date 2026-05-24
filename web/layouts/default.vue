@@ -52,7 +52,7 @@ function closeMenu() {
 </script>
 <template>
   <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/80 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
-    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between py-3! px-6! text-sm" :class="{ 'nav-ascii': !showMenuDialog }">
+    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between items-center py-3! px-6! text-sm">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <code class="text-white font-bold">erikb.dev()</code>
       </NuxtLink>
@@ -79,4 +79,3 @@ function closeMenu() {
     <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
   </BlockSection>
 </template>
-<style></style>
