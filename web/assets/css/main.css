@@ -5,18 +5,21 @@
   --color-base: #0a0a0a;
   --color-gridline: #1e1e1e;
   --size-gridline: 0.8px;
-  --text-xs: 0.75em;
-  --text-sm: 0.86em;
-  --text-base: 0.94em;
-  --text-lg: 1em;
-  --text-xl: 1.125em;
-  --text-2xl: 1.25em;
-  --text-3xl: 1.375em;
-  --text-4xl: 1.5em;
-  --text-5xl: 1.625em;
+  --scaled-font-size: 0.9;
+  --text-xs: calc(0.75rem * var(--scaled-font-size));
+  --text-xs--line-height: calc((1 / 0.75) * var(--scaled-font-size));
+  --text-sm: calc(0.875rem * var(--scaled-font-size));
+  --text-sm--line-height: calc((1.25 / 0.875) * var(--scaled-font-size));
+  --text-base: calc(1rem * var(--scaled-font-size));
+  --text-lg: calc(1.125rem * var(--scaled-font-size));
+  --text-lg--line-height: calc((1.75 / 1.125) * var(--scaled-font-size));
+  --text-2xl: calc(1.5rem * var(--scaled-font-size));
+  --text-2xl--line-height: calc((2 / 1.5) * var(--scaled-font-size));
+  --text-3xl: calc(1.875rem * var(--scaled-font-size));
+  --text-3xl--line-height: calc((2.25 / 1.875) * var(--scaled-font-size));
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --color-primary: #ffc900;
-  --color-terminal: #39d353;
+  --color-terminal: var(--color-primary);
   --header-height: 52px;
   --default-border-width: var(--size-gridline);
 }
@@ -44,8 +47,7 @@
       "cv02",
       "cv06",
       "cv07";
-    line-height: 1;
-    size-adjust: 90%;
+    line-height: 16px;
     src: url("/fonts/CommitMono.woff2") format("woff2");
   }
 
@@ -74,5 +76,15 @@
   code {
     font-family: inherit;
     line-height: 1;
+  }
+
+  .prose {
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  .prose-sm {
+    font-size: inherit !important;
+    line-height: inherit !important;
   }
 }

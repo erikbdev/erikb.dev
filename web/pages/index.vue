@@ -71,9 +71,9 @@ onMounted(() => {
         <NuxtLink :to="`mailto:${emailAddress}`" class="border border-gridline px-3 py-2 text-neutral-500 hover:bg-terminal/10 transition-colors">
           {{ emailAddress || "email" }}
         </NuxtLink>
-        <NuxtLink external to="/ebs-resume.pdf" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /resume.pdf </NuxtLink>
-        <NuxtLink external to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /github </NuxtLink>
-        <NuxtLink external to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /linkedin </NuxtLink>
+        <NuxtLink external to="/ebs-resume.pdf" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/resume.pdf </NuxtLink>
+        <NuxtLink external to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/github </NuxtLink>
+        <NuxtLink external to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/linkedin </NuxtLink>
       </div>
     </header>
   </BlockSection>
@@ -93,7 +93,7 @@ onMounted(() => {
         </hgroup>
       </header>
 
-      <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose text-lg prose-headings:text-2xl! prose-p:text-neutral-300 prose-invert mt-3" />
+      <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose prose-sm prose-headings:text-2xl prose-p:text-neutral-300 prose-invert mt-3" />
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium">
         <NuxtLink v-for="link in post.links || []" :class="['border px-3 py-2 transition-colors', link.role == 'secondary' ? 'border-terminal text-terminal hover:bg-terminal/10' : 'border-gridline text-neutral-500 hover:text-white hover:border-neutral-600']" :to="link.href" target="_blank" rel="noopener noreferrer">
           {{ link.label }}

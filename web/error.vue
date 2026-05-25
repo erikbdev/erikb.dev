@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import BlockSection from "~/components/block-section.vue";
-import { useCodeLang } from "~/composables/use-codelang";
 
-const { codeLang } = useCodeLang();
+const props = defineProps({
+  error: Object,
+});
+
+const statusCode = computed(() => props.error?.statusCode ?? 500);
+const statusMessage = computed(() => props.error?.statusMessage || "The requested page or asset could not be found.");
+
+const handleError = () => clearError({ redirect: "/" });
 </script>
 <template>
   <NuxtLayout>
-    <BlockSection class="flex flex-col size-128 bg-dotted">
-      <NuxtLink id="not-found" to="#not-found" class="self-end text-sm text-neutral-500">
-        <code>{{ codeLang.fileCase("not-found") }}</code>
-      </NuxtLink>
-      <div class="self-center content-center h-full">
-        <p v-if="codeLang.id == 'md'" class="text-3xl font-bold mb-2"><span class="text-neutral-400">#</span> Not Found</p>
-        <p>The asset or page could not be found</p>
-      </div>
+    <BlockSection id="error">
+      <header>
+        <p class="inline-block text-xs text-white mb-5"><span class="text-terminal">$</span> cat error.md</p>
+      </header>
+
+      <section>
+        <h1 class="text-3xl font-bold mb-1 text-white">{{ statusCode }}</h1>
+        <p class="text-neutral-300 mb-4">{{ statusMessage }}</p>
+        <button @click="handleError" class="text-sm border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors cursor-pointer">~/home</button>
+      </section>
     </BlockSection>
   </NuxtLayout>
 </template>
-<style lang="css">
-.bg-dotted {
-  background-image: radial-gradient(#2a2a2a 1px, transparent 0);
-  background-size: 12px 12px;
-}
-</style>

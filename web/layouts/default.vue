@@ -58,7 +58,7 @@ function closeMenu() {
         <span class="text-white font-bold">erikb@dev:~<span class="text-terminal">$</span></span>
       </NuxtLink>
 
-      <div class="hidden sm:flex items-center gap-2 text-[10px] text-neutral-700 tracking-wide">
+      <div class="hidden sm:flex items-center gap-2 text-xs text-neutral-700 tracking-wide">
         <span>TTY0</span>
         <span class="text-neutral-800">·</span>
         <span>{{ currentDate }}</span>
@@ -82,11 +82,9 @@ function closeMenu() {
           </li>
         </ul>
       </BlockSection>
-      <BlockSection as="footer" :divider="false">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs text-neutral-700">© {{ copyrightFooter }}</span>
-          <span class="text-[10px] text-neutral-800">TERM xterm-256color · TTY0 · connection open</span>
-        </div>
+      <BlockSection as="footer" class="flex flex-col gap-1 text-xs" :divider="false">
+        <span class="text-neutral-700">© {{ copyrightFooter }}</span>
+        <span class="text-neutral-800">TERM xterm-256color · TTY0 · connection open</span>
       </BlockSection>
     </template>
   </header>
