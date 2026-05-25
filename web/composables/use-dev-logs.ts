@@ -10,6 +10,7 @@ type PostMetadata = {
   date: string;
   kind: string;
   header?: PostHeader;
+  hidden?: boolean;
   links?: PostLink[];
 };
 
@@ -34,6 +35,7 @@ export function useDevLogs() {
     for (const pair of Object.entries(rawPosts) as [string, string][]) {
       const md = await parseMarkdown(pair[1]);
       const metadata = md.data as PostMetadata;
+      if (metadata.hidden) continue;
       posts.push({
         ...metadata,
         body: md.body,

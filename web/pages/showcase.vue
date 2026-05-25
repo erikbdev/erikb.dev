@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 definePageMeta({
-  name: "Showcase",
+  name: "showcase",
 });
 useHead({
-  title: "Showcase",
+  title: "showcase",
 });
 </script>
 <template>

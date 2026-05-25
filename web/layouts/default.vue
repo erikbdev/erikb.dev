@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import PhCopyrightSVG from "@phosphor-icons/core/regular/copyright.svg?raw";
-
 const showMenuDialog = ref(false);
 const router = useRouter();
 const route = useRoute();
-const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev, All rights reserved.`;
+
+const currentDate = computed(() => new Date().toISOString());
+const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev`;
 
 useHead({
   titleTemplate(title) {
@@ -54,28 +55,49 @@ function closeMenu() {
   <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/80 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
     <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between items-center py-3! px-6! text-sm">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
-        <code class="text-white font-bold">erikb.dev()</code>
+        <span class="text-white font-bold">erikb@dev:~<span class="text-terminal">$</span></span>
       </NuxtLink>
-      <button class="font-bold border-[1.16px] border-solid border-neutral-700 py-1 px-2 cursor-pointer" :class="showMenuDialog ? 'bg-neutral-100 text-black' : 'text-white'" @click.stop="showMenuDialog = !showMenuDialog">
-        <code v-if="!showMenuDialog">{{ "\<menu\>" }}</code>
-        <code v-else>{{ "\<close\>" }}</code>
-      </button>
+
+      <div class="hidden sm:flex items-center gap-2 text-[10px] text-neutral-700 tracking-wide">
+        <span>TTY0</span>
+        <span class="text-neutral-800">·</span>
+        <span>{{ currentDate }}</span>
+      </div>
+
+      <!-- 
+      <button class="font-bold border border-gridline py-1 px-2 cursor-pointer text-neutral-500 hover:text-white hover:border-neutral-500 transition-colors" :class="showMenuDialog ? 'bg-white! text-black! border-white!' : ''" @click.stop="showMenuDialog = !showMenuDialog">
+        <span v-if="!showMenuDialog">ls</span>
+        <span v-else>close {{ "\<q\>" }}</span>
+      </button> 
+      -->
     </BlockSection>
     <template v-if="showMenuDialog">
       <BlockSection class="w-full flex-1 flex flex-col">
+        <p class="text-xs text-neutral-700 mb-6">$ ls ~/</p>
         <ul class="grow">
-          <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5 *:hover:underline *:hover:decoration-2 *:hover:underline-offset-3" :class="{ 'text-primary': route.path === item.path }">
-            <NuxtLink :to="item.path" @click="closeMenu">{{ item.name }}</NuxtLink>
+          <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5" :class="route.path === item.path ? 'text-terminal' : 'text-neutral-700 hover:text-white'">
+            <NuxtLink :to="item.path">
+              <span><span class="text-neutral-800">~/</span>{{ item.name }}</span>
+            </NuxtLink>
           </li>
         </ul>
       </BlockSection>
       <BlockSection as="footer" :divider="false">
-        <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-neutral-700">© {{ copyrightFooter }}</span>
+          <span class="text-[10px] text-neutral-800">TERM xterm-256color · TTY0 · connection open</span>
+        </div>
       </BlockSection>
     </template>
   </header>
   <slot />
   <BlockSection as="footer" :divider="false">
-    <code class="text-sm text-neutral-300"><span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>{{ copyrightFooter }}</code>
+    <div class="flex flex-col gap-1">
+      <span class="text-sm text-neutral-500">
+        <span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>
+        <span> {{ copyrightFooter }}</span>
+      </span>
+      <span class="text-sm text-neutral-800">connection closed.</span>
+    </div>
   </BlockSection>
 </template>

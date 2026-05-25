@@ -2,8 +2,8 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-base: #1c1c1c;
-  --color-gridline: #303030;
+  --color-base: #0a0a0a;
+  --color-gridline: #1e1e1e;
   --size-gridline: 0.8px;
   --text-xs: 0.75em;
   --text-sm: 0.86em;
@@ -16,12 +16,13 @@
   --text-5xl: 1.625em;
   --font-mono: "CommitMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --color-primary: #ffc900;
+  --color-terminal: #39d353;
   --header-height: 52px;
   --default-border-width: var(--size-gridline);
 }
 
 @utility prose {
-  --tw-prose-pre-bg: #282828;
+  --tw-prose-pre-bg: #141414;
 }
 
 @layer base {
@@ -51,7 +52,8 @@
   body {
     height: 100%;
     background-color: var(--color-base);
-    color: #fafafa;
+    color: #e0e0e0;
+    font-family: var(--font-mono);
     font-optical-sizing: auto;
     font-size: var(--text-xs);
     overscroll-behavior: none;
@@ -70,7 +72,7 @@
   }
 
   code {
-    font-family: var(--font-mono);
+    font-family: inherit;
     line-height: 1;
   }
 }

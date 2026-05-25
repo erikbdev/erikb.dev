@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import PhArrowSquareOutSVG from "@phosphor-icons/core/bold/arrow-square-out-bold.svg?raw";
 import PhMapPinSVG from "@phosphor-icons/core/fill/map-pin-fill.svg?raw";
 import PhNavigationArrowSVG from "@phosphor-icons/core/fill/navigation-arrow-fill.svg?raw";
 import PhWaveFormSVG from "@phosphor-icons/core/regular/waveform.svg?raw";
 
 definePageMeta({
-  name: "Home",
+  name: "home",
   index: 0,
 });
 
 const { location, residency, nowPlaying, fetchActivity } = useActivity();
-const { codeLang, allCodeLangs } = useCodeLang();
-
 const { data: posts } = await useDevLogs();
 const emailAddress = ref("");
 
@@ -23,7 +20,6 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 
 onMounted(() => {
   if (import.meta.browser) {
-    // only show on mounted.
     emailAddress.value = "me@erikb.dev";
     fetchActivity();
   }
@@ -33,79 +29,74 @@ onMounted(() => {
   <!-- Intro -->
   <BlockSection id="user">
     <header>
-      <div class="w-full text-sm text-end text-neutral-500 mb-2">
-        <NuxtLink to="#user">
-          <code>{{ codeLang.fileCase("user") }}</code>
-        </NuxtLink>
+      <NuxtLink to="#user" class="inline-block text-xs text-start text-white mb-5"> <span class="text-terminal">$</span> cat profile.md </NuxtLink>
+
+      <h1 class="text-3xl font-bold mb-1 text-white">Erik Bautista Santibanez</h1>
+
+      <div class="space-y-1.5 mb-5 text-sm">
+        <div class="flex gap-2">
+          <span class="text-neutral-600 w-[3.5ch] flex-none">ROLE</span>
+          <span class="text-neutral-700 flex-none select-none">···</span>
+          <span class="text-neutral-300">Mobile &amp; Web Developer</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-neutral-600 w-[3.5ch] flex-none">LOC</span>
+          <span class="text-neutral-700 flex-none select-none">···</span>
+          <span class="text-neutral-400">
+            <span class="inline-block size-[1em] align-middle" v-html="PhMapPinSVG"></span>
+            {{ [residency.city, residency.state].join(", ") }}
+          </span>
+        </div>
+        <div v-if="location" class="flex gap-2">
+          <span class="text-neutral-600 w-[3.5ch] flex-none">NOW</span>
+          <span class="text-neutral-700 flex-none select-none">···</span>
+          <span class="text-white animate-pulse">
+            <span class="inline-block mr-1 size-[1em] align-middle -scale-x-100" v-html="PhNavigationArrowSVG"></span>
+            {{ [location.city || "", location.state || "", location.region || ""].filter((s) => !!s).join(", ") }}
+          </span>
+        </div>
+        <div v-if="nowPlaying" class="flex gap-2">
+          <span class="text-neutral-600 w-[3.5ch] flex-none">PLAY</span>
+          <span class="text-neutral-700 flex-none select-none">···</span>
+          <span class="text-white animate-pulse">
+            <span class="inline-block mr-1 size-[1em] align-middle" v-html="PhWaveFormSVG"></span>
+            {{ [nowPlaying.title, nowPlaying.artist || ""].join(" — ") }}
+          </span>
+        </div>
       </div>
-      <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Erik Bautista Santibanez</h1>
-      <p class="mb-1">Mobile & Web Developer</p>
-      <p class="text-neutral-300">
-        <span class="text-white inline-block mr-1 size-[1em]" v-html="PhMapPinSVG"></span>
-        <span>{{ [residency.city, residency.state].join(", ") }}</span>
-      </p>
-      <p v-if="location" class="text-neutral-300">
-        <span class="text-white inline-block mr-1 size-[1em] -scale-x-100 animate-pulse" v-html="PhNavigationArrowSVG"></span>
-        <span>Currently in </span>
-        <span class="font-bold italic text-white">{{ [location.city || "", location.state || "", location.region || ""].filter((s) => !!s).join(", ") }}</span>
-      </p>
-      <p v-if="nowPlaying" class="text-neutral-300">
-        <span class="text-white inline-block mr-1 size-[1em] animate-pulse" v-html="PhWaveFormSVG"></span>
-        <span>Listening to </span>
-        <span class="font-bold italic text-white">{{ [nowPlaying.title, nowPlaying.artist || ""].join(" — ") }}</span>
-      </p>
-      <p class="pt-3 pb-5" :class="codeLang.id !== 'md' ? 'text-neutral-300' : ''">{{ codeLang.id !== "md" ? "// " : "" }}I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
-      <div class="flex flex-row flex-wrap gap-2 text-sm text-white">
-        <NuxtLink external to="/ebs-resume.pdf" class="border border-gridline px-3 py-2">
-          <code v-if="codeLang.id == 'md'">[resume](ebs-resume.pdf)</code>
-          <code v-else>user.resume() <span class="text-neutral-500">// ebs-resume.pdf</span></code>
+
+      <p class="text-neutral-300 mb-4">I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
+
+      <div class="flex flex-row flex-wrap gap-2 text-sm">
+        <NuxtLink :to="`mailto:${emailAddress}`" class="border border-gridline px-3 py-2 text-neutral-500 hover:bg-terminal/10 transition-colors">
+          {{ emailAddress || "email" }}
         </NuxtLink>
-        <NuxtLink :to="`mailto:${emailAddress ? emailAddress : ''}`" class="border border-gridline px-3 py-2 bg-white text-black">
-          <code v-if="codeLang.id == 'md'">[email]{{ emailAddress ? `(${emailAddress})` : "" }}</code>
-          <code v-else
-            >user.email() <span class="text-neutral-700">{{ emailAddress ? `// ${emailAddress}` : "" }}</span></code
-          >
-        </NuxtLink>
-        <NuxtLink external to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 bg-white text-black">
-          <code v-if="codeLang.id == 'md'">[github](/erikbdev)</code>
-          <code v-else>user.github() <span class="text-neutral-700">// @erikbdev</span></code>
-        </NuxtLink>
-        <NuxtLink external to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 bg-white text-black">
-          <code v-if="codeLang.id == 'md'">[linkedin](/erikbautista)</code>
-          <code v-else>user.linkedin() <span class="text-neutral-700">// @erikbautista</span></code>
-        </NuxtLink>
+        <NuxtLink external to="/ebs-resume.pdf" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /resume.pdf </NuxtLink>
+        <NuxtLink external to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /github </NuxtLink>
+        <NuxtLink external to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> /linkedin </NuxtLink>
       </div>
     </header>
   </BlockSection>
 
   <!-- Dev Logs -->
-  <!-- TODO: move to /dev-logs and show preview of logs instead. -->
   <BlockSection id="dev-logs" class="p-0!">
     <header class="p-6">
-      <div class="w-full text-sm text-end text-neutral-500 mb-2">
-        <NuxtLink to="#dev-logs">
-          <code>{{ codeLang.fileCase("dev-logs") }}</code>
-        </NuxtLink>
-      </div>
-      <h1 class="text-3xl font-bold mb-1.5"><span class="text-neutral-500">#</span> Dev Logs</h1>
-      <p>A curated list of projects I've worked on.</p>
+      <NuxtLink to="#dev-logs" class="inline-block text-xs text-white mb-5"> <span class="text-terminal">$</span> cat dev-logs.md </NuxtLink>
+      <h1 class="text-3xl font-bold mb-1.5 text-white">Dev Logs</h1>
+      <p class="text-neutral-300">A curated list of projects I've worked on.</p>
     </header>
     <article v-for="post in posts" class="p-6 border-t border-gridline border-dashed" :key="post.id" :id="post.id">
       <header class="w-full">
-        <hgroup class="mb-6 text-sm text-neutral-500 flex flex-row justify-between items-center">
-          <span class="font-semibold">{{ postDateFormatter.format(post.date) }}</span>
-          <NuxtLink :to="`#${post.id}`">
-            <code v-if="codeLang.id == 'md'">{{ codeLang.fileCase(`log-${post.index}`) }}</code>
-            <code v-else>{{ `logs[${post.index}]` }}</code>
-          </NuxtLink>
+        <hgroup class="mb-6 text-xs text-white flex flex-row justify-between items-center">
+          <NuxtLink :to="`#${post.id}`"> <span class="text-terminal">$</span> cat log-{{ post.index }}.md </NuxtLink>
+          <span class="text-neutral-700">{{ postDateFormatter.format(post.date) }}</span>
         </hgroup>
       </header>
 
-      <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose text-lg prose-headings:text-2xl! prose-p:text-white prose-invert mt-3" />
-      <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium text-white">
-        <NuxtLink v-for="link in post.links || []" :class="['border border-gridline px-3 py-2', link.role == 'secondary' ? 'bg-white text-black' : '']" :to="link.href" target="_blank" rel="noopener noreferrer">
-          <span>{{ link.label }}</span>
-          <span class="inline-block ml-1 size-[1em]" v-html="PhArrowSquareOutSVG"></span>
+      <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose text-lg prose-headings:text-2xl! prose-p:text-neutral-300 prose-invert mt-3" />
+      <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium">
+        <NuxtLink v-for="link in post.links || []" :class="['border px-3 py-2 transition-colors', link.role == 'secondary' ? 'border-terminal text-terminal hover:bg-terminal/10' : 'border-gridline text-neutral-500 hover:text-white hover:border-neutral-600']" :to="link.href" target="_blank" rel="noopener noreferrer">
+          {{ link.label }}
         </NuxtLink>
       </footer>
     </article>
