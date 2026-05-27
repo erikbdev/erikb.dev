@@ -4,7 +4,7 @@ const showMenuDialog = ref(false);
 const router = useRouter();
 const route = useRoute();
 
-const currentDate = computed(() => new Date().toISOString());
+const currentDate = new Date().toISOString();
 const copyrightFooter = `${new Date().getUTCFullYear()} erikb.dev`;
 
 useHead({
@@ -22,7 +22,6 @@ useHead({
     class: {
       "overflow-x-hidden": true,
       "overflow-y-hidden": showMenuDialog,
-      "mt-(--header-height)": true,
     },
   },
   link: [
@@ -52,50 +51,43 @@ function closeMenu() {
 }
 </script>
 <template>
-  <header class="fixed w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/80 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-full': showMenuDialog }">
-    <BlockSection as="nav" :divider="showMenuDialog" class="bg-transparent! h-(--header-height) flex flex-none justify-between items-center py-3! px-6! text-sm">
+  <header class="sticky w-full flex flex-col top-0 left-0 z-50" :class="{ 'bg-base/80 backdrop-blur-sm border-b border-gridline': !showMenuDialog, 'bg-base h-screen': showMenuDialog }">
+    <BlockSection :divider="false" class="py-2! bg-transparent! text-sm text-neutral-800 border-gridline border-b"> TERM xterm-256color · TTY0 · connection opened </BlockSection>
+    <BlockSection as="nav" :divider="showMenuDialog" class="sticky bg-transparent! h-(--header-height) flex flex-none justify-between items-center py-3! px-6! text-sm">
       <NuxtLink to="/" class="self-center" @click="closeMenu">
         <span class="text-white font-bold">erikb@dev:~<span class="text-terminal">$</span></span>
       </NuxtLink>
 
-      <div class="hidden sm:flex items-center gap-2 text-xs text-neutral-700 tracking-wide">
-        <span>TTY0</span>
-        <span class="text-neutral-800">·</span>
-        <span>{{ currentDate }}</span>
-      </div>
-
-      <!-- 
-      <button class="font-bold border border-gridline py-1 px-2 cursor-pointer text-neutral-500 hover:text-white hover:border-neutral-500 transition-colors" :class="showMenuDialog ? 'bg-white! text-black! border-white!' : ''" @click.stop="showMenuDialog = !showMenuDialog">
-        <span v-if="!showMenuDialog">ls</span>
+      <!-- TODO: use menu navigation -->
+      <!-- <button class="font-bold border border-gridline py-1 px-2 cursor-pointer text-neutral-300 hover:text-white hover:border-neutral-500 transition-colors" :class="showMenuDialog ? 'bg-white! text-black! border-white!' : ''" @click.stop="showMenuDialog = !showMenuDialog">
+        <span v-if="!showMenuDialog">menu {{ "\<m\>" }}</span>
         <span v-else>close {{ "\<q\>" }}</span>
-      </button> 
-      -->
+      </button>  -->
     </BlockSection>
     <template v-if="showMenuDialog">
       <BlockSection class="w-full flex-1 flex flex-col">
-        <p class="text-xs text-neutral-700 mb-6">$ ls ~/</p>
+        <p class="text-xs text-neutral-300 mb-6"><span class="text-primary">$</span> ls /</p>
         <ul class="grow">
           <li v-for="item in menuItems" class="text-[3rem] leading-none font-bold mb-2.5" :class="route.path === item.path ? 'text-terminal' : 'text-neutral-700 hover:text-white'">
-            <NuxtLink :to="item.path">
+            <NuxtLink :to="item.path" @click="closeMenu">
               <span><span class="text-neutral-800">~/</span>{{ item.name }}</span>
             </NuxtLink>
           </li>
         </ul>
       </BlockSection>
-      <BlockSection as="footer" class="flex flex-col gap-1 text-xs" :divider="false">
-        <span class="text-neutral-700">© {{ copyrightFooter }}</span>
-        <span class="text-neutral-800">TERM xterm-256color · TTY0 · connection open</span>
+      <BlockSection as="footer" class="flex flex-col gap-1 text-sm" :divider="false">
+        <span class="text-neutral-500">© {{ copyrightFooter }}</span>
       </BlockSection>
     </template>
   </header>
   <slot />
-  <BlockSection as="footer" :divider="false">
-    <div class="flex flex-col gap-1">
+  <footer>
+    <BlockSection :divider="false">
       <span class="text-sm text-neutral-500">
         <span class="size-[1em] inline-block mr-0.5 *:mt-0.5" v-html="PhCopyrightSVG"></span>
         <span> {{ copyrightFooter }}</span>
       </span>
-      <span class="text-sm text-neutral-800">connection closed.</span>
-    </div>
-  </BlockSection>
+    </BlockSection>
+    <BlockSection :divider="false" class="py-2! text-sm text-neutral-800 border-gridline border-t">connection closed.</BlockSection>
+  </footer>
 </template>

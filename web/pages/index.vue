@@ -18,10 +18,10 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (import.meta.browser) {
     emailAddress.value = "me@erikb.dev";
-    fetchActivity();
+    await fetchActivity();
   }
 });
 </script>
@@ -29,51 +29,35 @@ onMounted(() => {
   <!-- Intro -->
   <BlockSection id="user">
     <header>
-      <NuxtLink to="#user" class="inline-block text-xs text-start text-white mb-5"> <span class="text-terminal">$</span> cat profile.md </NuxtLink>
+      <NuxtLink to="#user" class="inline-block text-xs text-start text-white mb-5"> <span class="text-terminal">$</span> whoami </NuxtLink>
 
       <h1 class="text-3xl font-bold mb-1 text-white">Erik Bautista Santibanez</h1>
 
-      <div class="space-y-1.5 mb-5 text-sm">
-        <div class="flex gap-2">
-          <span class="text-neutral-600 w-[3.5ch] flex-none">ROLE</span>
-          <span class="text-neutral-700 flex-none select-none">···</span>
-          <span class="text-neutral-300">Mobile &amp; Web Developer</span>
-        </div>
-        <div class="flex gap-2">
-          <span class="text-neutral-600 w-[3.5ch] flex-none">LOC</span>
-          <span class="text-neutral-700 flex-none select-none">···</span>
-          <span class="text-neutral-400">
-            <span class="inline-block size-[1em] align-middle" v-html="PhMapPinSVG"></span>
-            {{ [residency.city, residency.state].join(", ") }}
-          </span>
-        </div>
-        <div v-if="location" class="flex gap-2">
-          <span class="text-neutral-600 w-[3.5ch] flex-none">NOW</span>
-          <span class="text-neutral-700 flex-none select-none">···</span>
-          <span class="text-white animate-pulse">
-            <span class="inline-block mr-1 size-[1em] align-middle -scale-x-100" v-html="PhNavigationArrowSVG"></span>
-            {{ [location.city || "", location.state || "", location.region || ""].filter((s) => !!s).join(", ") }}
-          </span>
-        </div>
-        <div v-if="nowPlaying" class="flex gap-2">
-          <span class="text-neutral-600 w-[3.5ch] flex-none">PLAY</span>
-          <span class="text-neutral-700 flex-none select-none">···</span>
-          <span class="text-white animate-pulse">
-            <span class="inline-block mr-1 size-[1em] align-middle" v-html="PhWaveFormSVG"></span>
-            {{ [nowPlaying.title, nowPlaying.artist || ""].join(" — ") }}
-          </span>
-        </div>
+      <div class="space-y-1.5 mb-4 text-sm text-neutral-300">
+        <p>Mobile & Web Developer</p>
+        <p>
+          <span class="inline-block size-[1em] align-middle text-white" v-html="PhMapPinSVG"></span>
+          {{ [residency.city, residency.state].join(", ") }}
+        </p>
+        <p v-if="location">
+          <span class="inline-block size-[1em] align-middle -scale-x-100 text-white animation-pulse" v-html="PhNavigationArrowSVG"></span>
+          Currently in
+          <span class="italic font-medium text-white">{{ [location.city || "", location.state || "", location.region || ""].filter((s) => !!s).join(", ") }}</span>
+        </p>
+        <p v-if="nowPlaying">
+          <span class="inline-block size-[1em] align-middle text-white animate-pulse" v-html="PhWaveFormSVG"></span>
+          Listening to
+          <span class="italic font-bold text-white">{{ [nowPlaying.title, nowPlaying.artist || ""].join(" — ") }}</span>
+        </p>
       </div>
 
       <p class="text-neutral-300 mb-4">I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
 
       <div class="flex flex-row flex-wrap gap-2 text-sm">
-        <NuxtLink :to="`mailto:${emailAddress}`" class="border border-gridline px-3 py-2 text-neutral-500 hover:bg-terminal/10 transition-colors">
-          {{ emailAddress || "email" }}
-        </NuxtLink>
-        <NuxtLink external to="/ebs-resume.pdf" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/resume.pdf </NuxtLink>
-        <NuxtLink external to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/github </NuxtLink>
-        <NuxtLink external to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors"> ~/linkedin </NuxtLink>
+        <NuxtLink external :to="`mailto:${emailAddress}`" class="border border-gridline px-3 py-2 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"> /{{ emailAddress || "email" }} </NuxtLink>
+        <NuxtLink external target="blank" to="/ebs-resume.pdf" class="border border-gridline px-3 py-2 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"> /resume.pdf </NuxtLink>
+        <NuxtLink external target="blank" to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"> /github </NuxtLink>
+        <NuxtLink external target="blank" to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"> /linkedin </NuxtLink>
       </div>
     </header>
   </BlockSection>
@@ -81,7 +65,7 @@ onMounted(() => {
   <!-- Dev Logs -->
   <BlockSection id="dev-logs" class="p-0!">
     <header class="p-6">
-      <NuxtLink to="#dev-logs" class="inline-block text-xs text-white mb-5"> <span class="text-terminal">$</span> cat dev-logs.md </NuxtLink>
+      <NuxtLink to="#dev-logs" class="inline-block text-xs text-white mb-5"> <span class="text-terminal">$</span> ls -l /dev-logs/ </NuxtLink>
       <h1 class="text-3xl font-bold mb-1.5 text-white">Dev Logs</h1>
       <p class="text-neutral-300">A curated list of projects I've worked on.</p>
     </header>
@@ -95,7 +79,7 @@ onMounted(() => {
 
       <MDCRenderer tag="section" :body="post.body" class="w-full max-w-none prose prose-sm prose-headings:text-2xl prose-p:text-neutral-300 prose-invert mt-3" />
       <footer v-if="!!post.links?.length" class="mt-6 flex flex-row flex-wrap gap-2 text-sm font-medium">
-        <NuxtLink v-for="link in post.links || []" :class="['border px-3 py-2 transition-colors', link.role == 'secondary' ? 'border-terminal text-terminal hover:bg-terminal/10' : 'border-gridline text-neutral-500 hover:text-white hover:border-neutral-600']" :to="link.href" target="_blank" rel="noopener noreferrer">
+        <NuxtLink v-for="link in post.links || []" class="border px-3 py-2 transition-colors border-gridline text-neutral-300 hover:text-white hover:border-neutral-600" :to="link.href" :target="link.href.startsWith('/') ? undefined : 'blank'" rel="noopener noreferrer">
           {{ link.label }}
         </NuxtLink>
       </footer>
