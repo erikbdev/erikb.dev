@@ -3,12 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:web": "nuxt build --prerender",
     "dev:web": "nuxt dev",
+    "build:web": "nuxt build --prerender",
     "generate:web": "nuxt generate",
     "preview:web": "nuxt preview",
     "dev:server": "swift run SiteServer",
     "build:server": "swift build --product SiteServer",
+    "dev:ssh-server": "swift run SiteSSHServer",
+    "build:ssh-server": "swift build --product SiteSSHServer",
     "dev:resume": "echo 'no-op'",
     "build:resume": "echo 'no-op'",
     "postinstall": "nuxt prepare"

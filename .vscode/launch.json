@@ -5,6 +5,26 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "swift",
+      "request": "launch",
+      "name": "Launch SiteSSHServer",
+      "program": "${workspaceRoot}/.build/debug/SiteSSHServer",
+      "args": [],
+      "env": {},
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "swift: Build Debug SiteSSHServer"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "name": "Launch SiteServer",
+      "program": "${workspaceRoot}/.build/debug/SiteServer",
+      "args": [],
+      "env": {},
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "swift: Build Debug SiteServer"
+    },
+    {
       "type": "node-terminal",
       "name": "Run Script: dev:web",
       "request": "launch",
