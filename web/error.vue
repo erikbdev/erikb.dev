@@ -14,13 +14,13 @@ const handleError = () => clearError({ redirect: "/" });
   <NuxtLayout>
     <BlockSection id="error">
       <header>
-        <p class="inline-block text-xs text-white mb-5"><span class="text-terminal">$</span> cat error.md</p>
+        <p class="text-sm inline-block text-neutral-50 mb-5"><span class="text-terminal">$</span> cat error.md</p>
       </header>
 
       <section>
         <h1 class="text-3xl font-bold mb-1 text-white">{{ statusCode }}</h1>
         <p class="text-neutral-300 mb-4">{{ statusMessage }}</p>
-        <button @click="handleError" class="text-sm border border-gridline px-3 py-2 text-neutral-500 hover:text-white hover:border-neutral-600 transition-colors cursor-pointer">~/home</button>
+        <button @click="handleError" class="border border-gridline px-3 py-2 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors cursor-pointer">~/home</button>
       </section>
     </BlockSection>
   </NuxtLayout>

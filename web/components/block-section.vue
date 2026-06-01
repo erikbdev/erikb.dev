@@ -35,13 +35,13 @@ export default {
       fill === true || fill === ''
         ? ''
         : [
-            'md:border-x md:max-w-2xl mx-auto',
+            'md:border-x md:max-w-4xl mx-auto',
             {
-              'px-6 py-6': fill !== 'inner',
+              'p-8': fill !== 'inner',
             },
           ],
       // bottom divider
-      divider ? 'mb-4 after:absolute after:h-4 after:w-screen after:md:max-w-2xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-inherit big-divider-bottom' : '',
+      divider ? 'mb-4 after:absolute after:h-4 after:w-screen after:md:max-w-4xl after:-bottom-4 after:left-1/2 after:-translate-x-1/2 after:border-t after:border-inherit big-divider-bottom' : '',
     ]">
     <slot />
   </component>
