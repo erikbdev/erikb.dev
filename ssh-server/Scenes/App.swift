@@ -137,9 +137,11 @@ struct ScrollTab: View {
       }
       Divider()
       ScrollView {
-        ForEach(1...40, id: \.self) { i in
-          Button(selected == i ? "> Item \(i) <" : "  Item \(i)  ") {
-            selected = selected == i ? nil : i
+        VStack {
+          ForEach(1...40, id: \.self) { i in
+            Button(selected == i ? "> Item \(i) <" : "  Item \(i)  ") {
+              selected = selected == i ? nil : i
+            }
           }
         }
       }
