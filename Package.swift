@@ -27,9 +27,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
     .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
 
-    // TODO: use git version
-    .package(url: "https://github.com/erikbdev/swift-tau-tui.git", branch: "main")
-    // .package(path: "./dependencies/swift-tau-tui"),
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", from: "0.0.9")
   ],
   targets: [
     /// SiteServer
@@ -58,7 +56,8 @@ let package = Package(
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "Logging", package: "swift-log"),
-        .product(name: "TauTUI", package: "swift-tau-tui"),
+        .product(name: "SwiftTUI", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"]),
+        .product(name: "SwiftTUITerminal", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"])
       ],
       path: "ssh-server"
     ),

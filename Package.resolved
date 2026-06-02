@@ -1,5 +1,5 @@
 {
-  "originHash" : "4c66ec3500f847e5c11060dc49b7a2a273dd5e810ac6bf22c46ff71fca845d11",
+  "originHash" : "e031ce1ed8725df5e00711d191c73067db4500d76908313ed6434b9ef42fb7c5",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "dcccb979a2183b8df3334237e3dc1ae2b4116a86",
         "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "flyingfox",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swhitty/FlyingFox.git",
+      "state" : {
+        "revision" : "de38230104cf63ef4843cb569ba11c13f8165685",
+        "version" : "0.26.2"
       }
     },
     {
@@ -114,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-cmark.git",
       "state" : {
-        "revision" : "5d9bdaa4228b381639fff09403e39a04926e2dbe",
-        "version" : "0.7.1"
+        "revision" : "924936d0427cb25a61169739a7660230bffa6ea6",
+        "version" : "0.8.0"
       }
     },
     {
@@ -173,15 +182,6 @@
       }
     },
     {
-      "identity" : "swift-displaywidth",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ainame/swift-displaywidth.git",
-      "state" : {
-        "revision" : "5493276f6c91fd09d348e6cea70d66346fc7b610",
-        "version" : "0.1.0"
-      }
-    },
-    {
       "identity" : "swift-distributed-tracing",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-distributed-tracing.git",
@@ -220,10 +220,10 @@
     {
       "identity" : "swift-markdown",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-markdown.git",
+      "location" : "https://github.com/swiftlang/swift-markdown.git",
       "state" : {
-        "revision" : "7d9a5ce307528578dfa777d505496bd5f544ad94",
-        "version" : "0.7.3"
+        "revision" : "3c6f9523da3a1ec2fd829673e472d95b8097a3b8",
+        "version" : "0.8.0"
       }
     },
     {
@@ -361,12 +361,12 @@
       }
     },
     {
-      "identity" : "swift-tau-tui",
+      "identity" : "swift-tui",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/erikbdev/swift-tau-tui.git",
+      "location" : "https://github.com/SwiftTUI/swift-tui.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "d820f6dd253580b57441a8ee393f6421c9e1f443"
+        "revision" : "23eb0eb9a0f0f4f9d46dde4b2621983eb09d5cb3",
+        "version" : "0.0.9"
       }
     },
     {
@@ -383,6 +383,15 @@
       "location" : "https://github.com/erikbdev/swift-web.git",
       "state" : {
         "revision" : "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"
+      }
+    },
+    {
+      "identity" : "swiftterm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
+      "state" : {
+        "revision" : "8e7a1e154f470e19c709a00a8768df348ba5fc43",
+        "version" : "1.13.0"
       }
     },
     {
