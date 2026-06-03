@@ -1,6 +1,3 @@
-// SwiftTUITerminal re-exports SwiftTUIRuntime (App, WindowGroup, Scene)
-// and SwiftTUIViews (View, Text, VStack, …) without pulling in the
-// argument-parser-backed SwiftTUI.App overlay.
 import SwiftTUITerminal
 
 @MainActor
@@ -11,7 +8,7 @@ struct PortfolioApp: App {
     WindowGroup {
       DemoView()
     }
-    .exitOnKey(.character("q"))
+    .exitOnKey(.character("q"), modifiers: .ctrl)
   }
 }
 
@@ -26,10 +23,10 @@ struct DemoView: View {
 
   var body: some View {
     TabView(selection: $tab) {
-      Tab("Counter", value: DemoTab.counter) { CounterTab() }
-      Tab("Input",   value: DemoTab.input)   { InputTab() }
-      Tab("Scroll",  value: DemoTab.scroll)  { ScrollTab() }
-      Tab("Settings",value: DemoTab.settings){ SettingsTab() }
+      Tab("Counter", value: DemoTab.counter, content: CounterTab.init)
+      Tab("Input",   value: DemoTab.input, content: InputTab.init)
+      Tab("Scroll",  value: DemoTab.scroll, content: ScrollTab.init)
+      Tab("Settings",value: DemoTab.settings, content: SettingsTab.init)
     }
   }
 }

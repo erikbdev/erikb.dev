@@ -69,6 +69,15 @@ extension NIOSSHHandler {
   enum SSHChannelInboundData {
     case event(RequestEvent)
     case data(SSHChannelData)
+
+    var wantReply: Bool {
+      switch self {
+      case .event(let e):
+        return e.wantReply
+      case .data:
+        return false
+      }
+    }
   }
 
   typealias SSHChannelOutboundData = SSHChannelData
@@ -86,6 +95,33 @@ extension NIOSSHHandler {
     case signal(SSHChannelRequestEvent.SignalRequest)
     case channelSuccess
     case channelFailure
+
+    var wantReply: Bool {
+      switch self {
+      case .pseudoTerminal(let e):
+        return e.wantReply
+      case .channelFailure, .channelSuccess:
+        return false
+      case .environment(let e):
+        return e.wantReply
+      case .shell(let e):
+        return e.wantReply
+      case .exec(let e):
+        return e.wantReply
+      case .exitStatus(let e):
+        return e.wantReply
+      case .exitSignal(let e):
+        return e.wantReply
+      case .subsystem(let e):
+        return e.wantReply
+      case .windowChange(let e):
+        return e.wantReply
+      case .localFlowControl(let e):
+        return e.wantReply
+      case .signal(let e):
+        return e.wantReply
+      }
+    }
 
     fileprivate init?(_ value: Any) {
       switch value {
@@ -114,6 +150,7 @@ extension NIOSSHHandler {
       case _ where value is ChannelFailureEvent:
         self = .channelFailure
       default:
+        logger.trace("Unhandled request event: \(value)")
         return nil
       }
     }
@@ -122,7 +159,7 @@ extension NIOSSHHandler {
 
 private final class SSHMergeEventAndDataHandler: ChannelInboundHandler {
   typealias InboundIn = SSHChannelData
-  typealias InboundOut = NIOSSHHandler.SSHChannelInboundData 
+  typealias InboundOut = NIOSSHHandler.SSHChannelInboundData
 
   func userInboundEventTriggered(context: ChannelHandlerContext, event: Any) {
     if let event = NIOSSHHandler.RequestEvent(event) {

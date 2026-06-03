@@ -2,14 +2,11 @@ import Foundation
 import Logging
 import NIO
 import NIOSSH
+import SwiftTUITerminal
 @_spi(Runners) import SwiftTUIRuntime
+import Synchronization
 
-enum ClientSession {
-  typealias AsyncChannel = NIOAsyncChannel<
-    NIOSSHHandler.SSHChannelInboundData,
-    NIOSSHHandler.SSHChannelOutboundData
-  >
-
+final class ClientSession: Sendable {
   struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
     var code: Code
     var caught: Swift.Error?
@@ -27,18 +24,151 @@ enum ClientSession {
 
     enum Code: Hashable, Sendable, LocalizedError {
       case missingPseudoTerminalRequest
-      case connectionClosed
+      case connectionClosed(gracefully: Bool = false)
       case appInitializationFailed
       case unknown
 
       var errorDescription: String {
         switch self {
         case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
-        case .connectionClosed: "The connection unexpectedly closed."
+        case .connectionClosed(let gracefully): gracefully ? "" : "The connection unexpectedly closed."
         case .appInitializationFailed, .unknown: "An unknown error occurred."
         }
       }
     }
+  }
+
+  typealias AsyncChannel = NIOAsyncChannel<
+    NIOSSHHandler.SSHChannelInboundData,
+    NIOSSHHandler.SSHChannelOutboundData
+  >
+
+  // Bridges the SwiftTUI PresentationSurface protocol to SSH byte output.
+  // Thread-safe: Mutex guards mutable state; AsyncStream.Continuation is Sendable.
+  private final class SSHSurface: PresentationSurface, @unchecked Sendable {
+    private struct State: Sendable {
+      var surfaceSize: CellSize
+      var capabilityProfile: TerminalCapabilityProfile
+      var environment: [String: String] = [:]
+    }
+
+    private let state: Mutex<State>
+    private let continuation: AsyncStream<[UInt8]>.Continuation
+
+    init(continuation: AsyncStream<[UInt8]>.Continuation) {
+      self.continuation = continuation
+      state = Mutex(
+        State(
+          surfaceSize: CellSize(width: 80, height: 24),
+          capabilityProfile: .trueColor
+        )
+      )
+    }
+
+    var surfaceSize: CellSize { state.withLock(\.surfaceSize) }
+    var capabilityProfile: TerminalCapabilityProfile { state.withLock(\.capabilityProfile) }
+    var appearance: TerminalAppearance { .fallback }
+
+    func updateSurfaceSize(_ size: CellSize) {
+      state.withLock { $0.surfaceSize = size }
+    }
+
+    func applyEnvironment(name: String, value: String) {
+      state.withLock { state in
+        state.environment[name] = value
+        state.capabilityProfile = .detect(environment: state.environment, isTTY: true)
+      }
+    }
+
+    // MARK: TerminalCommandPresentationSurface
+
+    func enableRawMode() throws {
+      // enter alternate screen, clear screen hide cursor
+      try write("\u{001B}[?1049h\u{001B}[2J\u{001B}[?25l")
+    }
+
+    func disableRawMode() throws {
+      // show raw cursor, reset styles, exit alternative scren
+      try write("\u{1b}[?25h\u{1b}[?1049l")
+    }
+
+    func write(_ output: String) throws {
+      continuation.yield(Array(output.utf8))
+    }
+
+    func clearScreen() throws {
+      try write("\u{1b}[2J")
+    }
+
+    func moveCursor(to point: CellPoint) throws {
+      try write("\u{1b}[\(point.y + 1);\(point.x + 1)H")
+    }
+  }
+
+  nonisolated let outputStream: AsyncStream<[UInt8]>
+  private nonisolated let outputContinuation: AsyncStream<[UInt8]>.Continuation
+  private nonisolated let channel: AsyncChannel
+  private nonisolated let logger: Logger
+  private nonisolated let inputReader: SSHInputReader
+  private nonisolated let signalReader: InProcessSignalReader
+  private nonisolated let surface: SSHSurface
+
+  private init(channel: AsyncChannel, logger: Logger) throws {
+    let (outputStream, outputContinuation) = AsyncStream<[UInt8]>.makeStream()
+    self.outputStream = outputStream
+    self.outputContinuation = outputContinuation
+    self.channel = channel
+    self.logger = logger
+    inputReader = SSHInputReader()
+    signalReader = InProcessSignalReader()
+    surface = SSHSurface(continuation: outputContinuation)
+  }
+
+  @MainActor
+  private func start(pty: String, cellSize: CellSize) async throws {
+    defer {
+      inputReader.finish()
+      signalReader.finish()
+      outputContinuation.finish()
+      channel.channel.close(mode: .input, promise: nil)
+    }
+
+    surface.updateSurfaceSize(cellSize)
+
+    guard let selection = collectWindowSceneSelections(from: PortfolioApp().body).first else {
+      throw Error(.appInitializationFailed)
+    }
+
+    let resources = SceneSessionResources(
+      presentationSurface: surface,
+      terminalInputReader: inputReader,
+      signalReader: signalReader
+    )
+
+    _ = try await selection.run(
+      sessionName: String(reflecting: PortfolioApp.self),
+      resources: resources,
+      stateContainer: StateContainer(
+        initialState: SceneSessionState(),
+        invalidationIdentities: [selection.rootIdentity]
+      ),
+      focusTracker: FocusTracker(
+        invalidationIdentities: [selection.rootIdentity]
+      )
+    )
+  }
+
+  private func sendInput(_ bytes: [UInt8]) {
+    inputReader.receive(bytes)
+  }
+
+  private func addEnvironment(name: String, value: String) {
+    surface.applyEnvironment(name: name, value: value)
+  }
+
+  private func onResize(cellSize: CellSize) {
+    surface.updateSurfaceSize(cellSize)
+    signalReader.send("SIGWINCH")
   }
 
   static func serve(_ channel: AsyncChannel) async {
@@ -48,97 +178,72 @@ enum ClientSession {
       return logger
     }()
 
+    defer { logger.trace("Connection closed") }
+
     do {
       try await channel.executeThenClose { inbound, outbound in
+        logger.debug("New connection")
         defer { logger.trace("Closing connection") }
         do {
-          try await withThrowingTaskGroup(of: Void.self) { group in
+          let session = try ClientSession(channel: channel, logger: logger)
+          try await withThrowingDiscardingTaskGroup { group in
             defer { group.cancelAll() }
 
             var iterator = inbound.makeAsyncIterator()
 
-            // SSH clients must request a PTY before the TUI can start.
-            guard case .event(.pseudoTerminal(let pty)) = try await iterator.next() else {
-              throw Error(.missingPseudoTerminalRequest)
-            }
+            while let next = try await iterator.next() {
+              switch next {
+              case .data(let data):
+                guard case .byteBuffer(let data) = data.data else { continue }
+                session.sendInput(Array(buffer: data))
 
-            logger.trace(
-              "PTY request",
-              metadata: [
-                "term": "\(pty.term)",
-                "cols": "\(pty.terminalCharacterWidth)",
-                "rows": "\(pty.terminalRowHeight)",
-              ]
-            )
+              case .event(.environment(let env)):
+                session.addEnvironment(name: env.name, value: env.value)
 
-            let surface = SSHPresentationSurface(
-              columns: pty.terminalCharacterWidth,
-              rows: pty.terminalRowHeight,
-              environment: ["TERM": pty.term]
-            )
-            let inputReader = SSHInputReader()
-            let signalReader = InProcessSignalReader()
+              case .event(.pseudoTerminal(let pty)):
+                logger.trace(
+                  "PTY request",
+                  metadata: [
+                    "term": "\(pty.term)",
+                    "cols": "\(pty.terminalCharacterWidth)",
+                    "rows": "\(pty.terminalRowHeight)",
+                  ]
+                )
 
-            defer {
-              surface.finish()
-              inputReader.finish()
-              signalReader.finish()
-            }
-
-            // Forward rendered ANSI frames to the SSH channel.
-            group.addTask {
-              for await frame in surface.outputStream {
-                try await outbound.write(.init(type: .channel, data: .byteBuffer(frame)))
-              }
-            }
-
-            // Run App
-            group.addTask {
-              try await run(
-                app: PortfolioApp(),
-                surface: surface,
-                inputReader: inputReader,
-                signalReader: signalReader,
-                term: pty.term
-              )
-            }
-
-            // Forward SSH input bytes to SwiftTUI and handle resize events.
-            group.addTask {
-              while let next = try await iterator.next() {
-                switch next {
-                case .data(let data):
-                  guard case .byteBuffer(let buf) = data.data, data.type == .channel else {
-                    continue
-                  }
-                  inputReader.receive(Array(buf.readableBytesView))
-
-                case .event(.windowChange(let wc)):
-                  surface.resize(
-                    columns: wc.terminalCharacterWidth,
-                    rows: wc.terminalRowHeight
+                group.addTask {
+                  try await session.start(
+                    pty: pty.term,
+                    cellSize: CellSize(width: pty.terminalCharacterWidth, height: pty.terminalRowHeight)
                   )
-                  signalReader.send("SIGWINCH")
-                  break
-
-                case .event(.environment(let env)):
-                  surface.addEnvironment(name: env.name, value: env.value)
-                  break
-
-                default:
-                  break
                 }
+
+                group.addTask {
+                  for await bytes in session.outputStream {
+                    try await outbound.write(
+                      .init(
+                        type: .channel,
+                        data: .byteBuffer(channel.channel.allocator.buffer(bytes: bytes))
+                      )
+                    )
+                  }
+                }
+
+              case .event(.windowChange(let wc)):
+                session.onResize(cellSize: CellSize(width: wc.terminalCharacterWidth, height: wc.terminalRowHeight))
+
+              case .event(.channelFailure):
+                throw Error(.unknown)
+
+              default:
+                continue
+              }
+
+              if next.wantReply {
+                let reply = channel.channel.eventLoop.makePromise(of: Void.self)
+                channel.channel.triggerUserOutboundEvent(ChannelSuccessEvent(), promise: reply)
+                try await reply.futureResult.get()
               }
             }
-
-            // Treat remote channel closure as a structured exit.
-            group.addTask {
-              try await channel.channel.closeFuture.cancellableGet()
-              throw Error(.connectionClosed)
-            }
-
-            // Block until the first task completes or throws.
-            try await group.next()
           }
         } catch {
           let error = error as? Error ?? Error(.unknown, caught: error)
@@ -156,35 +261,5 @@ enum ClientSession {
     } catch {
       logger.debug("\(error)")
     }
-  }
-
-  @MainActor
-  private static func run<A: App>(
-    app: A,
-    surface: SSHPresentationSurface,
-    inputReader: SSHInputReader,
-    signalReader: InProcessSignalReader,
-    term: String
-  ) async throws {
-    let selections = collectWindowSceneSelections(from: app.body)
-    guard let selection = selections.first else {
-      throw Error(.appInitializationFailed)
-    }
-    _ = try await selection.run(
-      sessionName: String(reflecting: PortfolioApp.self),
-      resources: SceneSessionResources(
-        presentationSurface: surface,
-        terminalInputReader: inputReader,
-        signalReader: signalReader,
-        environmentValues: ["TERM": term]
-      ),
-      stateContainer: StateContainer(
-        initialState: SceneSessionState(),
-        invalidationIdentities: [selection.rootIdentity]
-      ),
-      focusTracker: FocusTracker(
-        invalidationIdentities: [selection.rootIdentity]
-      )
-    )
   }
 }
