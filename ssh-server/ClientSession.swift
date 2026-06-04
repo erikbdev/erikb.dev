@@ -2,168 +2,85 @@ import Foundation
 import Logging
 import NIO
 import NIOSSH
-import SwiftTUITerminal
 @_spi(Runners) import SwiftTUIRuntime
+import SwiftTUITerminal
 import Synchronization
 
 final class ClientSession: Sendable {
-  struct Error: Swift.Error, CustomStringConvertible, LocalizedError {
-    var code: Code
-    var caught: Swift.Error?
-
-    init(_ code: Code, caught error: Swift.Error? = nil) {
-      self.code = code
-      self.caught = error
-    }
-
-    var description: String {
-      "\(String(reflecting: code))\(caught.map { " Error: \($0)" } ?? "")"
-    }
-
-    var errorDescription: String { code.localizedDescription }
-
-    enum Code: Hashable, Sendable, LocalizedError {
-      case missingPseudoTerminalRequest
-      case connectionClosed(gracefully: Bool = false)
-      case appInitializationFailed
-      case unknown
-
-      var errorDescription: String {
-        switch self {
-        case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
-        case .connectionClosed(let gracefully): gracefully ? "" : "The connection unexpectedly closed."
-        case .appInitializationFailed, .unknown: "An unknown error occurred."
-        }
-      }
-    }
-  }
-
   typealias AsyncChannel = NIOAsyncChannel<
     NIOSSHHandler.SSHChannelInboundData,
     NIOSSHHandler.SSHChannelOutboundData
   >
 
-  // Bridges the SwiftTUI PresentationSurface protocol to SSH byte output.
-  // Thread-safe: Mutex guards mutable state; AsyncStream.Continuation is Sendable.
-  private final class SSHSurface: PresentationSurface, @unchecked Sendable {
-    private struct State: Sendable {
-      var surfaceSize: CellSize
-      var capabilityProfile: TerminalCapabilityProfile
-      var environment: [String: String] = [:]
-    }
+  private let outputStream: AsyncStream<[UInt8]>
+  private let outputContinuation: AsyncStream<[UInt8]>.Continuation
+  private let channel: AsyncChannel
+  private let logger: Logger
+  private let inputReader: SSHInputReader
+  private let signalReader: InProcessSignalReader
+  private let surface: SSHPresentationSurface
 
-    private let state: Mutex<State>
-    private let continuation: AsyncStream<[UInt8]>.Continuation
-
-    init(continuation: AsyncStream<[UInt8]>.Continuation) {
-      self.continuation = continuation
-      state = Mutex(
-        State(
-          surfaceSize: CellSize(width: 80, height: 24),
-          capabilityProfile: .trueColor
-        )
-      )
-    }
-
-    var surfaceSize: CellSize { state.withLock(\.surfaceSize) }
-    var capabilityProfile: TerminalCapabilityProfile { state.withLock(\.capabilityProfile) }
-    var appearance: TerminalAppearance { .fallback }
-
-    func updateSurfaceSize(_ size: CellSize) {
-      state.withLock { $0.surfaceSize = size }
-    }
-
-    func applyEnvironment(name: String, value: String) {
-      state.withLock { state in
-        state.environment[name] = value
-        state.capabilityProfile = .detect(environment: state.environment, isTTY: true)
-      }
-    }
-
-    // MARK: TerminalCommandPresentationSurface
-
-    func enableRawMode() throws {
-      // enter alternate screen, clear screen hide cursor
-      try write("\u{001B}[?1049h\u{001B}[2J\u{001B}[?25l")
-    }
-
-    func disableRawMode() throws {
-      // show raw cursor, reset styles, exit alternative scren
-      try write("\u{1b}[?25h\u{1b}[?1049l")
-    }
-
-    func write(_ output: String) throws {
-      continuation.yield(Array(output.utf8))
-    }
-
-    func clearScreen() throws {
-      try write("\u{1b}[2J")
-    }
-
-    func moveCursor(to point: CellPoint) throws {
-      try write("\u{1b}[\(point.y + 1);\(point.x + 1)H")
-    }
-  }
-
-  nonisolated let outputStream: AsyncStream<[UInt8]>
-  private nonisolated let outputContinuation: AsyncStream<[UInt8]>.Continuation
-  private nonisolated let channel: AsyncChannel
-  private nonisolated let logger: Logger
-  private nonisolated let inputReader: SSHInputReader
-  private nonisolated let signalReader: InProcessSignalReader
-  private nonisolated let surface: SSHSurface
-
-  private init(channel: AsyncChannel, logger: Logger) throws {
+  private init(channel: AsyncChannel, logger: Logger) {
     let (outputStream, outputContinuation) = AsyncStream<[UInt8]>.makeStream()
     self.outputStream = outputStream
     self.outputContinuation = outputContinuation
     self.channel = channel
     self.logger = logger
-    inputReader = SSHInputReader()
-    signalReader = InProcessSignalReader()
-    surface = SSHSurface(continuation: outputContinuation)
+    self.inputReader = SSHInputReader()
+    self.signalReader = InProcessSignalReader()
+    self.surface = SSHPresentationSurface(continuation: outputContinuation)
   }
 
   @MainActor
   private func start(pty: String, cellSize: CellSize) async throws {
-    defer {
-      inputReader.finish()
-      signalReader.finish()
-      outputContinuation.finish()
-      channel.channel.close(mode: .input, promise: nil)
-    }
-
-    surface.updateSurfaceSize(cellSize)
-
-    guard let selection = collectWindowSceneSelections(from: PortfolioApp().body).first else {
+    guard let primaryScene = collectWindowSceneSelections(from: PortfolioApp().body).first else {
       throw Error(.appInitializationFailed)
     }
 
     let resources = SceneSessionResources(
       presentationSurface: surface,
       terminalInputReader: inputReader,
-      signalReader: signalReader
+      signalReader: signalReader,
+      environmentValues: surface.environmentValues
     )
 
-    _ = try await selection.run(
+    surface.updateSurfaceSize(cellSize)
+
+    surface.enableRawMode()
+    defer { finish() }
+
+    _ = try await primaryScene.run(
       sessionName: String(reflecting: PortfolioApp.self),
       resources: resources,
       stateContainer: StateContainer(
         initialState: SceneSessionState(),
-        invalidationIdentities: [selection.rootIdentity]
+        invalidationIdentities: [primaryScene.rootIdentity]
       ),
       focusTracker: FocusTracker(
-        invalidationIdentities: [selection.rootIdentity]
+        invalidationIdentities: [primaryScene.rootIdentity]
       )
     )
   }
+
+  // Closes input/signal readers and the output stream. Does NOT write
+  // terminal exit sequences — those are sent directly to outbound by
+  // serve() so they can't be dropped by stream cancellation.
+  private func finish() {
+    inputReader.finish()
+    signalReader.finish()
+    outputContinuation.finish()
+  }
+
+  // The combined terminal-reset sequence, sent directly to outbound
+  // by the output writer (on clean exit) or by the error handler.
+  var exitSequence: String { surface.exitSequence }
 
   private func sendInput(_ bytes: [UInt8]) {
     inputReader.receive(bytes)
   }
 
-  private func addEnvironment(name: String, value: String) {
-    surface.applyEnvironment(name: name, value: value)
+  private func updateEnvironment(name: String, value: String) {
+    surface.updateEnvironment(name: name, value: value)
   }
 
   private func onResize(cellSize: CellSize) {
@@ -184,11 +101,16 @@ final class ClientSession: Sendable {
       try await channel.executeThenClose { inbound, outbound in
         logger.debug("New connection")
         defer { logger.trace("Closing connection") }
+
+        // Create the session before the do-catch so it's reachable in the
+        // catch block where we need to send the terminal exit sequence.
+        let session = ClientSession(channel: channel, logger: logger)
+
         do {
-          let session = try ClientSession(channel: channel, logger: logger)
           try await withThrowingDiscardingTaskGroup { group in
             defer { group.cancelAll() }
 
+            var hasReceivedPty = false
             var iterator = inbound.makeAsyncIterator()
 
             while let next = try await iterator.next() {
@@ -198,9 +120,10 @@ final class ClientSession: Sendable {
                 session.sendInput(Array(buffer: data))
 
               case .event(.environment(let env)):
-                session.addEnvironment(name: env.name, value: env.value)
+                session.updateEnvironment(name: env.name, value: env.value)
 
               case .event(.pseudoTerminal(let pty)):
+                hasReceivedPty = true
                 logger.trace(
                   "PTY request",
                   metadata: [
@@ -213,11 +136,15 @@ final class ClientSession: Sendable {
                 group.addTask {
                   try await session.start(
                     pty: pty.term,
-                    cellSize: CellSize(width: pty.terminalCharacterWidth, height: pty.terminalRowHeight)
+                    cellSize: CellSize(
+                      width: pty.terminalCharacterWidth,
+                      height: pty.terminalRowHeight
+                    )
                   )
                 }
 
                 group.addTask {
+                  // Drain all app output bytes first.
                   for await bytes in session.outputStream {
                     try await outbound.write(
                       .init(
@@ -226,15 +153,36 @@ final class ClientSession: Sendable {
                       )
                     )
                   }
+                  // Stream is fully drained. Send the terminal exit sequence
+                  // directly so it cannot be lost to task cancellation, then
+                  // close the channel so the inbound iterator exits cleanly.
+                  try await outbound.write(
+                    .init(
+                      type: .channel,
+                      data: .byteBuffer(channel.channel.allocator.buffer(string: session.exitSequence))
+                    )
+                  )
+                  channel.channel.close(promise: nil)
                 }
 
               case .event(.windowChange(let wc)):
-                session.onResize(cellSize: CellSize(width: wc.terminalCharacterWidth, height: wc.terminalRowHeight))
+                session.onResize(
+                  cellSize: CellSize(
+                    width: wc.terminalCharacterWidth,
+                    height: wc.terminalRowHeight
+                  )
+                )
 
               case .event(.channelFailure):
                 throw Error(.unknown)
 
+              case .event(.exec), .event(.shell):
+                if !hasReceivedPty {
+                  throw Error(.missingPseudoTerminalRequest)
+                }
+
               default:
+                logger.trace("Unhandled event in serve \(next)")
                 continue
               }
 
@@ -246,20 +194,227 @@ final class ClientSession: Sendable {
             }
           }
         } catch {
+          // The output writer was cancelled before it could drain and send the
+          // exit sequence. Send it directly here so the client exits alternate
+          // screen before seeing the error message.
           let error = error as? Error ?? Error(.unknown, caught: error)
           if channel.channel.isActive, channel.channel.isWritable {
-            try await outbound.write(
-              .init(
-                type: .channel,
-                data: .byteBuffer(channel.channel.allocator.buffer(string: error.errorDescription))
+            if !error.errorDescription.isEmpty {
+              try await outbound.write(
+                .init(
+                  type: .channel,
+                  data: .byteBuffer(channel.channel.allocator.buffer(string: error.errorDescription))
+                )
               )
-            )
+            }
           }
           throw error
         }
       }
     } catch {
       logger.debug("\(error)")
+    }
+  }
+}
+
+// MARK: ClientSession + Error
+
+extension ClientSession {
+  struct Error: Swift.Error, CustomStringConvertible {
+    var code: Code
+    var caught: Swift.Error?
+
+    init(_ code: Code, caught error: Swift.Error? = nil) {
+      self.code = code
+      self.caught = error
+    }
+
+    var description: String {
+      "\(String(reflecting: code))\(caught.map { " Error: \($0)" } ?? "")"
+    }
+
+    var errorDescription: String { code.errorDescription }
+
+    enum Code: Hashable, Sendable, LocalizedError {
+      case missingPseudoTerminalRequest
+      case connectionClosed(gracefully: Bool = false)
+      case appInitializationFailed
+      case unknown
+
+      var errorDescription: String {
+        switch self {
+        case .missingPseudoTerminalRequest: "A pseudo terminal is required to access this application."
+        case .connectionClosed(let gracefully): gracefully ? "" : "The connection unexpectedly closed."
+        case .appInitializationFailed, .unknown: "An unknown error occurred."
+        }
+      }
+    }
+  }
+}
+
+// MARK: - SSHPresentationSurface
+
+/// Bridges the SwiftTUI PresentationSurface protocol to SSH byte output.
+private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, RasterPresentationSurface, Sendable {
+  private struct State: Sendable {
+    var surfaceSize: CellSize
+    var capabilityProfile: TerminalCapabilityProfile
+    var environmentValues: [String: String] = [:]
+    var lastSurface: RasterSurface?
+  }
+
+  private let state: Mutex<State>
+  private let continuation: AsyncStream<[UInt8]>.Continuation
+
+  init(continuation: AsyncStream<[UInt8]>.Continuation) {
+    self.continuation = continuation
+    state = Mutex(
+      State(
+        surfaceSize: CellSize(width: 80, height: 24),
+        capabilityProfile: .trueColor
+      )
+    )
+  }
+
+  var surfaceSize: CellSize { state.withLock(\.surfaceSize) }
+  var capabilityProfile: TerminalCapabilityProfile { state.withLock(\.capabilityProfile) }
+  var appearance: TerminalAppearance { .fallback }
+  var environmentValues: [String: String] { state.withLock(\.environmentValues) }
+
+  func updateSurfaceSize(_ size: CellSize) {
+    state.withLock { $0.surfaceSize = size }
+  }
+
+  func updateEnvironment(name: String, value: String) {
+    state.withLock { state in
+      state.environmentValues[name] = value
+      state.capabilityProfile = .detect(environment: state.environmentValues, isTTY: true)
+    }
+  }
+
+  // MARK: Terminal setup / teardown
+
+  func enableRawMode() {
+    // Combine into one yield so it arrives atomically in the output stream.
+    let setup =
+      TerminalEscapeSequences.enterAlternateScreen
+      + TerminalEscapeSequences.clearScreen
+      + TerminalEscapeSequences.cursor(to: .zero)
+      + TerminalEscapeSequences.hideCursor
+    continuation.yield(Array(setup.utf8))
+    state.withLock { $0.lastSurface = nil }
+  }
+
+  // The terminal reset sequence sent directly to outbound (not through the
+  // async stream) so it cannot be dropped if the stream is cancelled.
+  var exitSequence: String {
+    TerminalEscapeSequences.clearScreen
+      + TerminalEscapeSequences.cursor(to: .zero)
+      + TerminalEscapeSequences.resetStyle
+      + TerminalEscapeSequences.showCursor
+      + TerminalEscapeSequences.exitAlternateScreen
+  }
+
+  // MARK: RasterPresentationSurface
+
+  func present(_ surface: RasterSurface) throws -> TerminalPresentationMetrics {
+    let renderer = TerminalSurfaceRenderer(capabilityProfile: capabilityProfile)
+    let lastSurface = state.withLock(\.lastSurface)
+
+    let canIncrement = lastSurface.map { prev in
+      prev.size == surface.size
+        && prev.attachments == surface.attachments
+        && prev.metadata == surface.metadata
+    } ?? false
+
+    var output = ""
+    let strategy: TerminalPresentationMetrics.Strategy
+    var linesTouched = 0
+    var cellsChanged = 0
+
+    if canIncrement, let lastSurface {
+      strategy = .incremental
+
+      let renderedRows = renderer.render(surface).components(separatedBy: "\r\n")
+      let rowCount = max(
+        max(lastSurface.cells.count, surface.cells.count),
+        surface.size.height
+      )
+
+      for row in 0..<rowCount {
+        let previousRow = row < lastSurface.cells.count ? lastSurface.cells[row] : []
+        let currentRow = row < surface.cells.count ? surface.cells[row] : []
+        guard previousRow != currentRow else { continue }
+
+        linesTouched += 1
+        let width = max(surface.size.width, max(previousRow.count, currentRow.count))
+        for col in 0..<width {
+          let prev = col < previousRow.count ? previousRow[col] : .empty
+          let curr = col < currentRow.count ? currentRow[col] : .empty
+          if prev != curr { cellsChanged += 1 }
+        }
+
+        let rowContent = row < renderedRows.count ? renderedRows[row] : ""
+        output += TerminalEscapeSequences.cursor(to: CellPoint(x: 0, y: row))
+        output += rowContent
+        output += TerminalEscapeSequences.eraseToEndOfLine
+      }
+    } else {
+      strategy = .fullRepaint
+      linesTouched = max(0, surface.size.height)
+      cellsChanged = max(0, surface.size.width) * max(0, surface.size.height)
+
+      let renderedRows = renderer.render(surface).components(separatedBy: "\r\n")
+      output += TerminalEscapeSequences.clearScreen
+      output += TerminalEscapeSequences.cursor(to: .zero)
+      for (rowIndex, rowContent) in renderedRows.enumerated() where !rowContent.isEmpty {
+        if rowIndex > 0 {
+          output += TerminalEscapeSequences.cursor(to: CellPoint(x: 0, y: rowIndex))
+        }
+        output += rowContent
+      }
+    }
+
+    let usedSynchronizedOutput =
+      !output.isEmpty && strategy == .fullRepaint && capabilityProfile.supportsSynchronizedOutput
+    if usedSynchronizedOutput {
+      output =
+        TerminalEscapeSequences.beginSynchronizedOutput
+        + output
+        + TerminalEscapeSequences.endSynchronizedOutput
+    }
+
+    state.withLock { $0.lastSurface = surface }
+    if !output.isEmpty {
+      continuation.yield(Array(output.utf8))
+    }
+
+    return TerminalPresentationMetrics(
+      bytesWritten: output.utf8.count,
+      linesTouched: linesTouched,
+      cellsChanged: cellsChanged,
+      strategy: strategy,
+      usedSynchronizedOutput: usedSynchronizedOutput,
+      graphicsReplayScope: .none,
+      graphicsAttachmentsReplayed: 0,
+      editOperationLowering: .none,
+      editOperationCount: 0
+    )
+  }
+
+  private enum TerminalEscapeSequences {
+    static let clearScreen = "\u{001B}[2J"
+    static let eraseToEndOfLine = "\u{001B}[K"
+    static let beginSynchronizedOutput = "\u{001B}[?2026h"
+    static let endSynchronizedOutput = "\u{001B}[?2026l"
+    static let enterAlternateScreen = "\u{001B}[?1049h"
+    static let exitAlternateScreen = "\u{001B}[?1049l"
+    static let hideCursor = "\u{001B}[?25l"
+    static let showCursor = "\u{001B}[?25h"
+    static let resetStyle = "\u{001B}[0m"
+
+    static func cursor(to point: CellPoint) -> String {
+      "\u{001B}[\(max(1, point.y + 1));\(max(1, point.x + 1))H"
     }
   }
 }
