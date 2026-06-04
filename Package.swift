@@ -18,16 +18,12 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
     .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
-    .package(url: "https://github.com/erikbdev/swift-url-routing.git", revision: "459063d23b1dd726972309e47d681c45763b55d1"),
 
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
 
-    .package(url: "https://github.com/pointfreeco/swift-perception.git", from: "2.0.0"),
-    .package(url: "https://github.com/erikbdev/swift-navigation.git", revision: "54fdf6ee21fd4607634c2aa0449daa2ff49cb20b"),
-
-    .package(url: "https://github.com/SwiftTUI/swift-tui.git", from: "0.0.9")
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", from: "0.0.14")
   ],
   targets: [
     /// SiteServer
@@ -41,8 +37,7 @@ let package = Package(
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "HummingbirdURLRouting", package: "swift-web"),
         .product(name: "MiddlewareUtils", package: "swift-web"),
-        .product(name: "URLRouting", package: "swift-url-routing", condition: .when(platforms: [.linux, .macOS])),
-        .product(name: "CasePaths", package: "swift-case-paths", condition: .when(platforms: [.linux, .macOS])),
+        .product(name: "CasePaths", package: "swift-case-paths"),
       ],
       path: "server"
     ),
@@ -50,8 +45,9 @@ let package = Package(
     .executableTarget(
       name: "SiteSSHServer",
       dependencies: [
-        "TinyStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "NIO", package: "swift-nio"),
         .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
@@ -60,18 +56,6 @@ let package = Package(
         .product(name: "SwiftTUITerminal", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"])
       ],
       path: "ssh-server"
-    ),
-    .target(
-      name: "TinyStore",
-      dependencies: [
-        .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "CasePaths", package: "swift-case-paths"),
-        .product(name: "Perception", package: "swift-perception"),
-        .product(name: "Logging", package: "swift-log"),
-        .product(name: "SwiftNavigation", package: "swift-navigation"),
-      ],
-      path: "dependencies/tiny-store"
     ),
   ],
   swiftLanguageModes: [.v6]

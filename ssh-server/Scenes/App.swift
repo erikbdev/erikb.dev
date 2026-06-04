@@ -2,20 +2,28 @@ import SwiftTUITerminal
 
 @MainActor
 struct PortfolioApp: App {
-  nonisolated init() {}
+
+  // nonisolated init() {}
 
   var body: some Scene {
     WindowGroup {
       PortfolioView()
     }
-    .exitOnKey(.character("q"), modifiers: .ctrl)
+    .exitOnKey(.character("q"))
   }
 }
 
 // MARK: - Root
 
-enum PortfolioTab: Hashable, Sendable {
+enum PortfolioTab: Hashable, Sendable, CaseIterable {
   case home, devLogs
+
+  var title: String {
+    switch self {
+    case .home: "Home"
+    case .devLogs: "Dev Logs"
+    }
+  }
 }
 
 struct PortfolioView: View {
@@ -23,27 +31,34 @@ struct PortfolioView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      statusBar
       navBar
       Divider()
-      TabView(selection: $tab) {
-        Tab("~/home", value: PortfolioTab.home) { HomeView() }
-        Tab("~/dev-logs", value: PortfolioTab.devLogs) { DevLogsView() }
-      }
-    }
-  }
 
-  private var statusBar: some View {
-    HStack {
-      Text("TERM xterm-256color  TTY0  connection opened")
-        .foregroundStyle(.gray)
-        .faint()
-      Spacer()
-      Text("^Q quit")
-        .foregroundStyle(.gray)
-        .faint()
+      // if tab == .home {
+      //   HomeView()
+      //     .frame(maxWidth: .infinity, maxHeight: .infinity)
+      // } else {
+      //   DevLogsView()
+      //     .frame(maxWidth: .infinity, maxHeight: .infinity)
+      // }
+      TabView(selection: $tab) {
+        Tab("home", detail: "(h)", value: PortfolioTab.home) {
+          HomeView()
+        }
+        Tab("dev-logs", detail: "(l)", value: PortfolioTab.devLogs) {
+          DevLogsView()
+        }
+      }
+      .tabViewStyle(.powerline)
     }
-    .padding(.horizontal)
+    .onKeyPress(.character("h")) { _ in
+      tab = .home
+      return .handled
+    }
+    .onKeyPress(.character("l")) { _ in
+      tab = .devLogs
+      return .handled
+    }
   }
 
   private var navBar: some View {
@@ -53,6 +68,12 @@ struct PortfolioView: View {
       Text("$")
         .bold()
         .foregroundStyle(.green)
+      switch tab {
+      case .home:
+        Text("whoami")
+      case .devLogs:
+        Text("ls -l /dev-logs")
+      }
       Spacer()
     }
     .padding(.horizontal)

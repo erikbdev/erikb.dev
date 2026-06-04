@@ -28,7 +28,7 @@ final class ClientSession: Sendable {
     self.logger = logger
     self.inputReader = SSHInputReader()
     self.signalReader = InProcessSignalReader()
-    self.surface = SSHPresentationSurface(continuation: outputContinuation)
+    self.surface = SSHPresentationSurface(continuation: outputContinuation, logger: logger)
   }
 
   @MainActor
@@ -117,6 +117,7 @@ final class ClientSession: Sendable {
               switch next {
               case .data(let data):
                 guard case .byteBuffer(let data) = data.data else { continue }
+                logger.trace("Received new data event")
                 session.sendInput(Array(buffer: data))
 
               case .event(.environment(let env)):
@@ -264,11 +265,13 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
   }
 
   private let state: Mutex<State>
-  private let continuation: AsyncStream<[UInt8]>.Continuation
+  private let writer: AsyncStream<[UInt8]>.Continuation
+  private let logger: Logger
 
-  init(continuation: AsyncStream<[UInt8]>.Continuation) {
-    self.continuation = continuation
-    state = Mutex(
+  init(continuation: AsyncStream<[UInt8]>.Continuation, logger: Logger) {
+    self.logger = logger
+    self.writer = continuation
+    self.state = Mutex(
       State(
         surfaceSize: CellSize(width: 80, height: 24),
         capabilityProfile: .trueColor
@@ -301,7 +304,7 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
       + TerminalEscapeSequences.clearScreen
       + TerminalEscapeSequences.cursor(to: .zero)
       + TerminalEscapeSequences.hideCursor
-    continuation.yield(Array(setup.utf8))
+    writer.yield(Array(setup.utf8))
     state.withLock { $0.lastSurface = nil }
   }
 
@@ -319,22 +322,18 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
 
   func present(_ surface: RasterSurface) throws -> TerminalPresentationMetrics {
     let renderer = TerminalSurfaceRenderer(capabilityProfile: capabilityProfile)
-    let lastSurface = state.withLock(\.lastSurface)
-
-    let canIncrement = lastSurface.map { prev in
-      prev.size == surface.size
-        && prev.attachments == surface.attachments
-        && prev.metadata == surface.metadata
-    } ?? false
+    let lastSurface = state.withLock {
+      let last = $0.lastSurface
+      return last?.size == surface.size && 
+        last?.attachments == surface.attachments && 
+        last?.metadata == surface.metadata ? last : nil
+    }
 
     var output = ""
-    let strategy: TerminalPresentationMetrics.Strategy
     var linesTouched = 0
     var cellsChanged = 0
 
-    if canIncrement, let lastSurface {
-      strategy = .incremental
-
+    if let lastSurface {
       let renderedRows = renderer.render(surface).components(separatedBy: "\r\n")
       let rowCount = max(
         max(lastSurface.cells.count, surface.cells.count),
@@ -360,7 +359,6 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
         output += TerminalEscapeSequences.eraseToEndOfLine
       }
     } else {
-      strategy = .fullRepaint
       linesTouched = max(0, surface.size.height)
       cellsChanged = max(0, surface.size.width) * max(0, surface.size.height)
 
@@ -375,8 +373,7 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
       }
     }
 
-    let usedSynchronizedOutput =
-      !output.isEmpty && strategy == .fullRepaint && capabilityProfile.supportsSynchronizedOutput
+    let usedSynchronizedOutput = !output.isEmpty && lastSurface != nil && capabilityProfile.supportsSynchronizedOutput
     if usedSynchronizedOutput {
       output =
         TerminalEscapeSequences.beginSynchronizedOutput
@@ -386,14 +383,24 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
 
     state.withLock { $0.lastSurface = surface }
     if !output.isEmpty {
-      continuation.yield(Array(output.utf8))
+      writer.yield(Array(output.utf8))
     }
+
+    // logger.trace(
+    //   "render",
+    //    metadata: [
+    //     "isIncremental": "\(lastSurface != nil)",
+    //     "writtenBytes": "\(output.utf8.count)",
+    //     "linesTouched": "\(linesTouched)",
+    //     "cellsChanged": "\(cellsChanged)"
+    //   ]
+    // )
 
     return TerminalPresentationMetrics(
       bytesWritten: output.utf8.count,
       linesTouched: linesTouched,
       cellsChanged: cellsChanged,
-      strategy: strategy,
+      strategy: lastSurface == nil ? .fullRepaint : .incremental,
       usedSynchronizedOutput: usedSynchronizedOutput,
       graphicsReplayScope: .none,
       graphicsAttachmentsReplayed: 0,

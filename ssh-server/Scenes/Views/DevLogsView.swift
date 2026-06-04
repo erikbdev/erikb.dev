@@ -20,16 +20,10 @@ struct DevLogsView: View {
   private var postList: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 1) {
-        HStack(spacing: 1) {
-          Text("$").bold().foregroundStyle(.green)
-          Text("ls -l /dev-logs/").bold()
-        }
-
-        Divider()
-
         VStack(alignment: .leading, spacing: 1) {
-          Text("Dev Logs").bold()
-          Text("A curated list of projects I've worked on.").foregroundStyle(.gray)
+          Text("# Dev Logs").bold()
+          Text("A curated list of projects I've worked on.")
+            .foregroundStyle(.gray)
         }
 
         Divider()
