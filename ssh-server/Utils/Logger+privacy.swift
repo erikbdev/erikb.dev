@@ -65,7 +65,7 @@ extension Logger.Message.StringInterpolation {
       #if DEBUG
         self.appendLiteral(Self.isDebuggerActive ? value : "<mask.hash: '\(Logger.Message.Privacy.Mask.hashed(value))'>")
       #else
-        self.appendLiteral("<mask.hash: '\(Logger.Message.Privacy.Mask.hashed.hashed(value))'>")
+        self.appendLiteral("<mask.hash: '\(Logger.Message.Privacy.Mask.hashed(value))'>")
       #endif
     case (.sensitive, .none):
       self.appendLiteral("<sensitive>")
