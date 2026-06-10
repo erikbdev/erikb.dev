@@ -15,7 +15,7 @@ let logger = {
     #if DEBUG
       handler.logLevel = logLevel ?? .trace
     #else
-      handler.logLevel = logLevel ?? .error
+      handler.logLevel = logLevel ?? .info
     #endif
     return handler
   }
