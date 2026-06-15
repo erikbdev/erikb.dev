@@ -1,6 +1,0 @@
-version: 3
-services:
-  web:
-    image: ghcr.io/erikbdev/erikb.dev:sha-${SOURCE_COMMIT:?error}
-    expose:
-      - 8080
