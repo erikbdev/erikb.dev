@@ -29,7 +29,7 @@ struct SpinnerView: View {
 
     // Perspective constants: K2 = camera distance, K1 = scale factor tuned
     // so the cube fills ~80 % of the 30×15 canvas after aspect-ratio doubling.
-    let size: Double = 1.5
+    let size: Double = 1
     let K2: Double = 5.0
     let K1: Double = 20.0
 

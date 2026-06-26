@@ -1,44 +1,41 @@
 import SwiftTUI
 
+// TODO: dynamically fetch all posts from api and cache?
 struct DevLogsView: View {
   @State private var selectedPost: Post? = nil
   @State private var showingDetail = false
 
   var body: some View {
     NavigationStack {
-      postList
-        .navigationDestination(isPresented: $showingDetail) {
-          if let post = selectedPost {
-            PostDetailView(post: post) {
-              showingDetail = false
-            }
-          }
-        }
-    }
-  }
-
-  private var postList: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 1) {
+      ScrollView {
         VStack(alignment: .leading, spacing: 1) {
-          Text("# Dev Logs").bold()
-          Text("A curated list of projects I've worked on.")
-            .foregroundStyle(.gray)
-        }
+          VStack(alignment: .leading, spacing: 1) {
+            Text("# Dev Logs")
+              .bold()
+            Text("A curated list of projects I've worked on.")
+              .foregroundStyle(.gray)
+          }
 
-        Divider()
+          Divider()
 
-        VStack(alignment: .leading, spacing: 0) {
-          ForEach(Post.all) { post in
-            PostRowView(post: post) {
-              selectedPost = post
-              showingDetail = true
+          VStack(alignment: .leading, spacing: 0) {
+            ForEach(Post.all) { post in
+              PostRowView(post: post) {
+                selectedPost = post
+                showingDetail = true
+              }
+              Divider()
             }
-            Divider()
           }
         }
       }
-      .padding()
+      .navigationDestination(isPresented: $showingDetail) {
+        if let post = selectedPost {
+          PostDetailView(post: post) {
+            showingDetail = false
+          }
+        }
+      }
     }
   }
 }
@@ -115,7 +112,7 @@ struct PostDetailView: View {
           dismiss()
         }
       }
-      .padding()
+      // .padding()
     }
   }
 }

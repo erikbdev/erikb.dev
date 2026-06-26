@@ -1,10 +1,6 @@
 import SwiftTUITerminal
 
-@MainActor
 struct PortfolioApp: App {
-
-  // nonisolated init() {}
-
   var body: some Scene {
     WindowGroup {
       PortfolioView()
@@ -16,7 +12,8 @@ struct PortfolioApp: App {
 // MARK: - Root
 
 enum PortfolioTab: Hashable, Sendable, CaseIterable {
-  case home, devLogs
+  case home
+  case devLogs
 
   var title: String {
     switch self {
@@ -24,58 +21,69 @@ enum PortfolioTab: Hashable, Sendable, CaseIterable {
     case .devLogs: "Dev Logs"
     }
   }
+
+  var command: String {
+    switch self {
+    case .home: "whoami"
+    case .devLogs: "ls -l /dev-logs"
+    }
+  }
 }
 
 struct PortfolioView: View {
+  @Environment(\.colorSchemeContrast) private var colorScheme
   @State private var tab: PortfolioTab = .home
+  @State private var textInput = PortfolioTab.home.command
 
   var body: some View {
     VStack(spacing: 0) {
-      navBar
+      HStack {
+        Text("erikb@dev:~")
+          .bold()
+        Text("$")
+          .bold()
+          .foregroundStyle(.yellow)
+
+        TextField(text: $textInput) {
+          EmptyView()
+        }
+        .textFieldStyle(.plain)
+        .onKeyPress(.return) { _ in
+          return resolveTabInput()
+        }
+        .onKeyPress(.tab) { _ in 
+          return resolveTabInput(setCommand: false)
+        }
+
+        Spacer()
+      }
+
       Divider()
 
-      // if tab == .home {
-      //   HomeView()
-      //     .frame(maxWidth: .infinity, maxHeight: .infinity)
-      // } else {
-      //   DevLogsView()
-      //     .frame(maxWidth: .infinity, maxHeight: .infinity)
-      // }
-      TabView(selection: $tab) {
-        Tab("home", detail: "(h)", value: PortfolioTab.home) {
-          HomeView()
-        }
-        Tab("dev-logs", detail: "(l)", value: PortfolioTab.devLogs) {
-          DevLogsView()
-        }
-      }
-      .tabViewStyle(.powerline)
-    }
-    .onKeyPress(.character("h")) { _ in
-      tab = .home
-      return .handled
-    }
-    .onKeyPress(.character("l")) { _ in
-      tab = .devLogs
-      return .handled
-    }
-  }
-
-  private var navBar: some View {
-    HStack {
-      Text("erikb@dev:~")
-        .bold()
-      Text("$")
-        .bold()
-        .foregroundStyle(.green)
       switch tab {
       case .home:
-        Text("whoami")
+        HomeView()
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       case .devLogs:
-        Text("ls -l /dev-logs")
+        DevLogsView()
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       }
-      Spacer()
+
+      Text("Press `q` to exit")
+        .foregroundStyle(.black)
+        .frame(maxWidth: .infinity)
+        .background(.white)
     }
-    .padding(.horizontal)
+    .background(Color(white: 0.1))
+  }
+
+  private func resolveTabInput(setCommand: Bool = true) -> KeyPressResult {
+    let trimmedTextInput = textInput.trimmingCharacters(in: .whitespacesAndNewlines)
+    let newTab = PortfolioTab.allCases.first { $0.command.hasPrefix(trimmedTextInput) } ?? self.tab
+    self.textInput = newTab.command
+    if (setCommand) {
+      self.tab = newTab
+    }
+    return .handled
   }
 }
