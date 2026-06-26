@@ -60,6 +60,8 @@ onMounted(async () => {
     </header>
   </BlockSection>
 
+  <!-- <Divider /> -->
+
   <!-- Dev Logs -->
   <BlockSection id="dev-logs" class="p-0!">
     <header class="p-8">
