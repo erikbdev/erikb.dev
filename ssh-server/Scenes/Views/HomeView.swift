@@ -41,9 +41,9 @@ struct HomeView: View {
   // Small figlet-style banner for "ERIKB"
   // Row widths: E=5, R=5, I=5, K=6, B=5, each separated by 1 space → 30 chars wide
   private let nameBanner = """
-   ___  ___  ___  _  __ ___
+   ___   ___    ___   _  __  ___
   | __| | _ \\ |_ _| | |/ / | _ )
-  | _|  |   /  | |  |   <  | _ \\
+  | _|  |   /  | | |   <  | _ \\
   |___| |_|_\\ |___| |_|\\_\\ |___/
   """
 
@@ -54,10 +54,6 @@ struct HomeView: View {
       row(label: "role", value: "Mobile & Web Developer")
       row(label: "from", value: "Irvine, CA")
       row(label: "tech", value: "Swift · TypeScript")
-      HStack(spacing: 0) {
-        Text("  >  ").foregroundStyle(.green).bold()
-        Text(cursorVisible ? "_" : " ")
-      }
     }
   }
 
