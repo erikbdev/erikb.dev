@@ -33,14 +33,16 @@ final class ClientSession: Sendable {
 
   @MainActor
   private func start(pty: String, cellSize: CellSize) async throws {
-    let app = PortfolioApp { [weak self] in
-      guard let self else {
-        return
+    let logger = self.logger
+    let app = WindowGroup {
+      PortfolioView(logger: logger) { [weak self] in
+        guard let self else {
+          return
+        }
+        self.inputReader.finish()
+        self.signalReader.finish()
+        self.outputContinuation.finish()
       }
-      self.inputReader.receive(Array(self.exitSequence.utf8))
-      self.inputReader.finish()
-      self.signalReader.finish()
-      self.outputContinuation.finish()
     }
 
     guard let primaryScene = collectWindowSceneSelections(from: app).first else {
@@ -59,7 +61,7 @@ final class ClientSession: Sendable {
     defer { finish() }
 
     _ = try await primaryScene.run(
-      sessionName: String(reflecting: PortfolioApp.self),
+      sessionName: String(reflecting: "PortfolioApp"),
       resources: resources,
       stateContainer: StateContainer(
         initialState: SceneSessionState(),
@@ -135,12 +137,7 @@ final class ClientSession: Sendable {
               case .event(.pseudoTerminal(let pty)):
                 hasReceivedPty = true
                 logger.trace(
-                  "PTY request",
-                  metadata: [
-                    "term": "\(pty.term)",
-                    "cols": "\(pty.terminalCharacterWidth)",
-                    "rows": "\(pty.terminalRowHeight)",
-                  ]
+                  "PTY request: TERM=\(pty.term), COLS=\(pty.terminalCharacterWidth), ROWS=\(pty.terminalRowHeight)",
                 )
 
                 group.addTask {
@@ -317,8 +314,6 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
     state.withLock { $0.lastSurface = nil }
   }
 
-  // The terminal reset sequence sent directly to outbound (not through the
-  // async stream) so it cannot be dropped if the stream is cancelled.
   var exitSequence: String {
     TerminalEscapeSequences.clearScreen
       + TerminalEscapeSequences.cursor(to: .zero)
@@ -333,9 +328,7 @@ private final class SSHPresentationSurface: PresentationSurfaceMetricsProvider, 
     let renderer = TerminalSurfaceRenderer(capabilityProfile: capabilityProfile)
     let lastSurface = state.withLock {
       let last = $0.lastSurface
-      return last?.size == surface.size && 
-        last?.attachments == surface.attachments && 
-        last?.metadata == surface.metadata ? last : nil
+      return last?.size == surface.size && last?.attachments == surface.attachments && last?.metadata == surface.metadata ? last : nil
     }
 
     var output = ""

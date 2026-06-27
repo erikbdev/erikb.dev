@@ -111,6 +111,7 @@ struct PostDetailView: View {
         Button("< back") {
           dismiss()
         }
+        .buttonStyle(.bordered)
       }
       // .padding()
     }

@@ -19,7 +19,7 @@ let logger = {
     #endif
     return handler
   }
-  return Logger(label: "SSHServer")
+  return Logger(label: "SiteSSHServer")
 }()
 
 @main

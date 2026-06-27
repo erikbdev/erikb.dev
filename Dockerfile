@@ -21,13 +21,13 @@ WORKDIR /build
 COPY resume/cv.tex resume/styling.sty ./
 
 RUN  mkdir -p .output \ 
-  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-mobile-resume \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=mobile-resume \
        -pdflatex='pdflatex %O "\def\showmobile{}\input{%S}"' cv.tex \
-  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-web-resume \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=web-resume \
        -pdflatex='pdflatex %O "\def\showweb{}\input{%S}"' cv.tex \
-  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-swift-resume \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=swift-resume \
        -pdflatex='pdflatex %O "\def\showswift{}\input{%S}"' cv.tex \
-  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=ebs-resume \
+  && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=resume \
        -pdflatex='pdflatex %O "\def\showmobile{}\def\showweb{}\input{%S}"' cv.tex \
   && rm -f .output/*.aux .output/*.log .output/*.out .output/*.fdb_latexmk .output/*.fls
 
