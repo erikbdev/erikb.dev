@@ -76,9 +76,8 @@ struct PortfolioView: View {
       self.exitAction()
     } else if let newCommand, self.command != newCommand {
       self.command = newCommand
-    } else {
-      self.commandInput = ""
     }
+    self.commandInput = ""
     return .handled
   }
 }
