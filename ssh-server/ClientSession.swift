@@ -33,7 +33,17 @@ final class ClientSession: Sendable {
 
   @MainActor
   private func start(pty: String, cellSize: CellSize) async throws {
-    guard let primaryScene = collectWindowSceneSelections(from: PortfolioApp().body).first else {
+    let app = PortfolioApp { [weak self] in
+      guard let self else {
+        return
+      }
+      self.inputReader.receive(Array(self.exitSequence.utf8))
+      self.inputReader.finish()
+      self.signalReader.finish()
+      self.outputContinuation.finish()
+    }
+
+    guard let primaryScene = collectWindowSceneSelections(from: app).first else {
       throw Error(.appInitializationFailed)
     }
 
@@ -45,7 +55,6 @@ final class ClientSession: Sendable {
     )
 
     surface.updateSurfaceSize(cellSize)
-
     surface.enableRawMode()
     defer { finish() }
 

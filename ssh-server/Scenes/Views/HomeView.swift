@@ -1,32 +1,32 @@
 import SwiftTUI
 
 struct HomeView: View {
+  @Environment(\.terminalSize) private var terminalSize
 
   var body: some View {
     ScrollView {
       HStack(alignment: .top, spacing: 2) {
-        VStack(alignment: .leading, spacing: 2) {
-          VStack(alignment: .leading, spacing: 0) {
-            row(label: "name", value: "Erik Bautista Santibanez")
-            row(label: "role", value: "Mobile & Web Developer")
-            row(label: "from", value: "Irvine, CA")
-            row(label: "tech", value: "Swift · TypeScript")
-          }
+        SpinnerView()
+
+        VStack(alignment: .leading, spacing: 0) {
+          row(label: "name", value: "Erik Bautista Santibanez")
+          row(label: "role", value: "Mobile & Web Developer")
+          row(label: "location", value: "Irvine, CA")
+          row(label: "tech", value: "Swift, Rust, Typescript")
+          row(label: "email", value: "me@erikb.dev")
+          row(label: "github", value: "github.com/erikbdev")
+          row(label: "linkedin", value: "linkedin.com/erikbautista")
+          row(label: "resume", value: "https://erikb.dev/resume.pdf")
 
           Text(
-            "I'm a passionate software developer who builds applications using Swift and modern web technologies."
+            """
+            Software developer who builds applications using Swift and modern web technologies.
+            Currently working on `\(Text("$ ssh erikb.dev").foregroundStyle(.yellow).bold())`.
+            """
           )
-
-          VStack(alignment: .leading, spacing: 1) {
-            Link("[/email](me@erikb.dev)", destination: "mailto:me@erikb.dev")
-            Link("[/resume.pdf](/ebs-resume.pdf)", destination: "https://erikb.dev/ebs-resume.pdf")
-            Link("[/github](/erikbdev)", destination: "https://github.com/erikbdev")
-            Link("[/linkedin](/erikbautista)", destination: "https://linkedin.com/in/erikbautista")
-          }
+          .padding(.top, 2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-
-        SpinnerView()
       }
       .frame(maxWidth: .infinity, alignment: .leading)
     }

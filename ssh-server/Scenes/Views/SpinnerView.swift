@@ -10,7 +10,7 @@ struct SpinnerView: View {
   private let height = 15
 
   var body: some View {
-    TimelineView(.animation(minimumInterval: .milliseconds(60))) { context in
+    TimelineView(PeriodicTimelineSchedule(by: .milliseconds(60))) { context in
       let t = context.instant.offset.totalSeconds
       Text(
         renderFrame(
