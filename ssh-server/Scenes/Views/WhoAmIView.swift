@@ -6,6 +6,7 @@ struct HomeView: View {
   var body: some View {
     HStack(alignment: .top, spacing: 2) {
       SpinnerView()
+        .layoutPriority(1)
 
       VStack(alignment: .leading, spacing: 0) {
         row(label: "name", value: "Erik Bautista Santibanez")

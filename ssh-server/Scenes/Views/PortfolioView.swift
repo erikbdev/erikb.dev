@@ -11,6 +11,7 @@ struct PortfolioView: View {
   @State private var showingSplash = true
   @State private var command: PortfolioCommand = .home
   @State private var commandInput = ""
+  @State private var commandNotFound = ""
   @FocusState private var commandInputFocused
 
   var body: some View {
@@ -44,24 +45,37 @@ struct PortfolioView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-        HStack(spacing: 0) {
-          Text("> ")
-            .foregroundStyle(.yellow)
-          TextField(text: $commandInput, prompt: Text("type a command (e.g. /help)"), label: EmptyView.init)
-            .focused($commandInputFocused)
-            .textFieldStyle(.plain)
-            .onKeyPress(.return) { _ in
-              resolveCommandInput()
-            }
-            .prefersDefaultFocus(in: .default)
+        VStack(alignment: .leading, spacing: 0) {
+          HStack(spacing: 0) {
+            Text("erikbdev@portfolio:$ ")
+              .foregroundStyle(.yellow)
+            TextField(text: $commandInput, prompt: Text("type a command (e.g. help)"), label: EmptyView.init)
+              .focused($commandInputFocused)
+              .textFieldStyle(.plain)
+              .onKeyPress(.return) { _ in
+                resolveCommandInput()
+              }
+              .onKeyPress(.tab) { _ in
+                .handled
+              }
+              .prefersDefaultFocus(in: .default)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .border(.yellow, set: .rounded, placement: .outset)
 
-        Text("* type /exit to quit")
+        HStack(spacing: 0) {
+          if !commandNotFound.isEmpty {
+            Text("command not found: \"\(commandNotFound)\", type \"help\" for commands ")
+              .foregroundStyle(.red)
+          }
+          Text(
+            "\(Text("*").foregroundStyle(.white)) type exit to quit | \(Text("↑/↓").foregroundStyle(.white)) navigate | \(Text("enter").foregroundStyle(.white)) select"
+          )
           .foregroundStyle(Color(white: 0.4))
           .italic()
-          .padding(.leading, 1)
+        }
+        .padding(.leading, 1)
       }
       .padding(0)
     }
@@ -76,6 +90,8 @@ struct PortfolioView: View {
       self.exitAction()
     } else if let newCommand, self.command != newCommand {
       self.command = newCommand
+    } else if newCommand == nil {
+      self.commandNotFound = trimmedTextInput
     }
     self.commandInput = ""
     return .handled
