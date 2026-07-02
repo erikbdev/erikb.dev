@@ -55,7 +55,7 @@ onMounted(async () => {
         <NuxtLink external :to="`mailto:${emailAddress}`" class="border border-gridline px-3 py-2 hover:text-white hover:border-neutral-600 transition-colors"> /{{ emailAddress || "email" }} </NuxtLink>
         <NuxtLink external target="blank" to="/resume.pdf" class="border border-gridline px-3 py-2 hover:text-white hover:border-neutral-600 transition-colors"> /resume.pdf </NuxtLink>
         <NuxtLink external target="blank" to="https://github.com/erikbdev" class="border border-gridline px-3 py-2 hover:text-white hover:border-neutral-600 transition-colors"> /github </NuxtLink>
-        <NuxtLink external target="blank" to="https://linkedin.com/erikbautista" class="border border-gridline px-3 py-2 hover:text-white hover:border-neutral-600 transition-colors"> /linkedin </NuxtLink>
+        <NuxtLink external target="blank" to="https://linkedin.com/in/erikbautista" class="border border-gridline px-3 py-2 hover:text-white hover:border-neutral-600 transition-colors"> /linkedin </NuxtLink>
       </div>
     </header>
   </BlockSection>

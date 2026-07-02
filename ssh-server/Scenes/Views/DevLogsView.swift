@@ -3,37 +3,37 @@ import SwiftTUI
 // TODO: dynamically fetch all posts from api and cache?
 struct DevLogsView: View {
   @State private var selectedPost: Post? = nil
-  @State private var showingDetail = false
 
   var body: some View {
     NavigationStack {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 1) {
-          VStack(alignment: .leading, spacing: 1) {
-            Text("# Dev Logs")
-              .bold()
-            Text("A curated list of projects I've worked on.")
-              .foregroundStyle(.gray)
-          }
+      VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+          Text("\(Text("$").foregroundStyle(.yellow)) ls -l dev-logs/")
+          Text("a curated lists of projects i've worked on")
+            .foregroundStyle(.gray)
+        }
+        .padding(.horizontal, 1)
 
-          Divider()
-
+        ScrollView(.vertical) {
           VStack(alignment: .leading, spacing: 0) {
             ForEach(Post.all) { post in
+              Divider()
+                .padding(0)
               PostRowView(post: post) {
                 selectedPost = post
-                showingDetail = true
               }
-              Divider()
+
+              if Post.all.last?.id == post.id {
+                Divider()
+                  .padding(0)
+              }
             }
           }
         }
       }
-      .navigationDestination(isPresented: $showingDetail) {
-        if let post = selectedPost {
-          PostDetailView(post: post) {
-            showingDetail = false
-          }
+      .navigationDestination(item: $selectedPost) { post in
+        PostDetailView(post: post) {
+          self.selectedPost = nil
         }
       }
     }
@@ -50,21 +50,20 @@ private struct PostRowView: View {
     Button(action: onSelect) {
       VStack(alignment: .leading, spacing: 0) {
         HStack {
-          Text("$ cat log-\(post.index).md")
-            .bold()
-            .foregroundStyle(.green)
-          Spacer()
+          Text("\(post.id).md")
+            .foregroundStyle(.yellow.opacity(0.5))
+            .frame(maxWidth: .infinity, alignment: .leading)
           Text(post.formattedDate)
             .foregroundStyle(.gray)
         }
         Text(post.title)
-          .padding(.top, 1)
         Text(post.kind.rawValue)
           .foregroundStyle(.gray)
-          .padding(.bottom, 1)
       }
+      .padding(.trailing, 1)
     }
     .buttonStyle(.plain)
+    .padding(0)
   }
 }
 
@@ -75,45 +74,35 @@ struct PostDetailView: View {
   let dismiss: @MainActor () -> Void
 
   var body: some View {
-    ScrollView {
+    ScrollView(.vertical) {
       VStack(alignment: .leading, spacing: 1) {
-        HStack(spacing: 1) {
-          Text("$").bold().foregroundStyle(.green)
-          Text("cat log-\(post.index).md").bold()
+        Text("\(Text("$").foregroundStyle(.yellow)) cat \(post.id).md")
+
+        HStack(spacing: 2) {
+          Text("# \(post.title)")
+            .bold()
+            .frame(maxWidth: .infinity, alignment: .leading)
+          Text(post.formattedDate)
+            .foregroundStyle(.gray)
         }
-
-        Divider()
-
-        VStack(alignment: .leading, spacing: 1) {
-          Text(post.title).bold()
-          HStack(spacing: 0) {
-            Text(post.formattedDate).foregroundStyle(.gray)
-            Text("  ·  ").foregroundStyle(.gray)
-            Text(post.kind.rawValue).foregroundStyle(.gray)
-          }
-        }
-
-        Divider()
 
         Text(post.body)
 
         if !post.links.isEmpty {
-          Divider()
-          VStack(alignment: .leading, spacing: 1) {
+          HStack(spacing: 1) {
             ForEach(Array(post.links.enumerated()), id: \.offset) { _, link in
-              Link(link.label, destination: LinkDestination(link.href))
+              Link(Text(link.label).foregroundStyle(.yellow), destination: LinkDestination(link.href))
+                .border(.yellow)
             }
           }
         }
 
-        Divider()
-
-        Button("< back") {
+        Button("← back") {
           dismiss()
         }
         .buttonStyle(.bordered)
       }
-      // .padding()
     }
+    .safeAreaPadding(.horizontal, 1)
   }
 }

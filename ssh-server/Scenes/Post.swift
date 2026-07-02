@@ -26,8 +26,7 @@ struct Post: Identifiable, Sendable {
 extension Post {
   private static let displayFormatter: DateFormatter = {
     let f = DateFormatter()
-    f.dateStyle = .medium
-    f.timeStyle = .none
+    f.dateFormat = "MM/dd/yyyy"
     return f
   }()
 

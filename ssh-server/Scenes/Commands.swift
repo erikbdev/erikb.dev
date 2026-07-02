@@ -1,3 +1,5 @@
+import Observation 
+
 struct PortfolioCommand: Hashable, Sendable, CaseIterable {
   let title: String
   let rawValue: String
@@ -12,7 +14,7 @@ struct PortfolioCommand: Hashable, Sendable, CaseIterable {
   static let allCases: [PortfolioCommand] = [
     home,
     devlogs,
+    help,
     exit,
-    help
   ]
 }
