@@ -42,7 +42,8 @@ struct PortfolioView: View {
           Text("erikb.dev@portfolio:$ ")
             .foregroundStyle(commandInputFocused ? .yellow : .gray)
           TextField(text: $commandInput, prompt: Text("type a command (e.g. help)"), label: EmptyView.init)
-            .focused($commandInputFocused)
+            .defaultFocus($commandInputFocused)
+            .prefersDefaultFocus(in: .default)
             .textFieldStyle(.plain)
             .onKeyPress(.return) { _ in
               resolveCommandInput()
@@ -50,7 +51,6 @@ struct PortfolioView: View {
             .onKeyPress(.tab) { _ in
               resolveCommandInputTabbed()
             }
-            .prefersDefaultFocus(in: .default)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 

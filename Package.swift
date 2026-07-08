@@ -23,7 +23,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
 
-    .package(url: "https://github.com/SwiftTUI/swift-tui.git", from: "0.1.0")
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.1.4")
   ],
   targets: [
     /// SiteServer
