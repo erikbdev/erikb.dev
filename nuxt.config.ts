@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   mdc: {
     highlight: {
       theme: "github-dark",
-      langs: ["swift", "ruby", "typescript", "markdown"],
+      langs: ["swift", "ruby", "typescript", "markdown", "bash"],
     },
   },
   nitro: {

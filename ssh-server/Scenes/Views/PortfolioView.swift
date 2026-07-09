@@ -39,7 +39,7 @@ struct PortfolioView: View {
 
       VStack(alignment: .leading, spacing: 0) {
         HStack(spacing: 0) {
-          Text("erikb.dev@portfolio:$ ")
+          Text("erikb@dev:$ ")
             .foregroundStyle(commandInputFocused ? .yellow : .gray)
           TextField(text: $commandInput, prompt: Text("type a command (e.g. help)"), label: EmptyView.init)
             .defaultFocus($commandInputFocused)

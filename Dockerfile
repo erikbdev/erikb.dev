@@ -32,7 +32,7 @@ RUN  mkdir -p .output \
   && rm -f .output/*.aux .output/*.log .output/*.out .output/*.fdb_latexmk .output/*.fls
 
 # ================================
-# Build Web
+# Build Web # TODO: use vp
 # ================================
 FROM node:24-bookworm-slim AS web-builder
 

@@ -13,7 +13,7 @@ struct HomeView: View {
               .layoutPriority(1)
 
             VStack(alignment: .leading, spacing: 0) {
-              Text("erikb.dev@portfolio")
+              Text("erikb@dev")
                 .safeAreaInset(edge: .bottom) {
                   Divider(strokeStyle: .ascii)
                 }
