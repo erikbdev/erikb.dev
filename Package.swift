@@ -23,7 +23,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.7.0"),
 
-    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.1.4"),
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.10.0"),
 
     .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.8.0"),
     .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.5.0"),
@@ -58,7 +58,7 @@ let package = Package(
       path: "server"
     ),
     // SSH Server
-    .executableTarget(
+    .target(
       name: "SiteSSHServer",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
@@ -70,7 +70,7 @@ let package = Package(
         .product(name: "Logging", package: "swift-log"),
         .product(name: "SwiftTUI", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"]),
         .product(name: "SwiftTUITerminal", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"]),
-        "Shared"
+        "Shared",
       ],
       path: "ssh-server"
     ),
