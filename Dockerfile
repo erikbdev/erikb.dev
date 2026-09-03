@@ -32,26 +32,6 @@ RUN  mkdir -p .output \
   && rm -f .output/*.aux .output/*.log .output/*.out .output/*.fdb_latexmk .output/*.fls
 
 # ================================
-# Build Web # TODO: use vp
-# ================================
-FROM node:24-bookworm-slim AS web-builder
-
-RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
-
-WORKDIR /build
-
-COPY package.json pnpm-lock.yaml ./
-
-RUN pnpm install --frozen-lockfile
-
-COPY . .
-
-# Copy resume output to public folder
-COPY --from=cv-builder /build/.output ./public
-
-RUN pnpm generate:web
-
-# ================================
 # Build Site Server
 # ================================
 FROM swift:6.3-bookworm AS server-builder
@@ -79,7 +59,11 @@ WORKDIR /staging
 
 RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SiteServer" ./
 RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
-COPY --from=web-builder /build/.output/public ./public
+
+# Static assets (favicons, fonts, models, post images, CSS) checked into the repo's public/,
+# then overlaid with the generated resume PDFs.
+RUN cp -r /build/public ./public
+COPY --from=cv-builder /build/.output ./public
 
 # ================================
 # Deploy

@@ -5,13 +5,7 @@ import NIOCore
 struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
   private var _fileMiddleware: FileMiddleware<Context, LocalFileSystem>
 
-  private static var publicPath: String {
-    #if DEBUG
-      ".output/public"
-    #else
-      "public"
-    #endif
-  }
+  private static var publicPath: String { "public" }
 
   init() {
     self._fileMiddleware = FileMiddleware(Self.publicPath, searchForIndexHtml: true)
@@ -31,6 +25,7 @@ struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
         throw error
       }
 
+      // TODO: load not found file with url using routes.
       var requestHead = request.head
       requestHead.path = "/404.html"
       let notFoundRequest = Request(head: requestHead, body: RequestBody(buffer: ByteBuffer()))

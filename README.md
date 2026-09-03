@@ -1,18 +1,24 @@
 # erikb.dev
 
-> Porfolio using Swift + Hummingbird + Nuxt
+> Portfolio using Swift + Hummingbird + Elementary + HTMX
 
 ### Todo
 
-- [ ] add resume
-- [ ] ssh-server as a portfolio entrypoint
+- [x] add resume
+- [x] ssh-server as a portfolio entrypoint
 - [ ] add showcases (projects)
 - [ ] add dev logs
-- [ ] addinteractive desk-like 3d model
+- ~~[ ] add interactive desk-like 3d model~~
+
+### Development
+
+- `swift run SiteServer` — run the web server (`server/`)
+- `swift run SiteSSHServer` — run the SSH server (`ssh-server/`)
 
 ### Resources
 
 - [Swift](https://swift.org)
 - [Hummingbird](https://hummingbird.codes)
-- [Nuxt](https://nuxt.com)
+- [Elementary](https://github.com/elementary-swift/elementary)
+- [HTMX](https://four.htmx.org)
 - [Phosphor Icons](https://phosphoricons.com/)

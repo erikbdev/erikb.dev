@@ -1,6 +1,7 @@
 import CasePaths
 import Foundation
 import URLRouting
+import Shared
 
 extension SiteRoute {
   @CasePathable

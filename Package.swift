@@ -17,15 +17,29 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
-    .package(url: "https://github.com/erikbdev/swift-web.git", revision: "e01ec6c41f9e639f86b8ef03c7d2c235bcf720bb"),
 
     .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
+    .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.7.0"),
 
-    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.1.4")
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.1.4"),
+
+    .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.8.0"),
+    .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.5.0"),
+    .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.8.0"),
   ],
   targets: [
+    /// Shared
+    .target(
+      name: "Shared",
+      dependencies: [
+        .product(name: "Markdown", package: "swift-markdown"),
+        .product(name: "Dependencies", package: "swift-dependencies"),
+        .product(name: "DependenciesMacros", package: "swift-dependencies"),
+      ],
+      path: "shared"
+    ),
     /// SiteServer
     .executableTarget(
       name: "SiteServer",
@@ -35,9 +49,11 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
-        .product(name: "HummingbirdURLRouting", package: "swift-web"),
-        .product(name: "MiddlewareUtils", package: "swift-web"),
         .product(name: "CasePaths", package: "swift-case-paths"),
+        .product(name: "Elementary", package: "elementary"),
+        .product(name: "URLRouting", package: "swift-url-routing"),
+        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
+        "Shared",
       ],
       path: "server"
     ),
@@ -53,7 +69,8 @@ let package = Package(
         .product(name: "NIOSSH", package: "swift-nio-ssh"),
         .product(name: "Logging", package: "swift-log"),
         .product(name: "SwiftTUI", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"]),
-        .product(name: "SwiftTUITerminal", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"])
+        .product(name: "SwiftTUITerminal", package: "swift-tui", moduleAliases: ["UnixSignals": "SwiftTUIUnixSignals"]),
+        "Shared"
       ],
       path: "ssh-server"
     ),

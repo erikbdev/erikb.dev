@@ -18,42 +18,48 @@ struct Server: AsyncParsableCommand {
         deps.envVars = try await .dotEnv()
       #endif
     } operation: {
-      let app = self.buildApp()
+
+      @Dependency(\.envVars) var envVars
+
+      let router = Router()
+      var logger = Logger(label: "portfolio-server")
+
+      if let logLevel = envVars.get("LOG_LEVEL", as: Logger.Level.self) {
+        logger.logLevel = logLevel
+      } else {
+        #if DEBUG
+          logger.logLevel = .debug
+        #endif
+      }
+
+      // Middlewares
+      router.addMiddleware {
+        #if DEBUG
+          CORSMiddleware(allowOrigin: .all)
+          TracingMiddleware()
+        #endif
+
+        PublicFilesMiddleware()
+
+        SiteMiddleware()
+      }
+
+      let app = Application(
+        router: router,
+        configuration: ApplicationConfiguration(
+          address: .hostname(self.hostname, port: self.port),
+          serverName: "erikb.dev"
+        ),
+        logger: logger
+      )
+
       #if DEBUG
         let buildMode = "development"
       #else
         let buildMode = "release"
       #endif
-      app.logger.info("Running server in '\(buildMode)' mode")
+      app.logger.info("Running server in '\(buildMode)' mode: http://\(self.hostname):\(self.port)")
       try await app.runService()
     }
-  }
-
-  func buildApp() -> some ApplicationProtocol {
-    @Dependency(\.envVars) var envVars
-
-    let router = Router()
-    var logger = Logger(label: "portfolio-server")
-
-    if let logLevel = envVars.get("LOG_LEVEL", as: Logger.Level.self) {
-      logger.logLevel = logLevel
-    } else {
-      #if DEBUG
-        logger.logLevel = .debug
-      #endif
-    }
-
-    router.addMiddleware {
-      SiteMiddleware()
-    }
-
-    return Application(
-      router: router,
-      configuration: ApplicationConfiguration(
-        address: .hostname(self.hostname, port: self.port),
-        serverName: "erikb.dev"
-      ),
-      logger: logger
-    )
   }
 }
