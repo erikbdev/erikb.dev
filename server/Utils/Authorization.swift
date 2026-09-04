@@ -1,8 +1,8 @@
-import Parsing
 import CasePaths
 import Dependencies
-import Hummingbird
 import Foundation
+import Hummingbird
+import Parsing
 
 extension HTTPFields {
   func verifyAuthorization() throws {
@@ -32,10 +32,7 @@ extension HTTPFields {
 
   @CasePathable
   public enum Authorization: Sendable, Equatable {
-    /// Token
     case bearer(String)
-
-    /// base64-encoded credentials
     case basic(String, String)
 
     public var basicAuthentication: (String, String)? {
@@ -45,58 +42,36 @@ extension HTTPFields {
       return (username, password)
     }
 
-    fileprivate static var parser: some Parser<Substring, Self> {
+    fileprivate static var parser: some ParserPrinter<Substring, Self> {
       OneOf {
         Parse(.case(\.bearer)) {
-          OneOf {
-            "Bearer"
-            "bearer"
-          }
-          " "
-          Rest().map(.string)
+          "Bearer "
+          Rest()
+            .map(.string)
         }
 
         Parse(.case(\.basic)) {
-          OneOf {
-            "Basic"
-            "basic"
-          }
-          " "
+          "Basic "
 
-          Rest().map(Base64EncodedSubstringToSubstring()).pipe {
-            Prefix { $0 != ":" }.map(.string)
-            ":"
-            Rest().map(.string)
-          }
-        }
-
-        Parse(.case(\.digest)) {
-          OneOf {
-            "Digest"
-            "digest"
-          }
-          " "
-          Rest().map(.string)
+          Rest()
+            .map(
+              .convert {
+                Data(base64Encoded: Data($0.utf8)).flatMap {
+                  Substring(String(decoding: $0, as: UTF8.self))
+                } ?? $0
+              } unapply: {
+                Substring(Data($0.utf8).base64EncodedString())
+              }
+            )
+            .pipe {
+              Prefix { $0 != ":" }
+                .map(.string)
+              ":"
+              Rest()
+                .map(.string)
+            }
         }
       }
     }
-  }
-}
-
-private struct Base64EncodedSubstringToSubstring: Conversion {
-  @usableFromInline
-  init() {}
-
-  @inlinable
-  func apply(_ input: Substring) -> Substring {
-    Data(base64Encoded: String(input)).flatMap {
-      String(decoding: $0, as: UTF8.self)[...]
-    } ?? ""
-  }
-
-  @inlinable
-  func unapply(_ output: Substring) -> Substring {
-    output.data(using: .utf8)?
-      .base64EncodedString()[...] ?? ""
   }
 }
