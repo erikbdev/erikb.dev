@@ -7,7 +7,7 @@
     {
       "type": "swift",
       "request": "launch",
-      "name": "Launch SiteSSHServer",
+      "name": "Launch site-ssh-server",
       "program": "${workspaceRoot}/.build/debug/SiteSSHServer",
       "args": [],
       "env": {},
@@ -17,26 +17,12 @@
     {
       "type": "swift",
       "request": "launch",
-      "name": "Launch SiteServer",
+      "name": "Launch site-server",
       "program": "${workspaceRoot}/.build/debug/SiteServer",
       "args": [],
       "env": {},
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "swift: Build Debug SiteServer"
-    },
-    {
-      "type": "node-terminal",
-      "name": "Run Script: dev:web",
-      "request": "launch",
-      "command": "pnpm run dev:web",
-      "cwd": "${workspaceFolder}",
-      "serverReadyAction": {
-        "action": "debugWithChrome",
-        "pattern": "Local:    (.*)",
-        "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}/src",
-        "killOnServerStop": true
-      }
     }
   ]
 }

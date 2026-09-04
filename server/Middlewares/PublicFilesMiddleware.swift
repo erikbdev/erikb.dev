@@ -1,5 +1,6 @@
 import Foundation
 import Hummingbird
+import HummingbirdElementary
 import NIOCore
 
 struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
@@ -25,15 +26,10 @@ struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
         throw error
       }
 
-      // TODO: load not found file with url using routes.
-      var requestHead = request.head
-      requestHead.path = "/404.html"
-      let notFoundRequest = Request(head: requestHead, body: RequestBody(buffer: ByteBuffer()))
-      var response = try await _fileMiddleware.handle(notFoundRequest, context: context) { _, _ in
-        throw error
+      return HTMLResponse(status: httpError.status) {
+        NotFoundPage(statusCode: httpError.status)
       }
-      response.status = httpError.status
-      return response
+      .response(from: request, context: context)
     }
   }
 }
