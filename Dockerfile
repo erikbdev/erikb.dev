@@ -20,7 +20,7 @@ WORKDIR /build
 
 COPY resume/cv.tex resume/styling.sty ./
 
-RUN  mkdir -p .output \ 
+RUN  mkdir -p .output \
   && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=mobile-resume \
        -pdflatex='pdflatex %O "\def\showmobile{}\input{%S}"' cv.tex \
   && latexmk -pdf -interaction=nonstopmode -outdir=.output -jobname=web-resume \
@@ -32,9 +32,9 @@ RUN  mkdir -p .output \
   && rm -f .output/*.aux .output/*.log .output/*.out .output/*.fdb_latexmk .output/*.fls
 
 # ================================
-# Build Site Server
+# Base swift build
 # ================================
-FROM swift:6.3-bookworm AS server-builder
+FROM swift:6.3-bookworm AS builder
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
@@ -51,24 +51,23 @@ RUN swift package resolve \
 COPY . .
 
 RUN swift build -c release \
-        --product SiteServer \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
-WORKDIR /staging
+RUN BIN_PATH="$(swift build -c release --show-bin-path)" \
+    && mkdir -p /staging/site-server /staging/ssh-server \
+    && cp "$BIN_PATH/SiteServer" /staging/site-server/ \
+    && cp "$BIN_PATH/SiteSSHServer" /staging/ssh-server/ \
+    && find -L "$BIN_PATH" -regex '.*SiteServer.*\.resources$' -exec cp -Ra {} /staging/site-server/ \; \
+    && find -L "$BIN_PATH" -regex '.*SiteSSHServer.*\.resources$' -exec cp -Ra {} /staging/ssh-server/ \;
 
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/SiteServer" ./
-RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" -regex '.*\.resources$' -exec cp -Ra {} ./ \;
-
-# Static assets (favicons, fonts, models, post images, CSS) checked into the repo's public/,
-# then overlaid with the generated resume PDFs.
-RUN cp -r /build/public ./public
-COPY --from=cv-builder /build/.output ./public
+RUN cp -r /build/public /staging/site-server/public
+COPY --from=cv-builder /build/.output /staging/site-server/public
 
 # ================================
-# Deploy
+# Run site-server
 # ================================
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS site-server
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
@@ -84,7 +83,7 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /ser
 
 WORKDIR /server
 
-COPY --from=server-builder --chown=deploy:deploy /staging /server
+COPY --from=builder --chown=deploy:deploy /staging/site-server /server
 
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
 
@@ -94,3 +93,33 @@ EXPOSE 8080
 
 ENTRYPOINT ["./SiteServer"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
+
+# ================================
+# Run site-ssh-server 
+# ================================
+FROM debian:bookworm-slim AS ssh-server
+
+RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    && apt-get -q update \
+    && apt-get -q dist-upgrade -y \
+    && apt-get -q install -y \
+    libjemalloc2 \
+    ca-certificates \
+    tzdata \
+    libcurl4 \
+    && rm -r /var/lib/apt/lists/*
+
+RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /server deploy
+
+WORKDIR /server
+
+COPY --from=builder --chown=deploy:deploy /staging/ssh-server /server
+
+ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
+
+USER deploy:deploy
+
+EXPOSE 2222
+
+ENTRYPOINT ["./SiteSSHServer"]
+CMD ["--hostname", "0.0.0.0", "--port", "2222"]

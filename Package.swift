@@ -58,7 +58,7 @@ let package = Package(
       path: "server"
     ),
     // SSH Server
-    .target(
+    .executableTarget(
       name: "SiteSSHServer",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
