@@ -57,6 +57,7 @@ struct SSHServer: AsyncParsableCommand {
       .serverChannelOption(.socketOption(.so_reuseaddr), value: 1)
       .childChannelOption(.allowRemoteHalfClosure, value: true)
       .childChannelOption(.socketOption(.so_reuseaddr), value: 1)
+      .childChannelOption(.tcpOption(.tcp_nodelay), value: 1)
       .bind(host: hostname, port: port) { channel in
         channel.configureSSHPipeline(
           role: .server(

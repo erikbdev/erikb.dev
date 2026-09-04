@@ -135,41 +135,46 @@ final class ClientSession: Sendable {
                 session.updateEnvironment(name: env.name, value: env.value)
 
               case .event(.pseudoTerminal(let pty)):
-                hasReceivedPty = true
                 logger.trace(
                   "PTY request: TERM=\(pty.term), COLS=\(pty.terminalCharacterWidth), ROWS=\(pty.terminalRowHeight)",
                 )
 
-                group.addTask {
-                  try await session.start(
-                    pty: pty.term,
-                    cellSize: CellSize(
-                      width: pty.terminalCharacterWidth,
-                      height: pty.terminalRowHeight
-                    )
-                  )
-                }
+                if hasReceivedPty {
+                  logger.trace("Ignoring duplicate PTY request")
+                } else {
+                  hasReceivedPty = true
 
-                group.addTask {
-                  // Drain all app output bytes first.
-                  for await bytes in session.outputStream {
-                    try await outbound.write(
-                      .init(
-                        type: .channel,
-                        data: .byteBuffer(channel.channel.allocator.buffer(bytes: bytes))
+                  group.addTask {
+                    try await session.start(
+                      pty: pty.term,
+                      cellSize: CellSize(
+                        width: pty.terminalCharacterWidth,
+                        height: pty.terminalRowHeight
                       )
                     )
                   }
-                  // Stream is fully drained. Send the terminal exit sequence
-                  // directly so it cannot be lost to task cancellation, then
-                  // close the channel so the inbound iterator exits cleanly.
-                  try await outbound.write(
-                    .init(
-                      type: .channel,
-                      data: .byteBuffer(channel.channel.allocator.buffer(string: session.exitSequence))
+
+                  group.addTask {
+                    // Drain all app output bytes first.
+                    for await bytes in session.outputStream {
+                      try await outbound.write(
+                        .init(
+                          type: .channel,
+                          data: .byteBuffer(channel.channel.allocator.buffer(bytes: bytes))
+                        )
+                      )
+                    }
+                    // Stream is fully drained. Send the terminal exit sequence
+                    // directly so it cannot be lost to task cancellation, then
+                    // close the channel so the inbound iterator exits cleanly.
+                    try await outbound.write(
+                      .init(
+                        type: .channel,
+                        data: .byteBuffer(channel.channel.allocator.buffer(string: session.exitSequence))
+                      )
                     )
-                  )
-                  channel.channel.close(promise: nil)
+                    channel.channel.close(promise: nil)
+                  }
                 }
 
               case .event(.windowChange(let wc)):
