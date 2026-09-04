@@ -52,15 +52,14 @@ extension HTTPFields {
 
         Parse(.case(\.basic)) {
           "Basic "
-
           Rest()
             .map(
               .convert {
                 Data(base64Encoded: Data($0.utf8)).flatMap {
-                  Substring(String(decoding: $0, as: UTF8.self))
+                  String(decoding: $0, as: UTF8.self)[...]
                 } ?? $0
               } unapply: {
-                Substring(Data($0.utf8).base64EncodedString())
+                Data($0.utf8).base64EncodedString()[...]
               }
             )
             .pipe {
