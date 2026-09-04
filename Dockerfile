@@ -61,9 +61,6 @@ RUN BIN_PATH="$(swift build -c release --show-bin-path)" \
     && find -L "$BIN_PATH" -regex '.*SiteServer.*\.resources$' -exec cp -Ra {} /staging/site-server/ \; \
     && find -L "$BIN_PATH" -regex '.*SiteSSHServer.*\.resources$' -exec cp -Ra {} /staging/ssh-server/ \;
 
-RUN cp -r /build/public /staging/site-server/public
-COPY --from=cv-builder /build/.output /staging/site-server/public
-
 # ================================
 # Run site-server
 # ================================
@@ -84,6 +81,9 @@ RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /ser
 WORKDIR /server
 
 COPY --from=builder --chown=deploy:deploy /staging/site-server /server
+
+COPY --from=builder --chown=deploy:deploy /build/public ./public
+COPY --from=cv-builder --chown=deploy:deploy /build/.output ./public
 
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
 
