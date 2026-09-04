@@ -1,9 +1,11 @@
 import Elementary
 import Foundation
 import Shared
+import Dependencies
 
 struct HomePage: HTML {
-  var activity: Activity?
+  @Dependency(\.activityClient.activity) private var activity
+  // var activity: Activity?
 
   private static let postDateFormatter: DateFormatter = {
     let f = DateFormatter()
@@ -24,10 +26,10 @@ struct HomePage: HTML {
           h1(.class("page-title")) { "Erik Bautista Santibanez" }
 
           p(.class("role-line")) { "Mobile & Web Developer" }
-          p { (activity?.location?.residency ?? .default).description }
+          p { (activity()?.location?.residency ?? .default).description }
 
           div(.id("activity"), .hx.get("/api/activity"), .hx.trigger(.event(.load))) {
-            ActivityFragment(activity: activity)
+            ActivityFragment()
           }
 
           p(.class("intro-text")) {

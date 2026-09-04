@@ -11,7 +11,7 @@ import URLRouting
 struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
   @Dependency(\.siteRouter) private var router
   @Dependency(\.currentRoute) private var currentRoute
-  @Dependency(\.activity) private var activityClient
+  @Dependency(\.activityClient) private var activityClient
 
   func handle(_ request: Request, context: Context, next: (Request, Context) async throws -> Response) async throws -> Response {
     do {
@@ -20,14 +20,13 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
       } operation: {
         switch currentRoute {
         case .api(.activity(.all)):
-          let activity = self.activityClient.activity()
           if request.headers[HTTPField.Name("HX-Request")!] == "true" {
             return HTMLResponse {
-              ActivityFragment(activity: activity)
+              ActivityFragment()
             }
           }
           do {
-            return try Activity.encoder.encode(activity, from: request, context: context)
+            return try Activity.encoder.encode(self.activityClient.activity(), from: request, context: context)
           } catch {
             throw HTTPError(.badRequest)
           }
@@ -41,7 +40,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
           return Response(status: .ok)
         case .page(.home):
           return HTMLResponse { 
-            HomePage(activity: self.activityClient.activity()) 
+            HomePage() 
           }
         case .page(.devLogs):
           return HTMLResponse { 

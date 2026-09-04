@@ -1,11 +1,12 @@
 import Elementary
 import Shared
+import Dependencies
 
 struct ActivityFragment: HTML {
-  var activity: Activity?
+  @Dependency(\.activityClient.activity) private var activity
 
   var body: some HTML {
-    if let location = activity?.location, location.city != nil || location.state != nil || location.region != nil {
+    if let location = activity()?.location, location.city != nil || location.state != nil || location.region != nil {
       p {
         "Currently in "
         span(.class("activity-location")) {
@@ -16,7 +17,7 @@ struct ActivityFragment: HTML {
         }
       }
     }
-    if let nowPlaying = activity?.nowPlaying {
+    if let nowPlaying = activity()?.nowPlaying {
       p {
         "Listening to "
         span(.class("activity-track")) {
