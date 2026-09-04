@@ -18,7 +18,6 @@ struct Server: AsyncParsableCommand {
         deps.envVars = try await .dotEnv()
       #endif
     } operation: {
-
       @Dependency(\.envVars) var envVars
 
       let router = Router()

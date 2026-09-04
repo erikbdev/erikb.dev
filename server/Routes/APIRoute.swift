@@ -23,13 +23,13 @@ extension SiteRoute.APIRoute {
   public struct Router: Sendable, ParserPrinter {
     public var body: some URLRouting.Router<SiteRoute.APIRoute> {
       OneOf {
-        Route(.case(SiteRoute.APIRoute.activity)) {
+        Route(.case(\SiteRoute.APIRoute.Cases.activity)) {
           Path { "activity" }
 
           OneOf {
             Route(.case(SiteRoute.APIRoute.ActivityRoute.all))
 
-            Route(.case(SiteRoute.APIRoute.ActivityRoute.location)) {
+            Route(.case(\SiteRoute.APIRoute.ActivityRoute.Cases.location)) {
               Method.post
               Path { "location" }
               Optionally {
@@ -37,7 +37,7 @@ extension SiteRoute.APIRoute {
               }
             }
 
-            Route(.case(SiteRoute.APIRoute.ActivityRoute.nowPlaying)) {
+            Route(.case(\SiteRoute.APIRoute.ActivityRoute.Cases.nowPlaying)) {
               Method.post
               Path { "now-playing" }
               Optionally {

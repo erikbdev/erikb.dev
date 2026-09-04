@@ -19,10 +19,10 @@ extension SiteRoute.PageRoute {
     public var body: some URLRouting.Router<SiteRoute.PageRoute> {
       OneOf {
         Route(.case(SiteRoute.PageRoute.home))
-        Route(.case(SiteRoute.PageRoute.devLogs)) {
+        Route(.case(\SiteRoute.PageRoute.Cases.devLogs)) {
           Path { "dev-logs" }
         }
-        Route(.case(SiteRoute.PageRoute.showcase)) {
+        Route(.case(\SiteRoute.PageRoute.Cases.showcase)) {
           Path { "showcase" }
         }
       }
