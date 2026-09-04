@@ -5,12 +5,13 @@ import Hummingbird
 import Foundation
 
 extension HTTPFields {
-  func authenticate() throws {
+  func verifyAuthorization() throws {
     @Dependency(\.envVars) var env
 
-    guard let basicAuthorization, 
-      basicAuthorization.0 == env.basicAuth.0, 
-      basicAuthorization.1 == env.basicAuth.1 else {
+    guard let basicAuthentication,
+      basicAuthentication.0 == env.basicAuth.0,
+      basicAuthentication.1 == env.basicAuth.1
+    else {
       throw HTTPError(.notFound)
     }
   }
@@ -25,8 +26,8 @@ extension HTTPFields {
     }
   }
 
-  public var basicAuthorization: (String, String)? {
-    self.authorization?.basicAuthorization
+  public var basicAuthentication: (String, String)? {
+    self.authorization?.basicAuthentication
   }
 
   @CasePathable
@@ -37,10 +38,7 @@ extension HTTPFields {
     /// base64-encoded credentials
     case basic(String, String)
 
-    /// sha256-algorithm
-    case digest(String)
-
-    public var basicAuthorization: (String, String)? {
+    public var basicAuthentication: (String, String)? {
       guard case let .basic(username, password) = self else {
         return nil
       }

@@ -32,11 +32,11 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
             throw HTTPError(.badRequest)
           }
         case let .api(.activity(.location(location))):
-          try request.headers.authenticate()
+          try request.headers.verifyAuthorization()
           self.activityClient.updateLocation(location)
           return Response(status: .ok)
         case let .api(.activity(.nowPlaying(nowPlaying))):
-          try request.headers.authenticate()
+          try request.headers.verifyAuthorization()
           self.activityClient.updateNowPlaying(nowPlaying)
           return Response(status: .ok)
         case .page(.home):
@@ -78,7 +78,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
       body = nil
     }
 
-    let authorization = request.headers.basicAuthorization
+    let authorization = request.headers.basicAuthentication
 
     return URLRequestData(
       method: request.method.rawValue,
