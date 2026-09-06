@@ -23,11 +23,11 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
         case .api(.liveReload(let timestamp)):
           return Response(
             status: .ok, 
-            headers: [.hx.refresh: timestamp == buildTimestamp ? "false" : "true"]
+            headers: [.hx.refresh: String(timestamp != buildTimestamp)]
           )
         #endif
         case .api(.activity(.all)):
-          if request.headers[.hx.request] == "true" {
+          if request.headers[.hx.request] == String(true) {
             return HTMLResponse {
               ActivityFragment()
             }
