@@ -1,9 +1,17 @@
+import Dependencies
 import Elementary
 import Foundation
+
+
+#if DEBUG
+  let buildTimestamp = String(Int(Date.now.timeIntervalSince1970 * 1000))
+#endif
 
 struct Layout<Content: HTML>: HTML {
   var pageTitle: String? = nil
   @HTMLBuilder var content: Content
+
+  @Dependency(\.siteRouter) private var router
 
   private var resolvedTitle: String {
     return [pageTitle ?? "","erikb.dev"].filter { !$0.isEmpty }
@@ -51,6 +59,16 @@ struct Layout<Content: HTML>: HTML {
             "connection closed."
           }
         }
+
+        #if DEBUG
+          // Live reload
+          div(
+            .hidden, 
+            .hx.get(router.path(for: .api(.liveReload(build: buildTimestamp)))),
+            .hx.trigger(.every("2s")),
+            .hx.swap(.none),
+          )
+        #endif
       }
     }
   }

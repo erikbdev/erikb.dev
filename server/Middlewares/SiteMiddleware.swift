@@ -19,6 +19,13 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
         $0.currentRoute = try await self.router.parse(self.parse(request: request))
       } operation: {
         switch currentRoute {
+        #if DEBUG
+        case .api(.liveReload(let timestamp)):
+          return Response(
+            status: .ok, 
+            headers: [HTTPField.Name("HX-Refresh")!: timestamp == buildTimestamp ? "false" : "true"]
+          )
+        #endif
         case .api(.activity(.all)):
           if request.headers[HTTPField.Name("HX-Request")!] == "true" {
             return HTMLResponse {
@@ -58,8 +65,8 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
         return try await next(request, context)
       } catch {
         #if DEBUG
-          context.logger.debug("Routing \(routingError)")
-          throw HTTPError(.notFound, message: "Routing \(routingError)")
+          context.logger.debug("Routing error \(routingError)")
+          throw HTTPError(.notFound, message: "Routing error: \(routingError)")
         #else
           throw error
         #endif

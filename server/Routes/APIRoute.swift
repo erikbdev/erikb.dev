@@ -1,12 +1,16 @@
 import CasePaths
 import Foundation
-import URLRouting
 import Shared
+import URLRouting
 
 extension SiteRoute {
   @CasePathable
   public enum APIRoute: Sendable, Equatable {
     case activity(ActivityRoute)
+
+    #if DEBUG
+      case liveReload(build: String)
+    #endif
   }
 }
 
@@ -46,6 +50,16 @@ extension SiteRoute.APIRoute {
             }
           }
         }
+
+        #if DEBUG
+          Route(.case(\SiteRoute.APIRoute.Cases.liveReload)) {
+            Method.post
+            Path { "live-reload" }
+            Query {
+              Field("rev", .string)
+            }
+          }
+        #endif
       }
     }
   }
