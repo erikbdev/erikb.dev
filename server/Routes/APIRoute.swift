@@ -53,7 +53,6 @@ extension SiteRoute.APIRoute {
 
         #if DEBUG
           Route(.case(\SiteRoute.APIRoute.Cases.liveReload)) {
-            Method.post
             Path { "live-reload" }
             Query {
               Field("rev", .string)

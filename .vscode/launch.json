@@ -22,7 +22,14 @@
       "args": [],
       "env": {},
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "swift: Build Debug SiteServer"
+      "preLaunchTask": "swift: Build Debug SiteServer",
+      "serverReadyAction":{
+        "action": "debugWithChrome",
+        "pattern": "Server started and listening on 127.0.0.1:([0-9]+)",
+        "uriFormat": "http://localhost:%s",
+        "webRoot": "${workspaceFolder}",
+        "killOnServerStop": false
+      }
     }
   ]
 }

@@ -33,8 +33,8 @@ struct Layout<Content: HTML>: HTML {
         link(.rel(.icon), .href("/favicon-32x32.png"), .custom(name: "type", value: "image/png"), .custom(name: "sizes", value: "32x32"))
         link(.rel(.icon), .href("/favicon-96x96.png"), .custom(name: "type", value: "image/png"), .custom(name: "sizes", value: "96x96"))
         link(.rel(.icon), .href("/favicon-128x128.png"), .custom(name: "type", value: "image/png"), .custom(name: "sizes", value: "128x128"))
-        link(.rel(.stylesheet), .href("/css/site.css"))
-        script(.custom(name: "src", value: "https://unpkg.com/htmx.org@4.0.0")) {}
+        link(.rel(.stylesheet), .href("/styles/site.css"))
+        script(.src("/scripts/vendors/htmx.min.js"))
       }
       Elementary.body(.class("site-body")) {
         header(.class("site-header")) {
