@@ -4,7 +4,7 @@ import Foundation
 
 
 #if DEBUG
-  let buildTimestamp = String(Int(Date.now.timeIntervalSince1970 * 1000))
+  let buildTimestamp = Date().formatted(.iso8601) 
 #endif
 
 struct Layout<Content: HTML>: HTML {
