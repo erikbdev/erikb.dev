@@ -1,7 +1,7 @@
 import Foundation
 
 extension Post: CaseIterable {
-  private static let dateFormatter: DateFormatter = {
+  public static let dateFormatter: DateFormatter = {
     let f = DateFormatter()
     f.dateFormat = "MM-dd-yyyy"
     f.timeZone = TimeZone(identifier: "UTC")
@@ -146,4 +146,10 @@ extension Post: CaseIterable {
         """
     ),
   ]
+}
+
+extension Post {
+  public var formattedDate: String {
+    Self.dateFormatter.string(from: self.date)
+  }
 }

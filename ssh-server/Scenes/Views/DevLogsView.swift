@@ -1,4 +1,5 @@
 import SwiftTUI
+import Shared
 
 // TODO: dynamically fetch all posts from api and cache?
 struct DevLogsView: View {
@@ -16,14 +17,14 @@ struct DevLogsView: View {
 
         ScrollView(.vertical) {
           VStack(alignment: .leading, spacing: 0) {
-            ForEach(Post.all) { post in
+            ForEach(Post.published) { post in
               Divider()
                 .padding(0)
               PostRowView(post: post) {
                 selectedPost = post
               }
 
-              if Post.all.last?.id == post.id {
+              if Post.published.last?.id == post.id {
                 Divider()
                   .padding(0)
               }
@@ -86,7 +87,7 @@ struct PostDetailView: View {
             .foregroundStyle(.gray)
         }
 
-        Text(post.body)
+        Text(post.markdownBody)
 
         if !post.links.isEmpty {
           HStack(spacing: 1) {
