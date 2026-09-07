@@ -43,7 +43,7 @@ struct Server: AsyncParsableCommand {
         SiteMiddleware()
       }
 
-      // TODO: support h2c and http1 to http2.
+      // TODO: support h2c for h1/h2.
       let app = Application(
         router: router,
         configuration: ApplicationConfiguration(
