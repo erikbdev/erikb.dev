@@ -1,5 +1,5 @@
-import SwiftTUI
 import Shared
+import SwiftTUI
 
 struct DevLogsView: View {
   @State private var selectedPost: Post? = nil

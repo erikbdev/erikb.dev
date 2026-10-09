@@ -1,5 +1,5 @@
 import Logging
-import SwiftTUITerminal
+import SwiftTUI
 
 struct PortfolioView: View {
   enum CommandTip {

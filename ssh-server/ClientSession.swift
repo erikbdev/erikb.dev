@@ -3,7 +3,6 @@ import Logging
 import NIO
 import NIOSSH
 @_spi(Runners) import SwiftTUIRuntime
-import SwiftTUITerminal
 import Synchronization
 
 final class ClientSession: Sendable {
@@ -113,8 +112,6 @@ final class ClientSession: Sendable {
         logger.debug("New connection")
         defer { logger.trace("Closing connection") }
 
-        // Create the session before the do-catch so it's reachable in the
-        // catch block where we need to send the terminal exit sequence.
         let session = ClientSession(channel: channel, logger: logger)
 
         do {

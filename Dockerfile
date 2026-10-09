@@ -34,7 +34,7 @@ RUN  mkdir -p .output \
 # ================================
 # Base swift build
 # ================================
-FROM swift:6.3-bookworm AS builder
+FROM swift:6.4-bookworm AS builder
 
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
