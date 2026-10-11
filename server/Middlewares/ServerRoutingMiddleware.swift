@@ -20,11 +20,11 @@ struct ServerRoutingMiddleware<Context: RequestContext>: RouterMiddleware {
       } operation: {
         switch currentRoute {
         #if DEBUG
-        case .api(.liveReload(let timestamp)):
-          return Response(
-            status: .ok, 
-            headers: [.hx.refresh: String(timestamp != buildTimestamp)]
-          )
+          case .api(.liveReload(let timestamp)):
+            return Response(
+              status: .ok,
+              headers: [.hx.refresh: String(timestamp != buildTimestamp)]
+            )
         #endif
         case .api(.activity(.all)):
           do {
@@ -33,19 +33,19 @@ struct ServerRoutingMiddleware<Context: RequestContext>: RouterMiddleware {
             throw HTTPError(.badRequest)
           }
         case let .api(.activity(.location(location))):
-          try request.headers.verifyAuthorization()
+          try request.verifyAuthorization()
           self.activityClient.updateLocation(location)
           return Response(status: .ok)
         case let .api(.activity(.nowPlaying(nowPlaying))):
-          try request.headers.verifyAuthorization()
+          try request.verifyAuthorization()
           self.activityClient.updateNowPlaying(nowPlaying)
           return Response(status: .ok)
-        case .page(.index(let component)):
-          return try await HomePage.response(for: component, request: request, context: context)
+        case .page(.index):
+          return HTMLResponse { HomePage() }
         case .page(.devLogs):
-          return try await DevLogsPage.response(for: (), request: request, context: context)
+          return HTMLResponse { DevLogsPage() }
         case .page(.showcase):
-          return try await ShowcasePage.response(for: (), request: request, context: context)
+          return HTMLResponse { ShowcasePage() }
         }
       }
       return try response.response(from: request, context: context)

@@ -4,6 +4,12 @@ import Foundation
 import Hummingbird
 import Parsing
 
+extension Request {
+  func verifyAuthorization() throws {
+    try self.headers.verifyAuthorization()
+  }
+}
+
 extension HTTPFields {
   func verifyAuthorization() throws {
     @Dependency(\.envVars) var env

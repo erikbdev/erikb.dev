@@ -22,6 +22,7 @@ struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
       guard request.method == .get || request.method == .head else {
         throw error
       }
+
       guard let accept: String = request.headers[.accept], accept.contains("text/html") || accept.contains("*/*") || accept.contains("text/*") else {
         throw error
       }

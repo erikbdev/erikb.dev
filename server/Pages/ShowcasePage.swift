@@ -13,12 +13,6 @@ struct ShowcasePage: HTML {
   }
 }
 
-extension ShowcasePage: PageResponder {
-  static func response(for route: Void, request: Request, context: some RequestContext) async throws -> any ResponseGenerator {
-    HTMLResponse { ShowcasePage() }
-  }
-}
-
 extension ShowcasePage {
   struct Router: Sendable, ParserPrinter {
     init() {}
