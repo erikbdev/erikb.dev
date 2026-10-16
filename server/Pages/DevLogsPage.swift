@@ -1,13 +1,11 @@
-import Elementary
 import Hummingbird
-import HummingbirdElementary
 import URLRouting
 
-struct DevLogsPage: HTML {
-  var body: some HTML {
+struct DevLogsPage: HTML.Component {
+  var body: HTML {
     PageLayout(pageTitle: "dev-logs") {
       BlockSection {
-        p { "Coming Soon" }
+        /* html */ "<p>Coming Soon</p>"
       }
     }
   }

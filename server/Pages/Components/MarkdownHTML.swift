@@ -1,11 +1,10 @@
-import Elementary
 import Markdown
 import Shared
 
-struct MarkdownHTML: HTML {
+struct MarkdownHTML: HTML.Component {
   var markdown: String
 
-  var body: some HTML {
-    HTMLRaw(HTMLFormatter.format(markdown))
+  var body: HTML {
+    HTML(unsafe: HTMLFormatter.format(markdown))
   }
 }

@@ -1,17 +1,20 @@
-import Elementary
-
-struct BlockSection<Content: HTML>: HTML {
+struct BlockSection: HTML.Component {
   var fill: Bool = false
   var flush: Bool = false
   var extraClass: String = ""
   var id: String?
-  @HTMLBuilder var content: Content
+  @HTML.Builder var content: HTML
 
-  var body: some HTML {
-    section(.class(Self.classes(fill: fill, flush: flush, extra: extraClass))) {
-      content
+  var body: HTML {
+    if let id {
+      /* html */ """
+      <section id="\(id)" class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
+      """
+    } else {
+      /* html */ """
+      <section class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
+      """
     }
-    .attributes(.id(id ?? ""), when: id != nil)
   }
 
   static func classes(fill: Bool, flush: Bool, extra: String) -> String {
@@ -23,21 +26,23 @@ struct BlockSection<Content: HTML>: HTML {
   }
 }
 
-struct NavBlockSection<Content: HTML>: HTML {
+struct NavBlockSection: HTML.Component {
   var fill: Bool = false
   var flush: Bool = false
   var extraClass: String = ""
-  @HTMLBuilder var content: Content
+  @HTML.Builder var content: HTML
 
-  var body: some HTML {
-    nav(.class(BlockSection<Content>.classes(fill: fill, flush: flush, extra: extraClass))) {
-      content
-    }
+  var body: HTML {
+    /* html */ """
+    <nav class="\(BlockSection.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</nav>
+    """
   }
 }
 
-struct Divider: HTML {
-  var body: some HTML {
-    section(.class("block-section-divider"))
+struct Divider: HTML.Component {
+  var body: HTML {
+    /* html */ """
+    <section class="block-section-divider"></section>
+    """
   }
 }

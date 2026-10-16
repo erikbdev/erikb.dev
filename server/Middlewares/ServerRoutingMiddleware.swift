@@ -2,7 +2,6 @@ import Dependencies
 import Foundation
 import HTTPTypes
 import Hummingbird
-import HummingbirdElementary
 import HummingbirdRouter
 import Parsing
 import Shared
@@ -41,11 +40,11 @@ struct ServerRoutingMiddleware<Context: RequestContext>: RouterMiddleware {
           self.activityClient.updateNowPlaying(nowPlaying)
           return Response(status: .ok)
         case .page(.index):
-          return HTMLResponse { HomePage() }
+          return HomePage().body
         case .page(.devLogs):
-          return HTMLResponse { DevLogsPage() }
+          return DevLogsPage().body
         case .page(.showcase):
-          return HTMLResponse { ShowcasePage() }
+          return ShowcasePage().body
         }
       }
       return try response.response(from: request, context: context)

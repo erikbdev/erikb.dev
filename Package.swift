@@ -25,8 +25,6 @@ let package = Package(
 
     .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.16.0"),
 
-    .package(url: "https://github.com/elementary-swift/elementary.git", from: "0.8.0"),
-    .package(url: "https://github.com/hummingbird-community/hummingbird-elementary.git", from: "0.5.0"),
     .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.8.0"),
   ],
   targets: [
@@ -50,9 +48,7 @@ let package = Package(
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
         .product(name: "CasePaths", package: "swift-case-paths"),
-        .product(name: "Elementary", package: "elementary"),
         .product(name: "URLRouting", package: "swift-url-routing"),
-        .product(name: "HummingbirdElementary", package: "hummingbird-elementary"),
         "Shared",
       ],
       path: "server"
