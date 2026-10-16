@@ -40,11 +40,11 @@ struct ServerRoutingMiddleware<Context: RequestContext>: RouterMiddleware {
           self.activityClient.updateNowPlaying(nowPlaying)
           return Response(status: .ok)
         case .page(.index):
-          return HomePage().body
+          return HTMLResponse { HomePage() }
         case .page(.devLogs):
-          return DevLogsPage().body
+          return HTMLResponse { DevLogsPage() }
         case .page(.showcase):
-          return ShowcasePage().body
+          return HTMLResponse { ShowcasePage() }
         }
       }
       return try response.response(from: request, context: context)

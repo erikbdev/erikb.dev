@@ -26,9 +26,10 @@ struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
         throw error
       }
 
-      var response = try NotFoundPage(statusCode: httpError.status).body.response(from: request, context: context)
-      response.status = httpError.status
-      return response
+      return try HTMLResponse(status: httpError.status) {
+        NotFoundPage(statusCode: httpError.status)
+      }
+      .response(from: request, context: context)
     }
   }
 }
