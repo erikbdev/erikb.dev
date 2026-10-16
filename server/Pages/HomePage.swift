@@ -58,15 +58,18 @@ struct HomePage: HTML.Component {
 
             switch post.header {
             case let .code(lang, value):
-              /* html */ """
+              /* html */
+              """
               <pre><code class="language-\(lang)">\(value)</code></pre>
               """
             case let .image(src, label):
-              /* html */ """
+              /* html */
+              """
               <img src="\(src)" alt="\(label)">
               """
             case let .video(src, label):
-              /* html */ """
+              /* html */
+              """
               <video src="\(src)" title="\(label)" autoplay playsinline muted loop></video>
               """
             case .link, .none:
@@ -94,10 +97,12 @@ struct HomePage: HTML.Component {
                 }
               }
 
-              /* html */ "</footer>"
+              /* html */
+              "</footer>"
             }
 
-            /* html */ "</article>"
+            /* html */
+            "</article>"
           }
         }
 

@@ -6,7 +6,8 @@ struct NotFoundPage: HTML.Component {
   var body: HTML {
     PageLayout(pageTitle: "\(statusCode.code)") {
       BlockSection(id: "error") {
-        /* html */ """
+        /* html */
+        """
         <header>
           <a href="#error" class="whoami-prompt"><span class="prompt-symbol">$</span> cat error.md</a>
         </header>

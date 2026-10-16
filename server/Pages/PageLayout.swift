@@ -21,7 +21,8 @@ struct PageLayout: HTML.Component {
   }
 
   var body: HTML {
-    /* html */ """
+    /* html */
+    """
     <!DOCTYPE html>
     <html data-theme="dark">
     <head>
@@ -510,7 +511,8 @@ struct PageLayout: HTML.Component {
     """
 
     #if DEBUG
-      /* html */ """
+      /* html */
+      """
       <div class="dev-banner" hx-get="\(router.path(for: .api(.liveReload(build: buildTimestamp))))" hx-trigger="every 2s" hx-swap="none" hx-on:htmx:error="this.classList.add('dev-banner--offline')" hx-on:htmx:response:error="this.classList.add('dev-banner--offline')" hx-on:htmx:after:request="this.classList.remove('dev-banner--offline')">
         <code><span class="dev-banner__ok">● DEV MODE · watching for changes</span><span class="dev-banner__offline">● DEV MODE · lost connection to server</span></code>
       </div>
@@ -518,30 +520,36 @@ struct PageLayout: HTML.Component {
     #endif
 
     BlockSection(extraClass: "terminal-banner") {
-      /* html */ "<code>TERM xterm-256color · TTY0 · connection opened</code>"
+      /* html */
+      "<code>TERM xterm-256color · TTY0 · connection opened</code>"
     }
 
     NavBlockSection(extraClass: "site-nav") {
-      /* html */ """
+      /* html */
+      """
       <a href="/" class="brand-link"><code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code></a>
       """
     }
 
-    /* html */ "</header>"
+    /* html */
+    "</header>"
 
     content
 
-    /* html */ "<footer>"
+    /* html */
+    "<footer>"
 
     BlockSection(extraClass: "site-footer-copyright") {
       "© \(copyrightYear) erikb.dev"
     }
 
     BlockSection(extraClass: "site-footer-status") {
-      /* html */ "<code>connection closed.</code>"
+      /* html */
+      "<code>connection closed.</code>"
     }
 
-    /* html */ """
+    /* html */
+    """
     </footer>
     </body>
     </html>

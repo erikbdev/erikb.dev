@@ -5,7 +5,8 @@ struct DevLogsPage: HTML.Component {
   var body: HTML {
     PageLayout(pageTitle: "dev-logs") {
       BlockSection {
-        /* html */ "<p>Coming Soon</p>"
+        /* html */
+        "<p>Coming Soon</p>"
       }
     }
   }

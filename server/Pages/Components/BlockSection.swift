@@ -7,11 +7,13 @@ struct BlockSection: HTML.Component {
 
   var body: HTML {
     if let id {
-      /* html */ """
+      /* html */ 
+      """
       <section id="\(id)" class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
       """
     } else {
-      /* html */ """
+      /* html */ 
+      """
       <section class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
       """
     }
@@ -33,7 +35,8 @@ struct NavBlockSection: HTML.Component {
   @HTML.Builder var content: HTML
 
   var body: HTML {
-    /* html */ """
+    /* html */ 
+    """
     <nav class="\(BlockSection.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</nav>
     """
   }
@@ -41,7 +44,8 @@ struct NavBlockSection: HTML.Component {
 
 struct Divider: HTML.Component {
   var body: HTML {
-    /* html */ """
+    /* html */ 
+    """
     <section class="block-section-divider"></section>
     """
   }
