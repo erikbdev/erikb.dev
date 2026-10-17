@@ -2,18 +2,10 @@ import Foundation
 import Hummingbird
 import NIOCore
 
-struct PublicFilesMiddleware<Context: RequestContext>: RouterMiddleware {
-  private var _fileMiddleware: FileMiddleware<Context, LocalFileSystem>
-
-  private static var publicPath: String { "public" }
-
-  init() {
-    self._fileMiddleware = FileMiddleware(Self.publicPath, searchForIndexHtml: true)
-  }
-
+struct NotFoundMiddleware<Context: RequestContext>: RouterMiddleware {
   func handle(_ request: Request, context: Context, next: (Request, Context) async throws -> Response) async throws -> Response {
     do {
-      return try await _fileMiddleware.handle(request, context: context, next: next)
+      return try await next(request, context)
     } catch {
       guard let httpError = error as? HTTPResponseError, httpError.status == .notFound else {
         throw error

@@ -34,13 +34,13 @@ struct Server: AsyncParsableCommand {
       // Middlewares
       router.addMiddleware {
         #if DEBUG
-          CORSMiddleware(allowOrigin: .all)
           TracingMiddleware()
+          CORSMiddleware(allowOrigin: .all)
         #endif
 
-        PublicFilesMiddleware()
-
-        ServerRoutingMiddleware()
+        NotFoundMiddleware()
+        FileMiddleware("public")
+        SiteMiddleware()
       }
 
       // TODO: support h2c for h1/h2.

@@ -18,12 +18,12 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
 
-    .package(url: "https://github.com/hummingbird-project/hummingbird.git", exact: "2.5.0"),
+    .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swift-url-routing.git", from: "0.7.0"),
 
-    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.16.0"),
+    .package(url: "https://github.com/SwiftTUI/swift-tui.git", exact: "0.18.1"),
 
     .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.8.0"),
   ],

@@ -3,7 +3,7 @@ import Hummingbird
 struct HTMLResponse: ResponseGenerator {
   var status: HTTPResponse.Status = .ok
   var headers: HTTPFields = [:]
-  @HTML.Builder var content: HTML
+  @HTML var content: HTML
 
   func response(from request: Request, context: some RequestContext) throws -> Response {
     var headers = headers

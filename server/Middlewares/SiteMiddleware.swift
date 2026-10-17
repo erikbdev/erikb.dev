@@ -7,7 +7,7 @@ import Parsing
 import Shared
 import URLRouting
 
-struct ServerRoutingMiddleware<Context: RequestContext>: RouterMiddleware {
+struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
   @Dependency(\.router) private var router
   @Dependency(\.currentRoute) private var currentRoute
   @Dependency(\.activityClient) private var activityClient

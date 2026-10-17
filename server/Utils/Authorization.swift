@@ -18,7 +18,7 @@ extension HTTPFields {
       basicAuthentication.0 == env.basicAuth.0,
       basicAuthentication.1 == env.basicAuth.1
     else {
-      throw HTTPError(.notFound)
+      throw HTTPError(.unauthorized)
     }
   }
 }

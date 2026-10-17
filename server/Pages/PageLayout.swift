@@ -7,7 +7,7 @@ import Foundation
 
 struct PageLayout: HTML.Component {
   var pageTitle: String? = nil
-  @HTML.Builder var content: HTML
+  @HTML var content: HTML
 
   @Dependency(\.router) private var router
 

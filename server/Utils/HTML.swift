@@ -1,3 +1,4 @@
+@resultBuilder
 public struct HTML: Sendable, Hashable, ExpressibleByStringInterpolation, CustomStringConvertible {
   public let rawValue: String
 
@@ -45,7 +46,7 @@ public struct HTML: Sendable, Hashable, ExpressibleByStringInterpolation, Custom
       output.appendEscapingHTML(string)
     }
 
-    public mutating func appendInterpolation(@HTML.Builder html: () -> HTML) -> HTML {
+    public mutating func appendInterpolation(@HTML html: () -> HTML) -> HTML {
       html()
     }
 
@@ -91,53 +92,52 @@ extension String {
 }
 
 extension HTML {
-  public protocol Component {
-    @HTML.Builder var body: HTML { get }
+  public static func buildExpression(_ html: HTML) -> HTML {
+    html
   }
 
-  @resultBuilder
-  public enum Builder {
-    public static func buildExpression(_ html: HTML) -> HTML {
-      html
-    }
+  public static func buildExpression(_ html: some Component) -> HTML {
+    html.body
+  }
 
-    public static func buildExpression(_ html: some Component) -> HTML {
-      html.body
-    }
+  public static func buildBlock(_ html: HTML) -> HTML {
+    html
+  }
 
-    public static func buildBlock(_ html: HTML) -> HTML {
-      html
-    }
+  public static func buildBlock(_ html: HTML...) -> HTML {
+    join(html)
+  }
 
-    public static func buildBlock(_ html: HTML...) -> HTML {
-      join(html)
-    }
+  public static func buildOptional(_ html: HTML?) -> HTML {
+    html ?? HTML()
+  }
 
-    public static func buildOptional(_ html: HTML?) -> HTML {
-      html ?? HTML()
-    }
+  public static func buildEither(first html: HTML) -> HTML {
+    html
+  }
 
-    public static func buildEither(first html: HTML) -> HTML {
-      html
-    }
+  public static func buildEither(second html: HTML) -> HTML {
+    html
+  }
 
-    public static func buildEither(second html: HTML) -> HTML {
-      html
-    }
+  public static func buildArray(_ html: [HTML]) -> HTML {
+    join(html)
+  }
 
-    public static func buildArray(_ html: [HTML]) -> HTML {
-      join(html)
+  private static func join(_ html: [HTML]) -> HTML {
+    guard html.count > 1 else { return html.first ?? HTML() }
+    var output = ""
+    output.reserveCapacity(html.reduce(0) { $0 + $1.rawValue.utf8.count })
+    for element in html {
+      output.append(element.rawValue)
     }
+    return HTML(unsafe: output)
+  }
+}
 
-    private static func join(_ html: [HTML]) -> HTML {
-      guard html.count > 1 else { return html.first ?? HTML() }
-      var output = ""
-      output.reserveCapacity(html.reduce(0) { $0 + $1.rawValue.utf8.count })
-      for element in html {
-        output.append(element.rawValue)
-      }
-      return HTML(unsafe: output)
-    }
+extension HTML {
+  public protocol Component {
+    @HTML var body: HTML { get }
   }
 }
 

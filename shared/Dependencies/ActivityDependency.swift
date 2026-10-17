@@ -19,9 +19,9 @@ extension ActivityClient {
       updateLocation: { newValue in
         storage.withValue {
           $0.location = Activity.Location(
-            city: newValue?.city, 
-            state: newValue?.state, 
-            region: newValue?.region, 
+            city: newValue?.city,
+            state: newValue?.state,
+            region: newValue?.region,
             residency: newValue?.residency ?? .default
           )
         }
@@ -120,13 +120,6 @@ extension Activity {
     public let duration: Double
 
     /// timestamp of the request sent
-    public let timestamp: Date
-
-    /// service used
-    public let service: Service
-
-    public enum Service: String, Sendable, Equatable, Codable {
-      case appleMusic = "apple"
-    }
+    public let timestamp: Date?
   }
 }
