@@ -36,7 +36,8 @@ struct HomePage: HTML.Component {
         Divider()
 
         BlockSection(flush: true) {
-          /* html */ """
+          /* html */
+          """
           <header class="dev-logs-header">
             <a href="#dev-logs" class="devlogs-prompt"><code><span class="prompt-symbol">$</span> ls -l /dev-logs/</code></a>
             <h1 class="devlogs-title">Dev Logs</h1>
@@ -45,7 +46,8 @@ struct HomePage: HTML.Component {
           """
 
           for post in Post.allCases {
-            /* html */ """
+            /* html */
+            """
             <article id="\(post.id)" class="log-entry">
               <header>
                 <hgroup class="log-entry-meta">
@@ -127,10 +129,11 @@ extension ServerRoute.PageRoute.IndexRoute {
 
     var body: some URLRouting.Router<IndexRoute?> {
       OneOf {
-        Route(.case(\.some) as AnyCasePath<IndexRoute?, IndexRoute>) {
-          Path { "_components" }
-          Route(.case(\.activity) as AnyCasePath<IndexRoute, Void>) {
-            Path { "activity" }
+        Route(.case(\.activity) as AnyCasePath<IndexRoute?, Void>) {
+          Method.get
+          Headers {
+            Field("HX-Request") { "true" }
+            Field("HX-Source") { "div#activity" }
           }
         }
         Route(.case(\.none) as AnyCasePath<IndexRoute?, Void>)
