@@ -138,14 +138,6 @@ struct PageLayout: HTML.Component {
           border-bottom: var(--size-gridline) solid var(--color-gridline);
         }
 
-        .terminal-banner {
-          font-size: 0.875rem;
-          padding-block: 0.5rem !important;
-          background-color: transparent !important;
-          color: var(--color-neutral-800);
-          border-bottom: var(--size-gridline) solid var(--color-gridline);
-        }
-
         .dev-banner {
           display: flex;
           align-items: center;
@@ -210,13 +202,6 @@ struct PageLayout: HTML.Component {
           display: flex;
           align-items: center;
           font-size: 0.875rem;
-        }
-
-        .site-footer-status {
-          font-size: 0.875rem;
-          padding-block: 0.5rem !important;
-          color: var(--color-neutral-800);
-          border-top: var(--size-gridline) solid var(--color-gridline);
         }
 
         /* Block section — bordered, full-bleed grid-line "card" with optional dashed divider */
@@ -519,11 +504,6 @@ struct PageLayout: HTML.Component {
       """
     #endif
 
-    BlockSection(extraClass: "terminal-banner") {
-      /* html */
-      "<code>TERM xterm-256color · TTY0 · connection opened</code>"
-    }
-
     NavBlockSection(extraClass: "site-nav") {
       /* html */
       """
@@ -541,11 +521,6 @@ struct PageLayout: HTML.Component {
 
     BlockSection(extraClass: "site-footer-copyright") {
       "© \(copyrightYear) erikb.dev"
-    }
-
-    BlockSection(extraClass: "site-footer-status") {
-      /* html */
-      "<code>connection closed.</code>"
     }
 
     /* html */

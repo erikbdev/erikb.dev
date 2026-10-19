@@ -41,12 +41,3 @@ struct NavBlockSection: HTML.Component {
     """
   }
 }
-
-struct Divider: HTML.Component {
-  var body: HTML {
-    /* html */
-    """
-    <section class="block-section-divider"></section>
-    """
-  }
-}
