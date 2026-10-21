@@ -114,16 +114,16 @@ struct HomePage: HTML.Component {
   }
 }
 
-extension ServerRoute.PageRoute {
+extension SiteRoute.PageRoute {
   @CasePathable
   enum IndexRoute: Sendable, Equatable {
     case activity
   }
 }
 
-extension ServerRoute.PageRoute.IndexRoute {
+extension SiteRoute.PageRoute.IndexRoute {
   struct Router: Sendable, ParserPrinter {
-    typealias IndexRoute = ServerRoute.PageRoute.IndexRoute
+    typealias IndexRoute = SiteRoute.PageRoute.IndexRoute
 
     init() {}
 

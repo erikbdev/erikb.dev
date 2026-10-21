@@ -3,22 +3,22 @@ import Foundation
 import URLRouting
 
 @CasePathable
-enum ServerRoute: Sendable, Equatable {
+enum SiteRoute: Sendable, Equatable {
   case api(APIRoute)
   case page(PageRoute)
 }
 
-extension ServerRoute {
+extension SiteRoute {
   struct Router: Sendable, ParserPrinter {
     init() {}
 
-    var body: some URLRouting.Router<ServerRoute> {
+    var body: some URLRouting.Router<SiteRoute> {
       OneOf {
-        Route(.case(\ServerRoute.Cases.api)) {
+        Route(.case(\SiteRoute.Cases.api)) {
           Path { "api" }
           APIRoute.Router()
         }
-        Route(.case(\ServerRoute.Cases.page)) {
+        Route(.case(\SiteRoute.Cases.page)) {
           PageRoute.Router()
         }
       }

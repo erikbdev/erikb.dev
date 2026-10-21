@@ -3,7 +3,7 @@ import Foundation
 import Shared
 import URLRouting
 
-extension ServerRoute {
+extension SiteRoute {
   @CasePathable
   enum APIRoute: Sendable, Equatable {
     case activity(ActivityRoute)
@@ -14,7 +14,7 @@ extension ServerRoute {
   }
 }
 
-extension ServerRoute.APIRoute {
+extension SiteRoute.APIRoute {
   @CasePathable
   enum ActivityRoute: Sendable, Equatable {
     case all
@@ -23,9 +23,9 @@ extension ServerRoute.APIRoute {
   }
 }
 
-extension ServerRoute.APIRoute {
+extension SiteRoute.APIRoute {
   struct Router: Sendable, ParserPrinter {
-    typealias BaseRoute = ServerRoute.APIRoute
+    typealias BaseRoute = SiteRoute.APIRoute
 
     var body: some URLRouting.Router<BaseRoute> {
       OneOf {

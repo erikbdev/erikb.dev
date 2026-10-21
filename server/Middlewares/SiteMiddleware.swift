@@ -54,10 +54,8 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
       } catch {
         #if DEBUG
           context.logger.debug("Routing error \(routingError)")
-          throw HTTPError(.notFound, message: "Routing error: \(routingError)")
-        #else
-          throw error
         #endif
+        throw error
       }
     }
   }

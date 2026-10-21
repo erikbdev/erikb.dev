@@ -1,7 +1,7 @@
 import CasePaths
 import URLRouting
 
-extension ServerRoute {
+extension SiteRoute {
   @CasePathable
   enum PageRoute: Sendable, Equatable {
     case index(IndexRoute?)
@@ -10,9 +10,9 @@ extension ServerRoute {
   }
 }
 
-extension ServerRoute.PageRoute {
+extension SiteRoute.PageRoute {
   struct Router: Sendable, ParserPrinter {
-    typealias BaseRoute = ServerRoute.PageRoute
+    typealias BaseRoute = SiteRoute.PageRoute
 
     init() {}
 

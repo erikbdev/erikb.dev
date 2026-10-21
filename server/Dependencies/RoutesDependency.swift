@@ -1,21 +1,22 @@
 import Dependencies
 
-extension ServerRoute: DependencyKey {
-  static let liveValue: ServerRoute = .page(.index(nil))
+extension SiteRoute: DependencyKey {
+  static let liveValue: SiteRoute = .page(.index(nil))
 }
 
-extension ServerRoute.Router: DependencyKey {
+extension SiteRoute.Router: DependencyKey {
   static let liveValue = Self()
 }
 
 extension DependencyValues {
-  var router: ServerRoute.Router {
-    get { self[ServerRoute.Router.self] }
-    set { self[ServerRoute.Router.self] = newValue }
+  var router: SiteRoute.Router {
+    get { self[SiteRoute.Router.self] }
+    set { self[SiteRoute.Router.self] = newValue }
   }
 
-  var currentRoute: ServerRoute {
-    get { self[ServerRoute.self] }
-    set { self[ServerRoute.self] = newValue }
+  var currentRoute: SiteRoute {
+    get { self[SiteRoute.self] }
+    set { self[SiteRoute.self] = newValue }
   }
 }
+
