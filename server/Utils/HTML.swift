@@ -8,10 +8,6 @@ public struct HTML: Sendable, ExpressibleByStringInterpolation, Hashable, Custom
     self.rawValue = ""
   }
 
-  public init(unsafe string: String) {
-    self.rawValue = string
-  }
-
   public init(stringLiteral value: String) {
     self.rawValue = value
   }
@@ -59,7 +55,6 @@ extension HTML {
 // MARK: - Builder
 
 extension HTML {
-  // Literals must resolve to `HTML` (raw markup), not `String` (escaped text).
   public static func buildExpression(_ html: HTML) -> HTML {
     html
   }
@@ -77,7 +72,6 @@ extension HTML {
     html
   }
 
-  // `consuming` hands over the accumulated buffer, so each statement appends in place.
   public static func buildPartialBlock(accumulated: consuming HTML, next: HTML) -> HTML {
     accumulated.append(next)
     return accumulated
@@ -124,7 +118,7 @@ extension Substring: HTML.Component {
 }
 
 extension Int: HTML.Component {
-  public var body: HTML { HTML(unsafe: String(self)) }
+  public var body: HTML { HTML(stringLiteral: String(self)) }
 }
 
 extension Optional: HTML.Component where Wrapped: HTML.Component {
@@ -164,6 +158,6 @@ extension HTML {
     }
 
     output.append(contentsOf: string[runStart..<utf8.endIndex])
-    self.init(unsafe: output)
+    self.rawValue = output
   }
 }

@@ -5,6 +5,6 @@ struct MarkdownHTML: HTML.Component {
   var markdown: String
 
   var body: HTML {
-    HTML(unsafe: HTMLFormatter.format(markdown))
+    HTML(stringLiteral: HTMLFormatter.format(markdown))
   }
 }
