@@ -56,55 +56,55 @@ struct HomePage: HTML.Component {
                 </hgroup>
               </header>
               <section class="log-entry-body">
-            """
-
-            switch post.header {
-            case let .code(lang, value):
-              /* html */
-              """
-              <pre><code class="language-\(lang)">\(value)</code></pre>
-              """
-            case let .image(src, label):
-              /* html */
-              """
-              <img src="\(src)" alt="\(label)">
-              """
-            case let .video(src, label):
-              /* html */
-              """
-              <video src="\(src)" title="\(label)" autoplay playsinline muted loop></video>
-              """
-            case .link, .none:
-              HTML()
-            }
-
-            MarkdownHTML(markdown: post.content)
-
-            /* html */ "</section>"
-
-            if !post.links.isEmpty {
-              /* html */ """
-              <footer class="log-entry-links">
-              """
-
-              for link in post.links {
-                if link.href.hasPrefix("/") {
-                  /* html */ """
-                  <a href="\(link.href)" class="pill-link">\(link.label)</a>
+                \({
+                  switch post.header {
+                  case let .code(lang, value):
+                    /* html */
+                    """
+                    <pre><code class="language-\(lang)">\(value)</code></pre>
+                    """
+                  case let .image(src, label):
+                    /* html */
+                    """
+                    <img src="\(src)" alt="\(label)">
+                    """
+                  case let .video(src, label):
+                    /* html */
+                    """
+                    <video src="\(src)" title="\(label)" autoplay playsinline muted loop></video>
+                    """
+                  case .link, .none:
+                    HTML()
+                  }
+                })
+                \(MarkdownHTML(markdown: post.content))
+              </section>
+              \({
+                if !post.links.isEmpty {
+                  /* html */
                   """
-                } else {
-                  /* html */ """
-                  <a href="\(link.href)" class="pill-link" target="_blank">\(link.label)</a>
+                  <footer class="log-entry-links">
+                    \({
+                      for link in post.links {
+                        if link.href.hasPrefix("/") {
+                          /* html */
+                          """
+                          <a href="\(link.href)" class="pill-link">\(link.label)</a>
+                          """
+                        } else {
+                          /* html */
+                          """
+                          <a href="\(link.href)" class="pill-link" target="_blank" rel="noopener noreferrer">\(link.label)</a>
+                          """
+                        }
+                      }
+                    })
+                  </footer>
                   """
                 }
-              }
-
-              /* html */
-              "</footer>"
-            }
-
-            /* html */
-            "</article>"
+              })
+            </article>
+            """
           }
         }
 

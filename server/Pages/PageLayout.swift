@@ -492,40 +492,30 @@ struct PageLayout: HTML.Component {
       <script src="/scripts/vendors/htmx.min.js"></script>
     </head>
     <body class="site-body">
-    <header class="site-header">
-    """
-
-    #if DEBUG
-      /* html */
-      """
-      <div class="dev-banner" hx-get="\(router.path(for: .api(.liveReload(build: buildTimestamp))))" hx-trigger="every 2s" hx-swap="none" hx-on:htmx:error="this.classList.add('dev-banner--offline')" hx-on:htmx:response:error="this.classList.add('dev-banner--offline')" hx-on:htmx:after:request="this.classList.remove('dev-banner--offline')">
-        <code><span class="dev-banner__ok">● DEV MODE · watching for changes</span><span class="dev-banner__offline">● DEV MODE · lost connection to server</span></code>
-      </div>
-      """
-    #endif
-
-    NavBlockSection(extraClass: "site-nav") {
-      /* html */
-      """
-      <a href="/" class="brand-link"><code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code></a>
-      """
-    }
-
-    /* html */
-    "</header>"
-
-    content
-
-    /* html */
-    "<footer>"
-
-    BlockSection(extraClass: "site-footer-copyright") {
-      "© \(copyrightYear) erikb.dev"
-    }
-
-    /* html */
-    """
-    </footer>
+      <header class="site-header">
+        \({
+          #if DEBUG
+            /* html */
+            """
+            <div class="dev-banner" hx-get="\(router.path(for: .api(.liveReload(build: buildTimestamp))))" hx-trigger="every 2s" hx-swap="none" hx-on:htmx:error="this.classList.add('dev-banner--offline')" hx-on:htmx:response:error="this.classList.add('dev-banner--offline')" hx-on:htmx:after:request="this.classList.remove('dev-banner--offline')">
+              <code><span class="dev-banner__ok">● CONNECTED</span><span class="dev-banner__offline">● DISCONNECTED</span></code>
+            </div>
+            """
+          #endif
+        })
+        \(NavBlockSection(extraClass: "site-nav") {
+          /* html */
+          """
+          <a href="/" class="brand-link"><code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code></a>
+          """
+        })
+      </header>
+      \(content)
+      <footer>
+        \(BlockSection(extraClass: "site-footer-copyright") {
+          "© \(copyrightYear) erikb.dev"
+        })
+      </footer>
     </body>
     </html>
     """
