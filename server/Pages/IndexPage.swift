@@ -5,9 +5,8 @@ import Hummingbird
 import Shared
 import URLRouting
 
-struct HomePage: HTML.Component {
-  @Dependency(\.activityClient.activity) private var activity
-  @Dependency(\.router) private var serverRouter
+struct IndexPage: HTML.Component {
+  @Dependency(\.router) private var siteRouter
   @Dependency(\.currentRoute) private var currentRoute
 
   var body: HTML {
@@ -16,12 +15,15 @@ struct HomePage: HTML.Component {
     } else {
       PageLayout {
         BlockSection(id: "user") {
-          /* html */ """
+          /* html */
+          """
           <header>
             <a href="#user" class="whoami-prompt"><code><span class="prompt-symbol">$</span> whoami</code></a>
             <h1 class="page-title">Erik Bautista Santibanez</h1>
             <p class="role-line">Mobile &amp; Web Developer</p>
-            <div id="activity" hx-get="\(serverRouter.path(for: .page(.index(.activity))))" hx-trigger="every 10s">\(ActivityComponent())</div>
+            <div id="activity" hx-get="\(siteRouter.path(for: .page(.index(.activity))))" hx-trigger="every 10s">
+              \(ActivityComponent())
+            </div>
             <p class="intro-text">I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
             <div class="link-row">
               <a href="mailto:me@erikb.dev" class="pill-link"><code>/me@erikb.dev</code></a>

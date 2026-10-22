@@ -48,7 +48,7 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
         self.activityClient.updateNowPlaying(nowPlaying)
         return Response(status: .ok)
       case .page(.index):
-        return HomePage()
+        return IndexPage()
           .response()
       case .page(.devLogs):
         return DevLogsPage()
