@@ -43,6 +43,19 @@ public struct HTML: Sendable, ExpressibleByStringInterpolation, Hashable, Custom
     public mutating func appendInterpolation(unsafe string: some StringProtocol) {
       self.output.append(contentsOf: string)
     }
+
+    /// Renders `name="value"` pairs separated by spaces, escaping each value and omitting `nil` ones.
+    public mutating func appendInterpolation(attributes: KeyValuePairs<String, String?>) {
+      var isFirst = true
+      for case let (name, value?) in attributes {
+        if !isFirst { self.output.append(" ") }
+        isFirst = false
+        self.output.append(name)
+        self.output.append("=\"")
+        self.output.append(.escapingHTML(value))
+        self.output.append("\"")
+      }
+    }
   }
 }
 
@@ -110,11 +123,11 @@ extension HTML: HTML.Component {
 }
 
 extension String: HTML.Component {
-  public var body: HTML { HTML(escaping: self) }
+  public var body: HTML { HTML(stringLiteral: .escapingHTML(self)) }
 }
 
 extension Substring: HTML.Component {
-  public var body: HTML { HTML(escaping: self) }
+  public var body: HTML { HTML(stringLiteral: .escapingHTML(self)) }
 }
 
 extension Int: HTML.Component {
@@ -129,8 +142,8 @@ extension Array: HTML.Component where Element: HTML.Component {
   public var body: HTML { HTML.buildArray(map(\.body)) }
 }
 
-extension HTML {
-  fileprivate init(escaping string: some StringProtocol) {
+extension String {
+  fileprivate static func escapingHTML(_ string: some StringProtocol) -> String {
     let utf8 = string.utf8
     var output = ""
     output.reserveCapacity(utf8.count)
@@ -158,6 +171,6 @@ extension HTML {
     }
 
     output.append(contentsOf: string[runStart..<utf8.endIndex])
-    self.rawValue = output
+    return output
   }
 }

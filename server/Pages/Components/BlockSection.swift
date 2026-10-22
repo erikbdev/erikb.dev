@@ -6,17 +6,10 @@ struct BlockSection: HTML.Component {
   @HTML var content: HTML
 
   var body: HTML {
-    if let id {
-      /* html */
-      """
-      <section id="\(id)" class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
-      """
-    } else {
-      /* html */
-      """
-      <section class="\(Self.classes(fill: fill, flush: flush, extra: extraClass))">\(content)</section>
-      """
-    }
+    /* html */
+    """
+    <section \(attributes: ["id": id, "class": Self.classes(fill: fill, flush: flush, extra: extraClass)])>\(content)</section>
+    """
   }
 
   static func classes(fill: Bool, flush: Bool, extra: String) -> String {
