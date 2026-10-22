@@ -20,8 +20,6 @@ struct NotFoundPage: HTML.Component {
         </section>
         """
       }
-
-      Divider()
     }
   }
 }

@@ -109,8 +109,6 @@ struct IndexPage: HTML.Component {
             """
           }
         }
-
-        Divider()
       }
     }
   }

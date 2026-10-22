@@ -5,7 +5,8 @@ struct ShowcasePage: HTML.Component {
   var body: HTML {
     PageLayout(pageTitle: "showcase") {
       BlockSection {
-        /* html */ "<p>Coming Soon</p>"
+        /* html */
+        "<p>Coming Soon</p>"
       }
     }
   }

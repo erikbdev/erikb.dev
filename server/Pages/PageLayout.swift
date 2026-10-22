@@ -511,6 +511,7 @@ struct PageLayout: HTML.Component {
         })
       </header>
       \(content)
+      \(Divider())
       <footer>
         \(BlockSection(extraClass: "site-footer-copyright") {
           "© \(copyrightYear) erikb.dev"
