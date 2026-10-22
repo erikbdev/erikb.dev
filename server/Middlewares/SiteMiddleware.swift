@@ -13,49 +13,49 @@ struct SiteMiddleware<Context: RequestContext>: RouterMiddleware {
   @Dependency(\.activityClient) private var activityClient
 
   func handle(_ request: Request, context: Context, next: (Request, Context) async throws -> Response) async throws -> Response {
+    let route: SiteRoute
+
     do {
-      let response: any ResponseGenerator = try await withDependencies {
-        $0.currentRoute = try await self.router.parse(self.parse(request: request))
-      } operation: {
-        switch currentRoute {
-        #if DEBUG
-          case .api(.liveReload(let timestamp)):
-            return Response(
-              status: .ok,
-              headers: [.hx.refresh: String(timestamp != buildTimestamp)]
-            )
-        #endif
-        case .api(.activity(.all)):
-          do {
-            return try Activity.encoder.encode(self.activityClient.activity().redacted, from: request, context: context)
-          } catch {
-            throw HTTPError(.badRequest)
-          }
-        case let .api(.activity(.location(location))):
-          try request.verifyAuthorization()
-          self.activityClient.updateLocation(location)
-          return Response(status: .ok)
-        case let .api(.activity(.nowPlaying(nowPlaying))):
-          try request.verifyAuthorization()
-          self.activityClient.updateNowPlaying(nowPlaying)
-          return Response(status: .ok)
-        case .page(.index):
-          return HTMLResponse { HomePage() }
-        case .page(.devLogs):
-          return HTMLResponse { DevLogsPage() }
-        case .page(.showcase):
-          return HTMLResponse { ShowcasePage() }
-        }
-      }
-      return try response.response(from: request, context: context)
+      route = try await self.router.parse(self.parse(request: request))
     } catch let routingError {
-      do {
-        return try await next(request, context)
-      } catch {
-        #if DEBUG
-          context.logger.debug("Routing error \(routingError)")
-        #endif
-        throw error
+      context.logger.debug("Routing error \(routingError)")
+      return try await next(request, context)
+    }
+
+    return try withDependencies {
+      $0.currentRoute = route
+    } operation: {
+      switch currentRoute {
+      #if DEBUG
+        case .api(.liveReload(let timestamp)):
+          return Response(
+            status: .ok,
+            headers: [.hx.refresh: String(timestamp != buildTimestamp)]
+          )
+      #endif
+      case .api(.activity(.all)):
+        do {
+          return try Activity.encoder.encode(self.activityClient.activity().redacted, from: request, context: context)
+        } catch {
+          throw HTTPError(.badRequest)
+        }
+      case let .api(.activity(.location(location))):
+        try request.verifyAuthorization()
+        self.activityClient.updateLocation(location)
+        return Response(status: .ok)
+      case let .api(.activity(.nowPlaying(nowPlaying))):
+        try request.verifyAuthorization()
+        self.activityClient.updateNowPlaying(nowPlaying)
+        return Response(status: .ok)
+      case .page(.index):
+        return HomePage()
+          .response()
+      case .page(.devLogs):
+        return DevLogsPage()
+          .response()
+      case .page(.showcase):
+        return ShowcasePage()
+          .response()
       }
     }
   }
