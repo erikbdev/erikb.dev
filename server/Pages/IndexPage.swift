@@ -5,11 +5,11 @@ import Hummingbird
 import Shared
 import URLRouting
 
-struct IndexPage: HTML.Component {
+struct IndexPage: HTML {
   @Dependency(\.router) private var siteRouter
   @Dependency(\.currentRoute) private var currentRoute
 
-  var body: HTML {
+  var body: some HTML {
     if currentRoute.is(\.page.index.activity) {
       ActivityComponent()
     } else {
@@ -76,7 +76,7 @@ struct IndexPage: HTML.Component {
                     <video src="\(src)" title="\(label)" autoplay playsinline muted loop></video>
                     """
                   case .link, .none:
-                    HTML()
+                    HTMLString()
                   }
                 })
                 \(MarkdownHTML(markdown: post.content))

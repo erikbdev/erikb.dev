@@ -1,10 +1,10 @@
 import HTTPTypes
 
-struct NotFoundPage: HTML.Component {
+struct NotFoundPage: HTML {
   var statusCode = HTTPResponse.Status.notFound
 
-  var body: HTML {
-    PageLayout(pageTitle: "\(statusCode.code)") {
+  var body: some HTML {
+    PageLayout(title: "\(statusCode.code)") {
       BlockSection(id: "error") {
         /* html */
         """

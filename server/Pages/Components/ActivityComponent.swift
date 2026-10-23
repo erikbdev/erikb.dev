@@ -1,10 +1,10 @@
 import Dependencies
 import Shared
 
-struct ActivityComponent: HTML.Component {
+struct ActivityComponent: HTML {
   @Dependency(\.activityClient.activity) private var activity
 
-  var body: HTML {
+  var body: some HTML {
     /* html */
     """
     <p>\(MapPinIcon())\((activity().location?.residency ?? .default).description)</p>
@@ -28,8 +28,8 @@ struct ActivityComponent: HTML.Component {
   }
 }
 
-private struct MapPinIcon: HTML.Component {
-  var body: HTML {
+private struct MapPinIcon: HTML {
+  var body: some HTML {
     /* html */
     """
     <svg class="activity-icon" viewBox="0 0 256 256">
@@ -39,8 +39,8 @@ private struct MapPinIcon: HTML.Component {
   }
 }
 
-private struct LocationPinIcon: HTML.Component {
-  var body: HTML {
+private struct LocationPinIcon: HTML {
+  var body: some HTML {
     /* html */
     """
     <svg class="activity-icon" viewBox="0 0 256 256">
@@ -50,8 +50,8 @@ private struct LocationPinIcon: HTML.Component {
   }
 }
 
-private struct MusicNotesIcon: HTML.Component {
-  var body: HTML {
+private struct MusicNotesIcon: HTML {
+  var body: some HTML {
     /* html */
     """
     <svg class="activity-icon" viewBox="0 0 256 256">

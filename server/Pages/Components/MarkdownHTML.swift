@@ -1,10 +1,10 @@
 import Markdown
 import Shared
 
-struct MarkdownHTML: HTML.Component {
+struct MarkdownHTML: HTML {
   var markdown: String
 
-  var body: HTML {
-    HTML(stringLiteral: HTMLFormatter.format(markdown))
+  var body: some HTML {
+    HTMLString(stringLiteral: HTMLFormatter.format(markdown))
   }
 }

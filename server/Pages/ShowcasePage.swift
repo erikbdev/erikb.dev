@@ -1,9 +1,9 @@
 import Hummingbird
 import URLRouting
 
-struct ShowcasePage: HTML.Component {
-  var body: HTML {
-    PageLayout(pageTitle: "showcase") {
+struct ShowcasePage: HTML {
+  var body: some HTML {
+    PageLayout(title: "showcase") {
       BlockSection {
         /* html */
         "<p>Coming Soon</p>"

@@ -14,6 +14,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.4.0"),
     .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
     .package(url: "https://github.com/apple/swift-nio", from: "2.0.0"),
     .package(url: "https://github.com/apple/swift-nio-ssh.git", from: "0.12.0"),
@@ -47,6 +48,7 @@ let package = Package(
         .product(name: "DependenciesMacros", package: "swift-dependencies"),
         .product(name: "Hummingbird", package: "hummingbird"),
         .product(name: "HummingbirdRouter", package: "hummingbird"),
+        .product(name: "OrderedCollections", package: "swift-collections"),
         .product(name: "CasePaths", package: "swift-case-paths"),
         .product(name: "URLRouting", package: "swift-url-routing"),
         "Shared",
