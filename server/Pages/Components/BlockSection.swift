@@ -19,6 +19,55 @@ struct BlockSection<Content: HTML>: HTML {
     self.content = content()
   }
 
+  static var styles: String {
+    /* html */
+    """
+    <style>
+      .block-section {
+        position: relative;
+        background-color: var(--color-base);
+        border-color: var(--color-gridline);
+        width: 100%;
+      }
+
+      .block-section > * {
+        position: relative;
+      }
+
+      .block-section::before {
+        content: "";
+        z-index: -1;
+        background-color: inherit;
+        position: absolute;
+        width: 100vw;
+        top: -0.8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-top: var(--size-gridline) solid;
+        border-color: inherit;
+        bottom: 0;
+      }
+
+      .block-section:not(.block-section--fill) {
+        border-inline: var(--size-gridline) solid var(--color-gridline);
+        max-width: var(--content-max-width);
+        margin-inline: auto;
+        padding: var(--section-padding);
+      }
+
+      @media (max-width: 47.9375rem) {
+        .block-section:not(.block-section--fill) {
+          border-inline: 0;
+        }
+      }
+
+      .block-section--flush {
+        padding: 0 !important;
+      }
+    </style>
+    """
+  }
+
   var body: some HTML {
     /* html */
     """
@@ -27,6 +76,7 @@ struct BlockSection<Content: HTML>: HTML {
   }
 }
 
+/// Uses `BlockSection`'s classes; their styles come from `BlockSection`, which the layout footer always renders.
 struct NavBlockSection<Content: HTML>: HTML {
   var fill: Bool
   var flush: Bool

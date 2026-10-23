@@ -4,6 +4,33 @@ import Shared
 struct ActivityComponent: HTML {
   @Dependency(\.activityClient.activity) private var activity
 
+  static var styles: String {
+    /* html */
+    """
+    <style>
+      .activity-icon {
+        display: inline;
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.125em;
+        margin-right: 0.35em;
+        fill: currentColor;
+      }
+
+      .activity-location {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--color-white);
+      }
+
+      .activity-track {
+        font-weight: 700;
+        color: var(--color-white);
+      }
+    </style>
+    """
+  }
+
   var body: some HTML {
     /* html */
     """
