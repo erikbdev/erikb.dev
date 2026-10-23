@@ -286,12 +286,12 @@ struct PageLayout<Content: HTML>: HTML {
             }
           }
         </style>
-        \(unsafe: page.globalStyles.values.joined(separator: "\n"))
+        \(unsafe: page.globalStyles.joined(separator: "\n"))
         <script src="/scripts/vendors/htmx.min.js"></script>
       </head>
       <body class="site-body">
         \(unsafe: page.output)
-        \(unsafe: page.globalScripts.values.joined(separator: "\n"))
+        \(unsafe: page.globalScripts.joined(separator: "\n"))
       </body>
       </html>
       """

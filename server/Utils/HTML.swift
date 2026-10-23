@@ -84,26 +84,27 @@ extension HTML {
 
 public struct HTMLRenderer: Sendable, Hashable {
   public var output = String()
-  public var globalStyles = OrderedDictionary<ObjectIdentifier, String>()
-  public var globalScripts = OrderedDictionary<ObjectIdentifier, String>()
+  public var globalStyles = OrderedSet<String>()
+  public var globalScripts = OrderedSet<String>()
 
-  /// Registers `type`'s styles and scripts, keyed by type so each is emitted once.
+  /// Registers `type`'s styles and scripts. Deduplicated by content, so specializations of a generic component (e.g.
+  /// `BlockSection<HTMLString>` and `BlockSection<_HTMLPartialBlock<…>>`) emit them once.
   public mutating func insertAssets<T: HTML>(of type: T.Type) {
     if !T.styles.isEmpty {
-      self.globalStyles[ObjectIdentifier(T.self)] = T.styles
+      self.globalStyles.append(T.styles)
     }
     if !T.scripts.isEmpty {
-      self.globalScripts[ObjectIdentifier(T.self)] = T.scripts
+      self.globalScripts.append(T.scripts)
     }
   }
 
   public mutating func append(_ other: HTMLRenderer) {
     self.output.append(other.output)
     if !other.globalStyles.isEmpty {
-      self.globalStyles.merge(other.globalStyles) { current, _ in current }
+      self.globalStyles.formUnion(other.globalStyles)
     }
     if !other.globalScripts.isEmpty {
-      self.globalScripts.merge(other.globalScripts) { current, _ in current }
+      self.globalScripts.formUnion(other.globalScripts)
     }
   }
 }
@@ -129,36 +130,40 @@ public enum HTMLBuilder {
     html
   }
 
-  public static func buildPartialBlock(accumulated: consuming HTMLString, next: some HTML) -> HTMLString {
-    next.render(into: &accumulated.renderer)
-    return accumulated
-  }
-
-  @_disfavoredOverload
-  public static func buildPartialBlock(accumulated: some HTML, next: some HTML) -> HTMLString {
-    var output = HTMLString()
-    accumulated.render(into: &output.renderer)
-    next.render(into: &output.renderer)
-    return output
+  public static func buildPartialBlock<Accumulated: HTML, Next: HTML>(
+    accumulated: Accumulated,
+    next: Next
+  ) -> _HTMLPartialBlock<Accumulated, Next> {
+    _HTMLPartialBlock { renderer in
+      accumulated.render(into: &renderer)
+      next.render(into: &renderer)
+    }
   }
 
   public static func buildOptional<Content: HTML>(_ html: Content?) -> Content? {
     html
   }
 
-  public static func buildEither<First: HTML, Second: HTML>(first html: First) -> _HTMLConditional<First, Second> {
-    .first(html)
+  /// Registers the un-taken branch's assets, then renders the taken one.
+  public static func buildEither<First: HTML, Second: HTML>(first html: First) -> _HTMLPartialBlock<First, Second> {
+    _HTMLPartialBlock { renderer in
+      renderer.insertAssets(of: Second.self)
+      html.render(into: &renderer)
+    }
   }
 
-  public static func buildEither<First: HTML, Second: HTML>(second html: Second) -> _HTMLConditional<First, Second> {
-    .second(html)
+  public static func buildEither<First: HTML, Second: HTML>(second html: Second) -> _HTMLPartialBlock<First, Second> {
+    _HTMLPartialBlock { renderer in
+      renderer.insertAssets(of: First.self)
+      html.render(into: &renderer)
+    }
   }
 
-  /// Erases the type, since an `if #available` branch can't be named outside of it.
-  public static func buildLimitedAvailability(_ html: some HTML) -> HTMLString {
-    var output = HTMLString()
-    html.render(into: &output.renderer)
-    return output
+  /// Erases the type, since an `if #available` branch's type can't be named outside of it.
+  public static func buildLimitedAvailability(_ html: some HTML) -> _HTMLPartialBlock<> {
+    _HTMLPartialBlock { renderer in
+      html.render(into: &renderer)
+    }
   }
 
   public static func buildArray<Content: HTML>(_ html: [Content]) -> [Content] {
@@ -166,21 +171,15 @@ public enum HTMLBuilder {
   }
 }
 
-/// The result of `if`/`else` and `switch` in an `@HTMLBuilder`. Registers the assets of every branch, renders the
-/// active one.
-public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
-  case first(First)
-  case second(Second)
+/// The result of combining builder statements and branches. `Content` only carries the statement/branch types (so
+/// `buildEither` can name the un-taken branch); the values are captured by `renderContent`.
+public struct _HTMLPartialBlock<each Content: HTML>: HTML {
+  let renderContent: (inout HTMLRenderer) -> Void
 
   public var body: HTMLString { HTMLString() }
 
   public func render(into renderer: inout HTMLRenderer) {
-    renderer.insertAssets(of: First.self)
-    renderer.insertAssets(of: Second.self)
-    switch self {
-    case let .first(html): html.render(into: &renderer)
-    case let .second(html): html.render(into: &renderer)
-    }
+    self.renderContent(&renderer)
   }
 }
 
