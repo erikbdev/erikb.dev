@@ -27,9 +27,9 @@ struct IndexPage: HTML.Component {
             <p class="intro-text">I'm a passionate software developer who builds applications using Swift and modern web technologies.</p>
             <div class="link-row">
               <a href="mailto:me@erikb.dev" class="pill-link"><code>/me@erikb.dev</code></a>
-              <a href="/resume.pdf" target="_blank" class="pill-link"><code>/resume.pdf</code></a>
-              <a href="https://github.com/erikbdev" target="_blank" class="pill-link"><code>/github</code></a>
-              <a href="https://linkedin.com/in/erikbautista" target="_blank" class="pill-link"><code>/linkedin</code></a>
+              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="pill-link"><code>/resume.pdf</code></a>
+              <a href="https://github.com/erikbdev" target="_blank" rel="noopener noreferrer" class="pill-link"><code>/github</code></a>
+              <a href="https://linkedin.com/in/erikbautista" target="_blank" rel="noopener noreferrer" class="pill-link"><code>/linkedin</code></a>
             </div>
           </header>
           """
@@ -130,7 +130,6 @@ extension SiteRoute.PageRoute.IndexRoute {
     var body: some URLRouting.Router<IndexRoute?> {
       OneOf {
         Route(.case(\.activity) as AnyCasePath<IndexRoute?, Void>) {
-          Method.get
           Headers {
             Field("HX-Request") { "true" }
             Field("HX-Source") { "div#activity" }

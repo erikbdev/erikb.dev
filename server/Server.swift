@@ -21,7 +21,7 @@ struct Server: AsyncParsableCommand {
       @Dependency(\.envVars) var envVars
 
       let router = Router()
-      var logger = Logger(label: "portfolio-server")
+      var logger = Logger(label: "site-server")
 
       if let logLevel = envVars.get("LOG_LEVEL", as: Logger.Level.self) {
         logger.logLevel = logLevel
@@ -35,7 +35,6 @@ struct Server: AsyncParsableCommand {
       router.addMiddleware {
         #if DEBUG
           TracingMiddleware()
-          CORSMiddleware(allowOrigin: .all)
         #endif
 
         NotFoundMiddleware()
