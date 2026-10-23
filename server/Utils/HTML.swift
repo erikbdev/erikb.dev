@@ -36,7 +36,7 @@ public struct HTMLString: Sendable, ExpressibleByStringInterpolation, Hashable, 
       html.render(into: &self.renderer)
     }
 
-    public mutating func appendInterpolation<T: HTML>(@HTMLBuilder _ html: () -> T) {
+    public mutating func appendInterpolation(@HTMLBuilder _ html: () -> some HTML) {
       html().render(into: &self.renderer)
     }
 
@@ -52,7 +52,7 @@ public struct HTMLString: Sendable, ExpressibleByStringInterpolation, Hashable, 
         isFirst = false
         self.renderer.output.append(name)
         self.renderer.output.append("=\"")
-        self.renderer.output.append(.escapingHTML(value))
+        self.renderer.output.append(escapingHTML: value)
         self.renderer.output.append("\"")
       }
     }
@@ -77,12 +77,7 @@ extension HTML {
   public static var scripts: String { "" }
 
   public func render(into renderer: inout HTMLRenderer) {
-    if !Self.styles.isEmpty {
-      renderer.globalStyles[ObjectIdentifier(Self.self)] = Self.styles
-    }
-    if !Self.scripts.isEmpty {
-      renderer.globalScripts[ObjectIdentifier(Self.self)] = Self.scripts
-    }
+    renderer.insertAssets(of: Self.self)
     self.body.render(into: &renderer)
   }
 }
@@ -92,10 +87,24 @@ public struct HTMLRenderer: Sendable, Hashable {
   public var globalStyles = OrderedDictionary<ObjectIdentifier, String>()
   public var globalScripts = OrderedDictionary<ObjectIdentifier, String>()
 
+  /// Registers `type`'s styles and scripts, keyed by type so each is emitted once.
+  public mutating func insertAssets<T: HTML>(of type: T.Type) {
+    if !T.styles.isEmpty {
+      self.globalStyles[ObjectIdentifier(T.self)] = T.styles
+    }
+    if !T.scripts.isEmpty {
+      self.globalScripts[ObjectIdentifier(T.self)] = T.scripts
+    }
+  }
+
   public mutating func append(_ other: HTMLRenderer) {
     self.output.append(other.output)
-    self.globalStyles.merge(other.globalStyles) { current, _ in current }
-    self.globalScripts.merge(other.globalScripts) { current, _ in current }
+    if !other.globalStyles.isEmpty {
+      self.globalStyles.merge(other.globalStyles) { current, _ in current }
+    }
+    if !other.globalScripts.isEmpty {
+      self.globalScripts.merge(other.globalScripts) { current, _ in current }
+    }
   }
 }
 
@@ -108,47 +117,70 @@ public enum HTMLBuilder {
   }
 
   @_disfavoredOverload
-  public static func buildExpression(_ html: some HTML) -> HTMLString {
-    var output = HTMLString()
-    html.render(into: &output.renderer)
-    return output
+  public static func buildExpression<Content: HTML>(_ html: Content) -> Content {
+    html
   }
 
   public static func buildBlock() -> HTMLString {
     HTMLString()
   }
 
-  public static func buildPartialBlock(first html: HTMLString) -> HTMLString {
+  public static func buildPartialBlock<Content: HTML>(first html: Content) -> Content {
     html
   }
 
-  public static func buildPartialBlock(accumulated: consuming HTMLString, next: HTMLString) -> HTMLString {
-    accumulated.append(next)
+  public static func buildPartialBlock(accumulated: consuming HTMLString, next: some HTML) -> HTMLString {
+    next.render(into: &accumulated.renderer)
     return accumulated
   }
 
-  public static func buildOptional(_ html: HTMLString?) -> HTMLString {
-    html ?? HTMLString()
-  }
-
-  public static func buildEither(first html: HTMLString) -> HTMLString {
-    html
-  }
-
-  public static func buildEither(second html: HTMLString) -> HTMLString {
-    html
-  }
-
-  public static func buildLimitedAvailability(_ html: HTMLString) -> HTMLString {
-    html
-  }
-
-  public static func buildArray(_ html: [HTMLString]) -> HTMLString {
+  @_disfavoredOverload
+  public static func buildPartialBlock(accumulated: some HTML, next: some HTML) -> HTMLString {
     var output = HTMLString()
-    for element in html {
-      output.append(element)
-    }
+    accumulated.render(into: &output.renderer)
+    next.render(into: &output.renderer)
     return output
+  }
+
+  public static func buildOptional<Content: HTML>(_ html: Content?) -> Content? {
+    html
+  }
+
+  public static func buildEither<First: HTML, Second: HTML>(first html: First) -> _HTMLConditional<First, Second> {
+    .first(html)
+  }
+
+  public static func buildEither<First: HTML, Second: HTML>(second html: Second) -> _HTMLConditional<First, Second> {
+    .second(html)
+  }
+
+  /// Erases the type, since an `if #available` branch can't be named outside of it.
+  public static func buildLimitedAvailability(_ html: some HTML) -> HTMLString {
+    var output = HTMLString()
+    html.render(into: &output.renderer)
+    return output
+  }
+
+  public static func buildArray<Content: HTML>(_ html: [Content]) -> [Content] {
+    html
+  }
+}
+
+/// The result of `if`/`else` and `switch` in an `@HTMLBuilder`. Registers the assets of every branch, renders the
+/// active one.
+public enum _HTMLConditional<First: HTML, Second: HTML>: HTML {
+  case first(First)
+  case second(Second)
+
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    renderer.insertAssets(of: First.self)
+    renderer.insertAssets(of: Second.self)
+    switch self {
+    case let .first(html): html.render(into: &renderer)
+    case let .second(html): html.render(into: &renderer)
+    }
   }
 }
 
@@ -166,34 +198,52 @@ extension String: HTML {
   // `String` is also a swift-parsing `Parser` with its own `body`, so `_Body` can't be inferred.
   public typealias _Body = HTMLString
 
-  public var body: HTMLString { HTMLString(stringLiteral: .escapingHTML(self)) }
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    renderer.output.append(escapingHTML: self)
+  }
 }
 
 extension Substring: HTML {
-  public var body: HTMLString { HTMLString(stringLiteral: .escapingHTML(self)) }
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    renderer.output.append(escapingHTML: self)
+  }
 }
 
 extension Int: HTML {
-  public var body: HTMLString { HTMLString(stringLiteral: String(self)) }
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    renderer.output.append(String(self))
+  }
 }
 
 extension Optional: HTML where Wrapped: HTML {
-  public var body: HTMLString {
-    if case let html? = self { html }
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    renderer.insertAssets(of: Wrapped.self)
+    self?.render(into: &renderer)
   }
 }
 
 extension Array: HTML where Element: HTML {
-  public var body: HTMLString {
-    for element in self { element }
+  public var body: HTMLString { HTMLString() }
+
+  public func render(into renderer: inout HTMLRenderer) {
+    for element in self {
+      element.render(into: &renderer)
+    }
   }
 }
 
 extension String {
-  fileprivate static func escapingHTML(_ string: some StringProtocol) -> String {
+  /// Appends `string` with HTML-reserved characters escaped.
+  fileprivate mutating func append(escapingHTML string: some StringProtocol) {
     let utf8 = string.utf8
-    var output = ""
-    output.reserveCapacity(utf8.count)
     var runStart = utf8.startIndex
     var index = runStart
 
@@ -210,14 +260,13 @@ extension String {
 
       if let replacement {
         // Reserved characters are ASCII, so `runStart..<index` is always on scalar boundaries.
-        output.append(contentsOf: string[runStart..<index])
-        output.append(replacement)
+        self.append(contentsOf: string[runStart..<index])
+        self.append(replacement)
         runStart = utf8.index(after: index)
       }
       index = utf8.index(after: index)
     }
 
-    output.append(contentsOf: string[runStart..<utf8.endIndex])
-    return output
+    self.append(contentsOf: string[runStart..<utf8.endIndex])
   }
 }
