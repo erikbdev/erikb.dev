@@ -1,5 +1,18 @@
 import OrderedCollections
 
+public protocol HTML {
+  associatedtype _Body: HTML = HTMLString
+
+  typealias Body = _Body
+
+  @HTMLBuilder var body: Body { get }
+
+  func render(into renderer: inout HTMLRenderer)
+
+  static var styles: String { get }
+  static var scripts: String { get }
+}
+
 public struct HTMLString: Sendable, ExpressibleByStringInterpolation, Hashable, CustomStringConvertible {
   fileprivate var renderer = HTMLRenderer()
 
@@ -40,11 +53,14 @@ public struct HTMLString: Sendable, ExpressibleByStringInterpolation, Hashable, 
       html().render(into: &self.renderer)
     }
 
+    public mutating func appendInterpolation(_ string: some StringProtocol) {
+      self.renderer.output.append(escapingHTML: string)
+    }
+
     public mutating func appendInterpolation(unsafe string: some StringProtocol) {
       self.renderer.output.append(contentsOf: string)
     }
 
-    /// Renders `name="value"` pairs separated by spaces, escaping each value and omitting `nil` ones.
     public mutating func appendInterpolation(attributes: KeyValuePairs<String, String?>) {
       var isFirst = true
       for case let (name, value?) in attributes {
@@ -57,19 +73,6 @@ public struct HTMLString: Sendable, ExpressibleByStringInterpolation, Hashable, 
       }
     }
   }
-}
-
-public protocol HTML {
-  associatedtype _Body: HTML = HTMLString
-
-  typealias Body = _Body
-
-  @HTMLBuilder var body: Body { get }
-
-  func render(into renderer: inout HTMLRenderer)
-
-  static var styles: String { get }
-  static var scripts: String { get }
 }
 
 extension HTML {
@@ -87,8 +90,6 @@ public struct HTMLRenderer: Sendable, Hashable {
   public var globalStyles = OrderedSet<String>()
   public var globalScripts = OrderedSet<String>()
 
-  /// Registers `type`'s styles and scripts. Deduplicated by content, so specializations of a generic component (e.g.
-  /// `BlockSection<HTMLString>` and `BlockSection<_HTMLPartialBlock<…>>`) emit them once.
   public mutating func insertAssets<T: HTML>(of type: T.Type) {
     if !T.styles.isEmpty {
       self.globalStyles.append(T.styles)
@@ -144,7 +145,6 @@ public enum HTMLBuilder {
     html
   }
 
-  /// Registers the un-taken branch's assets, then renders the taken one.
   public static func buildEither<First: HTML, Second: HTML>(first html: First) -> _HTMLPartialBlock<First, Second> {
     _HTMLPartialBlock { renderer in
       renderer.insertAssets(of: Second.self)
@@ -159,7 +159,6 @@ public enum HTMLBuilder {
     }
   }
 
-  /// Erases the type, since an `if #available` branch's type can't be named outside of it.
   public static func buildLimitedAvailability(_ html: some HTML) -> _HTMLPartialBlock<> {
     _HTMLPartialBlock { renderer in
       html.render(into: &renderer)
@@ -171,8 +170,6 @@ public enum HTMLBuilder {
   }
 }
 
-/// The result of combining builder statements and branches. `Content` only carries the statement/branch types (so
-/// `buildEither` can name the un-taken branch); the values are captured by `renderContent`.
 public struct _HTMLPartialBlock<each Content: HTML>: HTML {
   let renderContent: (inout HTMLRenderer) -> Void
 
@@ -186,34 +183,15 @@ public struct _HTMLPartialBlock<each Content: HTML>: HTML {
 // MARK: - Conformances
 
 extension HTMLString: HTML {
-  public var body: HTMLString { self }
+  public var body: Self { self }
 
   public func render(into renderer: inout HTMLRenderer) {
     renderer.append(self.renderer)
   }
 }
 
-extension String: HTML {
-  // `String` is also a swift-parsing `Parser` with its own `body`, so `_Body` can't be inferred.
-  public typealias _Body = HTMLString
-
-  public var body: HTMLString { HTMLString() }
-
-  public func render(into renderer: inout HTMLRenderer) {
-    renderer.output.append(escapingHTML: self)
-  }
-}
-
-extension Substring: HTML {
-  public var body: HTMLString { HTMLString() }
-
-  public func render(into renderer: inout HTMLRenderer) {
-    renderer.output.append(escapingHTML: self)
-  }
-}
-
 extension Int: HTML {
-  public var body: HTMLString { HTMLString() }
+  public var body: Self { self }
 
   public func render(into renderer: inout HTMLRenderer) {
     renderer.output.append(String(self))
@@ -221,7 +199,7 @@ extension Int: HTML {
 }
 
 extension Optional: HTML where Wrapped: HTML {
-  public var body: HTMLString { HTMLString() }
+  public var body: Self { self }
 
   public func render(into renderer: inout HTMLRenderer) {
     renderer.insertAssets(of: Wrapped.self)
@@ -230,7 +208,7 @@ extension Optional: HTML where Wrapped: HTML {
 }
 
 extension Array: HTML where Element: HTML {
-  public var body: HTMLString { HTMLString() }
+  public var body: Self { self }
 
   public func render(into renderer: inout HTMLRenderer) {
     for element in self {
