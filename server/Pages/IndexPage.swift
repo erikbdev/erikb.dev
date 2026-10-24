@@ -52,12 +52,12 @@ private struct DevLogsSection: HTML {
         padding: 2rem;
       }
 
-      .devlogs-prompt {
-        display: inline-block;
-        font-size: 0.875rem;
-        color: var(--color-white);
-        margin-bottom: 1.25rem;
-      }
+      /* .devlogs-prompt { */
+      /*   display: inline-block; */
+      /*   font-size: 0.875rem; */
+      /*   color: var(--color-white); */
+      /*   margin-bottom: 1.25rem; */
+      /* } */
 
       .devlogs-title {
         font-size: 1.875rem;
@@ -205,7 +205,7 @@ private struct DevLogsSection: HTML {
       /* html */
       """
       <header class="dev-logs-header">
-        <a href="#dev-logs" class="devlogs-prompt"><code><span class="prompt-symbol">$</span> ls -l /dev-logs/</code></a>
+        <a href="#dev-logs" class="devlogs-prompt">\(CommandPromptComponent(command: "ls -l /dev-logs/"))</a>
         <h1 class="devlogs-title">Dev Logs</h1>
         <p class="devlogs-subtitle">A curated list of projects I've worked on.</p>
       </header>

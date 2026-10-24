@@ -45,7 +45,10 @@ struct PageLayout<Content: HTML>: HTML {
         \(NavBlockSection(extraClass: "site-nav") {
           /* html */
           """
-          <a href="/" class="brand-link"><code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code></a>
+          <a href="/" class="brand-link">
+            \(CommandPromptComponent(showHostname: true))
+            <!-- <code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code> -->
+          </a>
           """
         })
       </header>
