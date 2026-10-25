@@ -42,7 +42,7 @@ struct PageLayout<Content: HTML>: HTML {
             """
           #endif
         })
-        \(NavBlockSection(extraClass: "site-nav") {
+        \(BlockSection(tag: "nav", extraClass: "site-nav") {
           /* html */
           """
           <a href="/" class="brand-link">
