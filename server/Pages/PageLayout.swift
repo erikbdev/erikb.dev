@@ -47,7 +47,6 @@ struct PageLayout<Content: HTML>: HTML {
           """
           <a href="/" class="brand-link">
             \(CommandPromptComponent(showHostname: true))
-            <!-- <code class="brand-text">erikb@dev:~<span class="prompt-symbol">$</span></code> -->
           </a>
           """
         })
@@ -58,6 +57,7 @@ struct PageLayout<Content: HTML>: HTML {
         \(BlockSection(extraClass: "site-footer-copyright") { "© \(copyrightYear) erikb.dev" })
       </footer>
       """
+
     var page = HTMLRenderer()
     main.render(into: &page)
 
@@ -229,10 +229,6 @@ struct PageLayout<Content: HTML>: HTML {
           .brand-text {
             color: var(--color-white);
             font-weight: 700;
-          }
-
-          .prompt-symbol {
-            color: var(--color-terminal);
           }
 
           .site-footer-copyright {

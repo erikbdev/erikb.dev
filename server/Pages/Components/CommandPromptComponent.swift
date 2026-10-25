@@ -6,12 +6,12 @@ struct CommandPromptComponent: HTML {
     <style>
       .prompt-line {
         display: inline-block;
-        color: var(--color-white);
+        color: var(--color-neutral-100);
+        font-weight: 700;
+        font-size: 0.875rem;
       }
       .prompt-symbol {
-          color: var(--color-terminal);
-      }
-      .prompt-command {
+        color: var(--color-terminal);
       }
     </style>
     """
@@ -19,13 +19,8 @@ struct CommandPromptComponent: HTML {
   var body: some HTML {
     /* html */
     """
-    <code="">
-      \({
-        if showHostname {
-          "erikb@dev:~"
-        }
-      })
-      <span class="prompt-symbol">$</span>
+    <code class="prompt-line">
+      \({ showHostname ? "erikb@dev:~" : ""})<span class="prompt-symbol">$</span>
       \(command ?? "")
     </code>
     """

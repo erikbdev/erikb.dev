@@ -14,11 +14,11 @@ struct IndexPage: HTML {
       ActivityComponent()
     } else {
       PageLayout {
-        BlockSection(id: "user") {
+        BlockSection(id: "whoami") {
           /* html */
           """
           <header>
-            <a href="#user" class="whoami-prompt"><code><span class="prompt-symbol">$</span> whoami</code></a>
+            <a href="#whoami">\(CommandPromptComponent(command: "whoami"))</a>
             <h1 class="page-title">Erik Bautista Santibanez</h1>
             <p class="role-line">Mobile &amp; Web Developer</p>
             <div id="activity" hx-get="\(siteRouter.path(for: .page(.index(.activity))))" hx-trigger="every 10s">
@@ -51,13 +51,6 @@ private struct DevLogsSection: HTML {
       .dev-logs-header {
         padding: 2rem;
       }
-
-      /* .devlogs-prompt { */
-      /*   display: inline-block; */
-      /*   font-size: 0.875rem; */
-      /*   color: var(--color-white); */
-      /*   margin-bottom: 1.25rem; */
-      /* } */
 
       .devlogs-title {
         font-size: 1.875rem;
@@ -205,7 +198,7 @@ private struct DevLogsSection: HTML {
       /* html */
       """
       <header class="dev-logs-header">
-        <a href="#dev-logs" class="devlogs-prompt">\(CommandPromptComponent(command: "ls -l /dev-logs/"))</a>
+        <a href="#dev-logs">\(CommandPromptComponent(command: "ls -l /dev-logs/"))</a>
         <h1 class="devlogs-title">Dev Logs</h1>
         <p class="devlogs-subtitle">A curated list of projects I've worked on.</p>
       </header>
@@ -217,7 +210,7 @@ private struct DevLogsSection: HTML {
         <article id="\(post.id)" class="log-entry">
           <header>
             <hgroup class="log-entry-meta">
-              <a href="#\(post.id)"><code><span class="prompt-symbol">$</span> cat log-\(post.index).md</code></a>
+              <a href="#\(post.id)">\(CommandPromptComponent(command: "cat log-\(post.index).md"))</a>
               <span class="log-entry-date">\(post.formattedDate)</span>
             </hgroup>
           </header>
