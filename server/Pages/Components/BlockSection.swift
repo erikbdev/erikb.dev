@@ -27,28 +27,8 @@ struct BlockSection<Content: HTML>: HTML {
     """
     <style>
       .block-section {
-        position: relative;
         background-color: var(--color-base);
-        border-color: var(--color-gridline);
         width: 100%;
-      }
-
-      .block-section > * {
-        position: relative;
-      }
-
-      .block-section::before {
-        content: "";
-        z-index: -1;
-        background-color: inherit;
-        position: absolute;
-        width: 100vw;
-        top: -0.8px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-top: var(--size-gridline) solid;
-        border-color: inherit;
-        bottom: 0;
       }
 
       .block-section:not([data-fill]) {
